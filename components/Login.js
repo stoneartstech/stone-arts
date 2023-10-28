@@ -31,9 +31,9 @@ function Login() {
             {error && <p className='text-red-500 w-full max-w-[25vw]'>{error}</p>}
             <button onClick={submitHandler} className='bg-slate-300 hover:bg-slate-400 p-2 w-full max-w-[25vw]'>Login</button>
             <p className='my-8 text-xl'>OR</p>
-            <button className='bg-slate-900 hover:bg-slate-700 text-white p-2 w-full max-w-[25vw]'>
+            <a href="/clientform" className='bg-slate-900 hover:bg-slate-700 text-white p-3 w-full max-w-[25vw] text-center'>
                 Client Form
-            </button>
+            </a>
         </div>
     )
 }
