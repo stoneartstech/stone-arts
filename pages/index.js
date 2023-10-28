@@ -7,7 +7,7 @@ export default function Home() {
     <>
       <Head>
         <title>Stone Arts App</title>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/logo.png" />
       </Head>
       <Login />
     </>
