@@ -1,12 +1,15 @@
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-
-const inter = Inter({ subsets: ['latin'] })
+import Head from 'next/head'
+import Login from '../components/Login'
+import Layout from '@/components/Layout'
 
 export default function Home() {
   return (
-    <div>
-      hi
-    </div>
+    <>
+      <Head>
+        <title>Stone Arts App</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <Login />
+    </>
   )
 }
