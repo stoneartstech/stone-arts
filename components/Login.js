@@ -1,29 +1,31 @@
 import React, { useState } from 'react'
+import { useAuth } from '../context/AuthContext'
 
 function Login() {
-    const [username, setUsername] = useState('')
+    const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState(null)
 
-    function submitHandler() {
-        if (!username || !password) {
-            setError('Please enter username and password')
+    const { login, currentUser } = useAuth()
+
+    async function submitHandler() {
+        if (!email || !password) {
+            setError('Please enter email and password')
             return
         }
-        if (username === 'pankaj' && password === '1234') {
-            window.location.href = '/admin'
-            return
+        try {
+            await login(email, password)
         }
-        else {
-            setError('Invalid username or password')
+        catch (err) {
+            setError("Failed to login")
         }
     }
 
     return (
         <div className='flex flex-col justify-center items-center'>
             <p className='font-bold text-3xl mb-8'>LOGIN</p>
-            <input type="text" value={username} onChange={(e) => setUsername(e.target.value)}
-                placeholder="username" className=' p-2 w-full max-w-[25vw]' />
+            <input type="text" value={email} onChange={(e) => setEmail(e.target.value)}
+                placeholder="email" className=' p-2 w-full max-w-[25vw]' />
             <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
                 placeholder="password" className=' p-2 w-full max-w-[25vw] my-4' />
             {error && <p className='text-red-500 w-full max-w-[25vw]'>{error}</p>}

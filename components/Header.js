@@ -10,7 +10,7 @@ function Header() {
                 width={150}
                 height={150}
             />
-            <p className='text-4xl text-center w-full'>Stone Arts</p>
+            <p className='text-4xl text-center w-[77vw]'>Stone Arts</p>
         </div>
     )
 }
