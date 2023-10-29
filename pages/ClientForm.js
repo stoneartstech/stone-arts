@@ -54,7 +54,7 @@ export default function ClientForm() {
     return <>{!loading && (
         <div className='flex flex-col items-center'>
             <p className='text-3xl'>Client Information Form</p>
-            <div className='flex p-8 gap-16 w-full'>
+            <div className='flex flex-col sm:flex-row p-8 gap-16 w-full'>
 
                 <div className='flex flex-col w-full'>
                     <p className=''>Name:</p>

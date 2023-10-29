@@ -48,7 +48,7 @@ export default function measurement() {
             <p className='text-3xl'>Measurement Information</p>
             <p className='text-xl mt-4'>Measurement Charges : 10,000/-</p>
             <p className=''>Outside Nairobi, prices may vary *T&C Apply*</p>
-            <div className='flex p-8 gap-16 w-full'>
+            <div className='flex flex-col sm:flex-row p-8 gap-16 w-full'>
                 <div className='flex flex-col w-full'>
                     <p className=''>Cost:</p>
                     <input type="text" value={cost} onChange={(e) => setCost(e.target.value)}

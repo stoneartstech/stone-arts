@@ -17,8 +17,8 @@ export default function SalesDashboard() {
 
     return (
         <div>
-            <p className='mt-4 text-3xl text-center'>{showroomName}</p>
-            <div className='flex flex-row p-24 items-center justify-center gap-24'>
+            <p className='my-4 text-3xl text-center'>{showroomName}</p>
+            <div className='flex flex-col sm:flex-row sm:p-24 items-center justify-center gap-8 sm:gap-24'>
                 <div className='flex flex-col text-xl gap-8'>
                     <p className='text-center'>{visitors} Visitors today</p>
                     <p className='text-center'>{calls} Called</p>
@@ -28,23 +28,23 @@ export default function SalesDashboard() {
                 </div>
                 <div className='flex flex-col text-xl gap-4'>
                     <button
-                        className='bg-slate-300 hover:bg-slate-400 p-2 w-full max-w-[25vw]'>
+                        className='bg-slate-300 hover:bg-slate-400 p-2 w-full sm:max-w-[25vw]'>
                         Invocing
                     </button>
                     <button onClick={BOQHandler}
-                        className='bg-slate-300 hover:bg-slate-400 p-2 w-full max-w-[25vw]'>
+                        className='bg-slate-300 hover:bg-slate-400 p-2 w-full sm:max-w-[25vw]'>
                         Send Information to BOQ
                     </button>
                     <button
-                        className='bg-slate-300 hover:bg-slate-400 p-2 w-full max-w-[25vw]'>
+                        className='bg-slate-300 hover:bg-slate-400 p-2 w-full sm:max-w-[25vw]'>
                         Check Client History
                     </button>
                     <button
-                        className='bg-slate-300 hover:bg-slate-400 p-2 w-full max-w-[25vw]'>
+                        className='bg-slate-300 hover:bg-slate-400 p-2 w-full sm:max-w-[25vw]'>
                         Reports
                     </button>
                     <button
-                        className='bg-slate-300 hover:bg-slate-400 p-2 w-full max-w-[25vw]'>
+                        className='bg-slate-300 hover:bg-slate-400 p-2 w-full sm:max-w-[25vw]'>
                         Upload Order
                     </button>
                 </div>
