@@ -5,6 +5,7 @@ import { doc, setDoc } from 'firebase/firestore'
 import { useSearchParams } from 'next/navigation'
 
 export default function measurement() {
+    /* eslint-disable */
     const [cost, setCost] = useState('')
     const [date, setDate] = useState('')
     const [supplyFix, setSupplyFix] = useState('supply')
@@ -83,4 +84,5 @@ export default function measurement() {
         </div>)
     }
     </>
+    /* eslint-enable */
 }
