@@ -33,7 +33,7 @@ export default function BOQDashboard() {
             <p className='mt-8 text-2xl text-center'>Measurement Requests from Clients</p>
             <div className='flex flex-col text-xl gap-4 items-center'>
                 {measurementRequests.map((measurementRequest) => (
-                    <div className='flex flex-col gap-2 p-4 w-[80vw]'>
+                    <div key={measurementRequest.clientId} className='flex flex-col gap-2 p-4 w-[80vw]'>
                         <p>Client Name: {measurementRequest.name}</p>
                         <p>Client Email: {measurementRequest.email}</p>
                         <p>Client Number: {measurementRequest.number}</p>
