@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next/router'
+import { db } from '../firebase'
+import { doc, setDoc } from 'firebase/firestore'
 
 function clientform() {
     const [name, setName] = useState('')
@@ -11,20 +13,48 @@ function clientform() {
     const [sourceInfo, setSourceInfo] = useState('socialmedia')
     const [specificInfo, setSpecificInfo] = useState('')
     const [delivery, setDelivery] = useState('yes')
+    const [loading, setLoading] = useState(false)
 
     const aspects = ['Fireplaces', 'Flooring', 'Sintered Stone']
 
     const router = useRouter()
 
     function submitHandler() {
+
+        if (!number || !name || !email || !address || !aspect || !sourceInfo || !delivery || (sourceInfo === 'other' && !specificInfo)) {
+            alert('Please enter all the details')
+            return
+        }
+
+        setLoading(true)
+        // const clientId = number
+        const clientData = {
+            name: name,
+            email: email,
+            option: option,
+            address: address,
+            number: number,
+            aspect: aspect,
+            sourceInfo: sourceInfo,
+            specificInfo: specificInfo,
+            delivery: delivery
+        }
+
+        // await setDoc(doc(db, "clients", clientId), clientData)
+
         const route = '/' + option
-        console.log(option)
-        router.push(route)
+
+        setLoading(false)
+        router.push({
+            pathname: route,
+            query: { clientData: JSON.stringify(clientData) }
+        })
     }
 
-    return (
+    return <>{!loading && (
         <div className='flex flex-col items-center'>
-            <div className='flex p-12 gap-16 w-full'>
+            <p className='text-3xl'>Client Information Form</p>
+            <div className='flex p-8 gap-16 w-full'>
 
                 <div className='flex flex-col w-full'>
                     <p className=''>Name:</p>
@@ -81,8 +111,10 @@ function clientform() {
             <button onClick={submitHandler} className='bg-slate-300 hover:bg-slate-400 p-2 w-1/3 '>
                 SUBMIT
             </button>
-        </div>
-    )
+        </div>)
+    }
+    </>
+
 }
 
 export default clientform
