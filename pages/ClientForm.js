@@ -86,7 +86,7 @@ export default function ClientForm() {
                     <p className='mt-4'>Interested Aspect:</p>
                     <select className='p-2 w-full' onChange={(e) => setAspect(e.target.value)}>
                         {aspects.map((aspect) => (
-                            <option value={aspect}>{aspect}</option>
+                            <option key={aspect} value={aspect}>{aspect}</option>
                         ))}
                     </select>
 
