@@ -17,7 +17,7 @@ function AdminDashboard() {
             <p className='text-2xl text-center mb-8'>Admin Home Page</p>
             <div className='flex flex-col text-xl gap-4 items-center'>
                 {options.map((option) => (
-                    <a href={option.link}
+                    <a key={option.link} href={option.link}
                         className='bg-slate-300 hover:bg-slate-400 p-2 w-full max-w-[25vw]'>
                         {option.title}
                     </a>
