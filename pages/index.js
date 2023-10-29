@@ -3,7 +3,7 @@ import Login from '../components/Login'
 import Layout from '@/components/Layout'
 import { useAuth } from '../context/AuthContext'
 import AdminDashboard from '@/components/AdminDashboard'
-import ClientForm from './clientform.js'
+import ClientForm from './ClientForm.js'
 
 export default function Home() {
   const { currentUser } = useAuth()
