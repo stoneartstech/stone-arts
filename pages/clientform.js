@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import { db } from '../firebase'
 import { doc, setDoc } from 'firebase/firestore'
 
-function clientform() {
+export default function ClientForm() {
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [option, setOption] = useState('measurement')
@@ -116,5 +116,3 @@ function clientform() {
     </>
 
 }
-
-export default clientform
