@@ -12,7 +12,7 @@ export default function SalesDashboard() {
     const router = useRouter()
     function BOQHandler() {
         //transfer firebase data of client to BOQ 
-        router.push('/success')
+        alert("Data sent to BOQ")
     }
 
     return (

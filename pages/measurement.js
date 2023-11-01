@@ -41,7 +41,7 @@ export default function measurement() {
 
         await setDoc(doc(db, "clients", clientId), clientData)
         setLoading(false)
-        router.push('/saleshome')
+        router.push('/success')
     }
     return <> {!loading && (
         <div className='flex flex-col items-center'>

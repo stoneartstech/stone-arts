@@ -4,6 +4,7 @@ import Layout from '@/components/Layout'
 import { useAuth } from '../context/AuthContext'
 import AdminDashboard from '@/components/AdminDashboard'
 import ClientForm from './ClientForm.js'
+import SalesDashboard from '@/components/SalesDashboard'
 
 export default function Home() {
   const { currentUser } = useAuth()
@@ -15,7 +16,7 @@ export default function Home() {
       </Head>
       {!currentUser && <Login />}
       {currentUser && currentUser.email === 'admin@stonearts.com' && <AdminDashboard />}
-      {currentUser && currentUser.email === 'salesgalleria@stonearts.com' && <ClientForm />}
+      {currentUser && currentUser.email === 'salesgalleria@stonearts.com' && <SalesDashboard />}
     </>
   )
 }
