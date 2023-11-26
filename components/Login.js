@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import ClientForm from '@/pages/ClientForm'
+import Link from 'next/link'
 
 function Login() {
     const [email, setEmail] = useState('')
@@ -32,9 +33,9 @@ function Login() {
             {error && <p className='text-red-500 w-full sm:max-w-[25vw]'>{error}</p>}
             <button onClick={submitHandler} className='bg-slate-300 hover:bg-slate-400 p-2 w-full sm:max-w-[25vw]'>Login</button>
             <p className='my-8 text-xl'>OR</p>
-            <a href="/ClientForm" className='bg-slate-900 hover:bg-slate-700 text-white p-3 w-full max-w-[25vw] text-center'>
+            <Link href="/ClientForm" className='bg-slate-900 hover:bg-slate-700 text-white p-3 w-full max-w-[25vw] text-center'>
                 Client Form
-            </a>
+            </Link>
         </div>
     )
 }
