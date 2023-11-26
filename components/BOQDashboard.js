@@ -26,26 +26,41 @@ export default function BOQDashboard() {
     //         console.log(doc.id, ' => ', doc.data());
     //     });
     // };
+    function handleButtonClick(name) {
+        measurementRequests.forEach((request) => {
+            if (request.name === name) {
+                request.showDetails = !request.showDetails;
+            }
+        });
+        setMeasurementRequests([...measurementRequests]);
+    }
 
 
     return <>{!loading && (
         <div>
-            <p className='mt-8 text-2xl text-center'>Measurement Requests from Clients</p>
+            <p className='mt-8 text-2xl text-center font-bold mb-4'>Measurement Requests from Clients</p>
             <div className='flex flex-col text-xl gap-4 items-center'>
+
                 {measurementRequests.map((measurementRequest) => (
-                    <div key={measurementRequest.clientId} className='flex flex-col gap-2 p-4 w-[80vw]'>
-                        <p>Client Name: {measurementRequest.name}</p>
-                        <p>Client Email: {measurementRequest.email}</p>
-                        <p>Client Number: {measurementRequest.number}</p>
-                        <p>Client Address: {measurementRequest.address}</p>
-                        <p className='font-bold'>Measurement Request:</p>
-                        <p>Cost: {measurementRequest.measurementData.cost}</p>
-                        <p>Date: {measurementRequest.measurementData.date}</p>
-                        <p>Supply/Fix: {measurementRequest.measurementData.supplyFix}</p>
-                        <p>Time: {measurementRequest.measurementData.time}</p>
-                        <p>Contact Person: {measurementRequest.measurementData.contactPerson}</p>
-                    </div>
-                ))}
+                    <div key={measurementRequest.clientId} className='flex flex-col gap-2 p-4 w-[80vw] border-2 border-black'>
+                        <button onClick={() => handleButtonClick(measurementRequest.name)}>{measurementRequest.name}</button>
+                        {measurementRequest.showDetails && (
+                            <div>
+                                <p>Client Email: {measurementRequest.email}</p>
+                                <p>Client Number: {measurementRequest.number}</p>
+                                <p>Client Address: {measurementRequest.address}</p>
+                                <p className='font-bold'>Measurement Request:</p>
+                                <p>Cost: {measurementRequest.measurementData.cost}</p>
+                                <p>Date: {measurementRequest.measurementData.date}</p>
+                                <p>Supply/Fix: {measurementRequest.measurementData.supplyFix}</p>
+                                <p>Time: {measurementRequest.measurementData.time}</p>
+                                <p>Contact Person: {measurementRequest.measurementData.contactPerson}</p>
+                            </div>
+                        )}
+                    </div>))
+                }
+
+
             </div>
 
 
