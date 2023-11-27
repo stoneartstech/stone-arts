@@ -13,7 +13,9 @@ export default function measurement() {
     const [contactPerson, setContactPerson] = useState('')
     const [loading, setLoading] = useState(false)
 
-    const aspects = ['Fireplaces', 'Flooring', 'Sintered Stone']
+    const aspects = ['Claddings', 'Travertine', 'Marble', 'Sintered Stones', 'Pavings', 'Fireplaces', 'Facade',
+        'Water Features', 'Garden Furnitures', 'Planters and Stands', 'Vanity and Sinks', 'Bird Bath/Feeder',
+        'Pebbles and Landscaping', 'Memorials', 'Statues', 'Other Products', 'Brass', 'Plant Venture']
 
     const router = useRouter()
     const query = useSearchParams().get("clientData")

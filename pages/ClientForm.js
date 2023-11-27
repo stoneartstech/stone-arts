@@ -9,17 +9,19 @@ export default function ClientForm() {
     const [option, setOption] = useState('measurement')
     const [address, setAddress] = useState('')
     const [number, setNumber] = useState('')
-    const [aspect, setAspect] = useState('Fireplaces')
+    const [aspect, setAspect] = useState('Claddings')
     const [sourceInfo, setSourceInfo] = useState('socialmedia')
     const [specificInfo, setSpecificInfo] = useState('')
     const [delivery, setDelivery] = useState('yes')
     const [loading, setLoading] = useState(false)
 
-    const aspects = ['Fireplaces', 'Flooring', 'Sintered Stone']
+    const aspects = ['Claddings', 'Travertine', 'Marble', 'Sintered Stones', 'Pavings', 'Fireplaces', 'Facade',
+        'Water Features', 'Garden Furnitures', 'Planters and Stands', 'Vanity and Sinks', 'Bird Bath/Feeder',
+        'Pebbles and Landscaping', 'Memorials', 'Statues', 'Other Products', 'Brass', 'Plant Venture']
 
     const router = useRouter()
 
-    function submitHandler() {
+    async function submitHandler() {
 
         if (!number || !name || !email || !address || !aspect || !sourceInfo || !delivery || (sourceInfo === 'other' && !specificInfo)) {
             alert('Please enter all the details')
@@ -44,11 +46,21 @@ export default function ClientForm() {
 
         const route = '/' + option
 
-        setLoading(false)
-        router.push({
-            pathname: route,
-            query: { clientData: JSON.stringify(clientData) }
-        })
+
+        if (option == 'measurement') {
+            setLoading(false)
+            router.push({
+                pathname: route,
+                query: { clientData: JSON.stringify(clientData) }
+            })
+        }
+        else {
+            const clientId = clientData.number
+            await setDoc(doc(db, "clients", clientId), clientData)
+            setLoading(false)
+            router.push('/success')
+        }
+
     }
 
     return <>{!loading && (

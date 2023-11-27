@@ -8,15 +8,20 @@ export default function BOQDashboard() {
     const [measurementRequests, setMeasurementRequests] = useState([])
     const [loading, setLoading] = useState(true)
 
+    //fetch only those documents which have option as measurement in database
+
+
     useEffect(() => {
         const fetch = onSnapshot(collection(db, 'clients'), (snapshot) => {
-            const measurementRequests = snapshot.docs.map((doc) => ({
+            var measurementRequests = snapshot.docs.map((doc) => ({
                 id: doc.id,
                 ...doc.data()
             }))
+            measurementRequests = measurementRequests.filter((request) => request.option === 'measurement')
             setMeasurementRequests(measurementRequests)
             setLoading(false)
         })
+
         return fetch
     }, [])
 
@@ -49,6 +54,7 @@ export default function BOQDashboard() {
                                 <p>Client Email: {measurementRequest.email}</p>
                                 <p>Client Number: {measurementRequest.number}</p>
                                 <p>Client Address: {measurementRequest.address}</p>
+                                {measurementRequest}
                                 <p className='font-bold'>Measurement Request:</p>
                                 <p>Cost: {measurementRequest.measurementData.cost}</p>
                                 <p>Date: {measurementRequest.measurementData.date}</p>
