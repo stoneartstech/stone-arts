@@ -3,13 +3,16 @@ import { useRouter } from 'next/router'
 import { db } from '../firebase'
 import { doc, setDoc } from 'firebase/firestore'
 import { useSearchParams } from 'next/navigation'
+import TimePicker from 'react-time-picker'
+import 'react-time-picker/dist/TimePicker.css';
+import 'react-clock/dist/Clock.css';
 
 export default function measurement() {
     /* eslint-disable */
     const [cost, setCost] = useState('')
     const [date, setDate] = useState('')
     const [supplyFix, setSupplyFix] = useState('supply')
-    const [time, setTime] = useState('')
+    const [time, setTime] = useState('14:00')
     const [contactPerson, setContactPerson] = useState('')
     const [loading, setLoading] = useState(false)
 
@@ -22,7 +25,7 @@ export default function measurement() {
     const [clientData, setClientData] = useState(JSON.parse(query))
 
     async function submitHandler() {
-        if (!cost || !date || !time || !contactPerson) {
+        if (!cost || !date || !time) {
             alert('Please enter all the details')
             return
         }
@@ -82,9 +85,8 @@ export default function measurement() {
 
                 </div>
                 <div className='flex flex-col w-full'>
-                    <p className='mt-4'>Time for the visit:</p>
-                    <input type="text" value={time} onChange={(e) => setTime(e.target.value)}
-                        className=' p-2 w-full ' />
+                    <p className='mt-4'>Time for the visit: (Type in 24H format)</p>
+                    <TimePicker value={time} onChange={setTime} />
 
                     <p className='mt-4'>Contact person at site:</p>
                     <input type="text" value={contactPerson} onChange={(e) => setContactPerson(e.target.value)}
