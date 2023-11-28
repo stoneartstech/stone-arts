@@ -48,13 +48,17 @@ export default function measurement() {
     return <> {!loading && (
         <div className='flex flex-col items-center'>
             <p className='text-3xl'>Measurement Information</p>
-            <p className='text-xl mt-4'>Measurement Charges : 10,000/-</p>
+            <p className='text-xl mt-4'>Measurement Charges : KES 10,000/-</p>
             <p className=''>Outside Nairobi, prices may vary *T&C Apply*</p>
             <div className='flex flex-col sm:flex-row p-8 gap-16 w-full'>
                 <div className='flex flex-col w-full'>
                     <p className=''>Cost:</p>
-                    <input type="text" value={cost} onChange={(e) => setCost(e.target.value)}
-                        className=' p-2 w-full ' />
+                    <div className='flex items-center'>
+                        <p className='mr-2'>KES</p>
+                        <input type="text" value={cost} onChange={(e) => setCost(e.target.value)}
+                            className=' p-2 w-full ' />
+                    </div>
+
 
                     <p className='mt-4'>Date for site visit:</p>
                     <input type="date" value={date} onChange={(e) => setDate(e.target.value)}
