@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { useRouter } from 'next/router'
 import { db } from '../firebase'
 import { doc, setDoc } from 'firebase/firestore'
+import PhoneInput from 'react-phone-input-2'
+import 'react-phone-input-2/lib/style.css'
 
 export default function ClientForm() {
     const [name, setName] = useState('')
@@ -13,11 +15,18 @@ export default function ClientForm() {
     const [sourceInfo, setSourceInfo] = useState('socialmedia')
     const [specificInfo, setSpecificInfo] = useState('')
     const [delivery, setDelivery] = useState('yes')
-    const [loading, setLoading] = useState(false)
 
     const aspects = ['Claddings', 'Travertine', 'Marble', 'Sintered Stones', 'Pavings', 'Fireplaces', 'Facade',
         'Water Features', 'Garden Furnitures', 'Planters and Stands', 'Vanity and Sinks', 'Bird Bath/Feeder',
         'Pebbles and Landscaping', 'Memorials', 'Statues', 'Other Products', 'Brass', 'Plant Venture']
+
+    const [loading, setLoading] = useState(false)
+
+    const [validNumber, setValidNumber] = useState(true)
+    const validateNumber = (number) => {
+        const numberPattern = /^\d{1,14}$/
+        return numberPattern.test(number)
+    }
 
     const router = useRouter()
 
@@ -69,11 +78,11 @@ export default function ClientForm() {
             <div className='flex flex-col sm:flex-row p-8 gap-16 w-full'>
 
                 <div className='flex flex-col w-full'>
-                    <p className=''>Name:</p>
+                    <p className=''>Name:<span className='text-red-500'>*</span></p>
                     <input type="text" value={name} onChange={(e) => setName(e.target.value)}
                         className=' p-2 w-full ' />
 
-                    <p className='mt-4'>Email ID:</p>
+                    <p className='mt-4'>Email ID:<span className='text-red-500'>*</span></p>
                     <input type="text" value={email} onChange={(e) => setEmail(e.target.value)}
                         className=' p-2 w-full ' />
 
@@ -85,15 +94,26 @@ export default function ClientForm() {
 
                     </select>
 
-                    <p className='mt-4'>Address:</p>
+                    <p className='mt-4'>Address:<span className='text-red-500'>*</span></p>
                     <textarea value={address} onChange={(e) => setAddress(e.target.value)}
                         placeholder="Enter your address" className='p-2 w-full' />
 
                 </div>
                 <div className='flex flex-col w-full'>
-                    <p className='mt-4'>Phone Number:</p>
-                    <input type="text" value={number} onChange={(e) => setNumber(e.target.value)}
-                        placeholder="+254 1919202020" className=' p-2 w-full ' />
+                    <p className='mt-1'>Phone Number:<span className='text-red-500'>*</span></p>
+                    <PhoneInput
+                        country={'ke'}
+                        inputProps={{
+                            required: true,
+                        }}
+                        en
+                        placeholder='Enter phone number'
+                        value={number} onChange={(value) => {
+                            setNumber(value)
+                            setValidNumber(validateNumber(value))
+                        }}
+                        className='w-full' />
+                    {!validNumber && <p className='text-red-500'>Please enter a valid phone number</p>}
 
                     <p className='mt-4'>Interested Aspect:</p>
                     <select className='p-2 w-full' onChange={(e) => setAspect(e.target.value)}>
