@@ -48,15 +48,27 @@ export default function BOQDashboard() {
                         <button onClick={() => handleButtonClick(measurementRequest.name)}>{measurementRequest.name}</button>
                         {measurementRequest.showDetails && (
                             <div>
+                                <p>Client Name: {measurementRequest.name}</p>
                                 <p>Client Email: {measurementRequest.email}</p>
                                 <p>Client Number: {measurementRequest.number}</p>
                                 <p>Client Address: {measurementRequest.address}</p>
-                                <p className='font-bold'>Measurement Request:</p>
-                                <p>Cost: {measurementRequest.measurementData.cost}</p>
-                                <p>Date: {measurementRequest.measurementData.date}</p>
-                                <p>Supply/Fix: {measurementRequest.measurementData.supplyFix}</p>
-                                <p>Time: {measurementRequest.measurementData.time}</p>
-                                <p>Contact Person: {measurementRequest.measurementData.contactPerson}</p>
+                                <p>Interested Aspect: {measurementRequest.aspect}</p>
+                                <p>Request Category: {measurementRequest.option}</p>
+                                <p>Delivery: {measurementRequest.delivery}</p>
+                                <p>How did Client get to know about us:{" "}
+                                    {measurementRequest.sourceInfo !== 'other' && measurementRequest.sourceInfo}
+                                    {measurementRequest.sourceInfo === 'other' && measurementRequest.specificInfo}
+                                </p>
+
+                                {measurementRequest.option == 'measurement' &&
+                                    <div><p className='font-bold'>Measurement Request:</p>
+                                        <p>Cost: {measurementRequest.measurementData.cost}</p>
+                                        <p>Date: {measurementRequest.measurementData.date}</p>
+                                        <p>Time: {measurementRequest.measurementData.time}</p>
+                                        <p>Supply/Fix: {measurementRequest.measurementData.supplyFix}</p>
+                                        <p>Contact Person: {measurementRequest.measurementData.contactPerson}</p>
+                                    </div>
+                                }
                             </div>
                         )}
                     </div>))

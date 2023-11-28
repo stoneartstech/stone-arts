@@ -47,16 +47,24 @@ export default function ClientHistory() {
                         <button onClick={() => handleButtonClick(clientRequest.name)}>{clientRequest.name}</button>
                         {clientRequest.showDetails && (
                             <div>
+                                <p>Client Name: {clientRequest.name}</p>
                                 <p>Client Email: {clientRequest.email}</p>
                                 <p>Client Number: {clientRequest.number}</p>
                                 <p>Client Address: {clientRequest.address}</p>
-                                <p>Request Category: <b>{clientRequest.option}</b></p>
+                                <p>Interested Aspect: {clientRequest.aspect}</p>
+                                <p>Request Category: {clientRequest.option}</p>
+                                <p>Delivery: {clientRequest.delivery}</p>
+                                <p>How did Client get to know about us:{" "}
+                                    {clientRequest.sourceInfo !== 'other' && clientRequest.sourceInfo}
+                                    {clientRequest.sourceInfo === 'other' && clientRequest.specificInfo}
+                                </p>
+
                                 {clientRequest.option == 'measurement' &&
                                     <div><p className='font-bold'>Measurement Request:</p>
                                         <p>Cost: {clientRequest.measurementData.cost}</p>
                                         <p>Date: {clientRequest.measurementData.date}</p>
-                                        <p>Supply/Fix: {clientRequest.measurementData.supplyFix}</p>
                                         <p>Time: {clientRequest.measurementData.time}</p>
+                                        <p>Supply/Fix: {clientRequest.measurementData.supplyFix}</p>
                                         <p>Contact Person: {clientRequest.measurementData.contactPerson}</p>
                                     </div>
                                 }
