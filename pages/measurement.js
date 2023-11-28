@@ -47,16 +47,23 @@ export default function measurement() {
     }
     return <> {!loading && (
         <div className='flex flex-col items-center'>
+            <div className='w-full pl-8'>
+                <button className='bg-slate-300 p-2 rounded-lg'
+                    onClick={() => router.back()}>
+                    Go Back
+                </button>
+            </div>
             <p className='text-3xl'>Measurement Information</p>
             <p className='text-xl mt-4'>Measurement Charges : KES 10,000/-</p>
             <p className=''>Outside Nairobi, prices may vary *T&C Apply*</p>
             <div className='flex flex-col sm:flex-row p-8 gap-16 w-full'>
                 <div className='flex flex-col w-full'>
-                    <p className=''>Cost:</p>
+
                     <div className='flex items-center'>
+                        <p className='mr-8'>Cost:</p>
                         <p className='mr-2'>KES</p>
-                        <input type="text" value={cost} onChange={(e) => setCost(e.target.value)}
-                            className=' p-2 w-full ' />
+                        <input type="number" value={cost} onChange={(e) => setCost(e.target.value)}
+                            className=' p-2 ' />
                     </div>
 
 
