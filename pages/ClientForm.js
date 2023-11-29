@@ -24,7 +24,11 @@ export default function ClientForm() {
 
     const [validNumber, setValidNumber] = useState(true)
     const validateNumber = (number) => {
-        const numberPattern = /^\d{1,14}$/
+        console.log(number)
+        var numberPattern = /^\d{1,14}$/
+        if (number.startsWith('254')) {
+            numberPattern = /^\d{12}$/
+        }
         return numberPattern.test(number)
     }
 
