@@ -52,6 +52,7 @@ export default function BOQDashboard() {
                                 <p>Client Email: {measurementRequest.email}</p>
                                 <p>Client Number: {measurementRequest.number}</p>
                                 <p>Client Address: {measurementRequest.address}</p>
+                                <p>Date of Request: {measurementRequest.date}</p>
                                 <p>Interested Aspect: {measurementRequest.aspect}</p>
                                 <p>Request Category: {measurementRequest.option}</p>
                                 <p>Delivery: {measurementRequest.delivery}</p>

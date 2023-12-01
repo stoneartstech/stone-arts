@@ -43,11 +43,14 @@ export default function ClientForm() {
 
         setLoading(true)
         // const clientId = number
+        var today = new Date()
+        var date = today.getDate() + '-' + (today.getMonth() + 1) + '-' + today.getFullYear()
         const clientData = {
             name: name,
             email: email,
             option: option,
             address: address,
+            date: date,
             number: '+' + number,
             aspect: aspect,
             sourceInfo: sourceInfo,

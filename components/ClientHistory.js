@@ -51,6 +51,7 @@ export default function ClientHistory() {
                                 <p>Client Email: {clientRequest.email}</p>
                                 <p>Client Number: {clientRequest.number}</p>
                                 <p>Client Address: {clientRequest.address}</p>
+                                <p>Date of Request: {clientRequest.date}</p>
                                 <p>Interested Aspect: {clientRequest.aspect}</p>
                                 <p>Request Category: {clientRequest.option}</p>
                                 <p>Delivery: {clientRequest.delivery}</p>
