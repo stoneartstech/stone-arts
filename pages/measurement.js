@@ -42,9 +42,10 @@ export default function measurement() {
         // setClientData({ ...clientData, measurementInfo: measurementData })
         clientData["measurementData"] = measurementData;
         // console.log(clientData)
-        const clientId = clientData.number
+        const clientId = clientData.clientId
 
-        await setDoc(doc(db, "clients", clientId), clientData)
+        await setDoc(doc(db, "clients", clientId.toString()), clientData)
+        await setDoc(doc(db, "clientId", "clientId"), { id: clientId + 1 })
         setLoading(false)
         router.push('/success')
     }

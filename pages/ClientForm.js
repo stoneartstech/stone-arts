@@ -1,11 +1,25 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { db } from '../firebase'
-import { doc, setDoc } from 'firebase/firestore'
+import { doc, setDoc, collection, getDocs, onSnapshot } from 'firebase/firestore'
 import PhoneInput from 'react-phone-input-2'
 import 'react-phone-input-2/lib/style.css'
 
 export default function ClientForm() {
+
+    const [clientId, setClientId] = useState()
+    const [loading, setLoading] = useState(true)
+    useEffect(() => {
+        const fetch = onSnapshot(collection(db, 'clientId'), (snapshot) => {
+            var number = snapshot.docs[0].data()
+            console.log(number)
+            setClientId(number.id)
+            setLoading(false)
+        })
+
+        return fetch
+    }, [])
+
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [option, setOption] = useState('measurement')
@@ -20,7 +34,7 @@ export default function ClientForm() {
         'Water Features', 'Garden Furnitures', 'Planters and Stands', 'Vanity and Sinks', 'Bird Bath/Feeder',
         'Pebbles and Landscaping', 'Memorials', 'Statues', 'Other Products', 'Brass', 'Plant Venture']
 
-    const [loading, setLoading] = useState(false)
+
 
     const [validNumber, setValidNumber] = useState(true)
     const validateNumber = (number) => {
@@ -42,10 +56,12 @@ export default function ClientForm() {
         }
 
         setLoading(true)
-        // const clientId = number
+
         var today = new Date()
         var date = today.getDate() + '-' + (today.getMonth() + 1) + '-' + today.getFullYear()
+
         const clientData = {
+            clientId: clientId,
             name: name,
             email: email,
             option: option,
@@ -71,8 +87,8 @@ export default function ClientForm() {
             })
         }
         else {
-            const clientId = clientData.number
-            await setDoc(doc(db, "clients", clientId), clientData)
+            await setDoc(doc(db, "clients", clientId.toString()), clientData)
+            await setDoc(doc(db, "clientId", "clientId"), { id: clientId + 1 })
             setLoading(false)
             router.push('/success')
         }
@@ -82,6 +98,7 @@ export default function ClientForm() {
     return <>{!loading && (
         <div className='flex flex-col items-center'>
             <p className='text-3xl'>Client Information Form</p>
+            <p>ID:{clientId}</p>
             <div className='flex flex-col sm:flex-row p-8 gap-16 w-full'>
 
                 <div className='flex flex-col w-full'>

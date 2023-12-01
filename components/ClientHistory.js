@@ -44,7 +44,7 @@ export default function ClientHistory() {
 
                 {clientRequests.map((clientRequest) => (
                     <div key={clientRequest.clientId} className='flex flex-col gap-2 p-4 w-[80vw] border-2 border-black'>
-                        <button onClick={() => handleButtonClick(clientRequest.name)}>{clientRequest.name}</button>
+                        <button onClick={() => handleButtonClick(clientRequest.name)}>{clientRequest.clientId} : {clientRequest.name}</button>
                         {clientRequest.showDetails && (
                             <div>
                                 <p>Client Name: {clientRequest.name}</p>

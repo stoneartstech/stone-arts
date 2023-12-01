@@ -45,7 +45,7 @@ export default function BOQDashboard() {
 
                 {measurementRequests.map((measurementRequest) => (
                     <div key={measurementRequest.clientId} className='flex flex-col gap-2 p-4 w-[80vw] border-2 border-black'>
-                        <button onClick={() => handleButtonClick(measurementRequest.name)}>{measurementRequest.name}</button>
+                        <button onClick={() => handleButtonClick(measurementRequest.name)}>{measurementRequest.clientId} : {measurementRequest.name}</button>
                         {measurementRequest.showDetails && (
                             <div>
                                 <p>Client Name: {measurementRequest.name}</p>
