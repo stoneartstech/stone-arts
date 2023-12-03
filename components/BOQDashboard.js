@@ -37,12 +37,29 @@ export default function BOQDashboard() {
         setMeasurementRequests([...measurementRequests]);
     }
 
+    function handleSearch() {
+
+        setMeasurementRequests(measurementRequests.filter((measurementRequest) => {
+            return (measurementRequest.name.toLowerCase().includes(search.toLowerCase())
+                || measurementRequest.clientId.toString().toLowerCase().includes(search.toLowerCase())
+            )
+        }
+        ))
+    }
+
 
     return <>{!loading && (
         <div>
             <p className='mt-8 text-2xl text-center font-bold mb-4'>Measurement Requests from Clients</p>
             <div className='flex flex-col text-xl gap-4 items-center'>
-
+                <div className='flex gap-2'>
+                    <input onChange={(e) => setSearch(e.target.value)}
+                        className='mx-auto border-2 border-black p-2'
+                    />
+                    <button className='bg-slate-300 hover:bg-slate-400 p-3 rounded-lg'
+                        onClick={handleSearch}
+                    >Search</button>
+                </div>
                 {measurementRequests.map((measurementRequest) => (
                     <div key={measurementRequest.clientId} className='flex flex-col gap-2 p-4 w-[80vw] border-2 border-black'>
                         <button onClick={() => handleButtonClick(measurementRequest.name)}>{measurementRequest.clientId} : {measurementRequest.name}</button>

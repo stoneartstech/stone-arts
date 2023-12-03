@@ -7,6 +7,7 @@ export default function ClientHistory() {
 
     const [clientRequests, setClientRequests] = useState([])
     const [loading, setLoading] = useState(true)
+    const [search, setSearch] = useState('')
 
     useEffect(() => {
         const fetch = onSnapshot(collection(db, 'clients'), (snapshot) => {
@@ -36,11 +37,29 @@ export default function ClientHistory() {
         setClientRequests([...clientRequests]);
     }
 
+    function handleSearch() {
+
+        setClientRequests(clientRequests.filter((clientRequest) => {
+            return (clientRequest.name.toLowerCase().includes(search.toLowerCase())
+                || clientRequest.clientId.toString().toLowerCase().includes(search.toLowerCase())
+            )
+        }
+        ))
+    }
+
 
     return <>{!loading && (
         <div>
             <p className='mt-8 text-2xl text-center font-bold mb-4'>Requests from Clients</p>
             <div className='flex flex-col text-xl gap-4 items-center'>
+                <div className='flex gap-2'>
+                    <input onChange={(e) => setSearch(e.target.value)}
+                        className='mx-auto border-2 border-black p-2'
+                    />
+                    <button className='bg-slate-300 hover:bg-slate-400 p-3 rounded-lg'
+                        onClick={handleSearch}
+                    >Search</button>
+                </div>
 
                 {clientRequests.map((clientRequest) => (
                     <div key={clientRequest.clientId} className='flex flex-col gap-2 p-4 w-[80vw] border-2 border-black'>
