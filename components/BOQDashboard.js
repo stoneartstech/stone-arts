@@ -6,6 +6,7 @@ import { collection, getDocs, onSnapshot } from 'firebase/firestore'
 export default function BOQDashboard() {
 
     const [measurementRequests, setMeasurementRequests] = useState([])
+    const [originalMeasurementRequests, setOriginalMeasurementRequests] = useState([])
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
@@ -16,6 +17,7 @@ export default function BOQDashboard() {
             }))
             measurementRequests = measurementRequests.filter((request) => request.option === 'measurement')
             setMeasurementRequests(measurementRequests)
+            setOriginalMeasurementRequests(measurementRequests)
             setLoading(false)
         })
 
@@ -39,9 +41,17 @@ export default function BOQDashboard() {
 
     function handleSearch() {
 
-        setMeasurementRequests(measurementRequests.filter((measurementRequest) => {
-            return (measurementRequest.name.toLowerCase().includes(search.toLowerCase())
-                || measurementRequest.clientId.toString().toLowerCase().includes(search.toLowerCase())
+        setMeasurementRequests(originalMeasurementRequests.filter((measurementRequest) => {
+            var searchParam = search.toLowerCase()
+            return (measurementRequest.name.toLowerCase().includes(searchParam)
+                || measurementRequest.clientId.toString().includes(searchParam)
+                || measurementRequest.email.toLowerCase().includes(searchParam)
+                || measurementRequest.number.toString().includes(searchParam)
+                || measurementRequest.address.toLowerCase().includes(searchParam)
+                || measurementRequest.date.toString().includes(searchParam)
+                || measurementRequest.aspect.toLowerCase().includes(searchParam)
+                || measurementRequest.option.toLowerCase().includes(searchParam)
+                || measurementRequest.sourceInfo.toLowerCase().includes(searchParam)
             )
         }
         ))
