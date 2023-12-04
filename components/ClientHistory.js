@@ -6,6 +6,7 @@ import { collection, getDocs, onSnapshot } from 'firebase/firestore'
 export default function ClientHistory() {
 
     const [clientRequests, setClientRequests] = useState([])
+    const [originalClientRequests, setOriginalClientRequests] = useState([])
     const [loading, setLoading] = useState(true)
     const [search, setSearch] = useState('')
 
@@ -16,6 +17,7 @@ export default function ClientHistory() {
                 ...doc.data()
             }))
             setClientRequests(clientRequests)
+            setOriginalClientRequests(clientRequests)
             setLoading(false)
         })
 
@@ -39,9 +41,17 @@ export default function ClientHistory() {
 
     function handleSearch() {
 
-        setClientRequests(clientRequests.filter((clientRequest) => {
-            return (clientRequest.name.toLowerCase().includes(search.toLowerCase())
-                || clientRequest.clientId.toString().toLowerCase().includes(search.toLowerCase())
+        setClientRequests(originalClientRequests.filter((clientRequest) => {
+            var searchParam = search.toLowerCase()
+            return (clientRequest.name.toLowerCase().includes(searchParam)
+                || clientRequest.clientId.toString().includes(searchParam)
+                || clientRequest.email.toLowerCase().includes(searchParam)
+                || clientRequest.number.toString().includes(searchParam)
+                || clientRequest.address.toLowerCase().includes(searchParam)
+                || clientRequest.date.toString().includes(searchParam)
+                || clientRequest.aspect.toLowerCase().includes(searchParam)
+                || clientRequest.option.toLowerCase().includes(searchParam)
+                || clientRequest.sourceInfo.toLowerCase().includes(searchParam)
             )
         }
         ))
