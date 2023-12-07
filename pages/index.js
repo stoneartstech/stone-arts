@@ -8,6 +8,12 @@ import SalesDashboard from '@/components/SalesDashboard'
 
 export default function Home() {
   const { currentUser } = useAuth()
+  const salesMails = {
+    'stoneartsgalleria@stonearts.com': true,
+    'stoneartsmirage@stonearts.com': true,
+    'stoneartskimusu@stonearts.com': true,
+    'stoneartsmombasaroad@stonearts.com': true,
+  }
   return (
     <>
       <Head>
@@ -16,7 +22,7 @@ export default function Home() {
       </Head>
       {!currentUser && <Login />}
       {currentUser && currentUser.email === 'admin@stonearts.com' && <AdminDashboard />}
-      {currentUser && currentUser.email === 'salesgalleria@stonearts.com' && <SalesDashboard />}
+      {currentUser && salesMails[currentUser.email] && <SalesDashboard />}
     </>
   )
 }
