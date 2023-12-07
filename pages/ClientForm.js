@@ -26,7 +26,7 @@ export default function ClientForm() {
     const [address, setAddress] = useState('')
     const [number, setNumber] = useState('')
     const [aspect, setAspect] = useState('Claddings')
-    const [sourceInfo, setSourceInfo] = useState('socialmedia')
+    const [sourceInfo, setSourceInfo] = useState('social media')
     const [specificInfo, setSpecificInfo] = useState('')
     const [delivery, setDelivery] = useState('yes')
 
@@ -148,9 +148,9 @@ export default function ClientForm() {
 
                     <p className='mt-4'>How did you get to know us:</p>
                     <select className='p-2 w-full' onChange={(e) => setSourceInfo(e.target.value)}>
-                        <option value="socialmedia">Social Media</option>
+                        <option value="social media">Social Media</option>
                         <option value="website">Website</option>
-                        <option value="wordofmouth">Word of mouth</option>
+                        <option value="word of mouth">Word of mouth</option>
                         <option value="other">Other (Specify)</option>
                     </select>
                     {sourceInfo === 'other' &&
