@@ -71,7 +71,7 @@ export default function SalesDashboard({ showroomName }) {
             </div> */}
             <div className='flex flex-col items-center gap-4 mt-6'>
                 <Link href={{
-                    pathname: '/clienthistory',
+                    pathname: '/Clienthistory',
                     query: { showroomName: showroomName },
                 }}
                     className='bg-slate-300 hover:bg-slate-500 text-black p-3 w-full sm:max-w-[25vw] text-center'>

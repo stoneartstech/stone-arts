@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext'
 import { useRouter } from 'next/router'
 import { useSearchParams } from 'next/navigation'
 
-export default function clienthistory() {
+export default function Clienthistory() {
 
     const router = useRouter()
 
