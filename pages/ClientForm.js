@@ -5,6 +5,7 @@ import { doc, setDoc, collection, getDocs, onSnapshot } from 'firebase/firestore
 import PhoneInput from 'react-phone-input-2'
 import 'react-phone-input-2/lib/style.css'
 import { useSearchParams } from 'next/navigation'
+import Select from 'react-select'
 
 export default function ClientForm() {
 
@@ -24,21 +25,30 @@ export default function ClientForm() {
         return fetch
     }, [])
 
+    var today = new Date()
+    var date = today.getDate() + '-' + (today.getMonth() + 1) + '-' + today.getFullYear()
+
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [option, setOption] = useState('measurement')
     const [address, setAddress] = useState('')
     const [number, setNumber] = useState('')
-    const [aspect, setAspect] = useState('Claddings')
+    const [aspects, setAspects] = useState([])
     const [sourceInfo, setSourceInfo] = useState('social media')
     const [specificInfo, setSpecificInfo] = useState('')
-    const [delivery, setDelivery] = useState('yes')
+    // const [delivery, setDelivery] = useState('yes')
 
-    const aspects = ['Claddings', 'Travertine', 'Marble', 'Sintered Stones', 'Pavings', 'Fireplaces', 'Facade',
+    const aspectsList = ['Claddings', 'Travertine', 'Marble', 'Sintered Stones', 'Pavings', 'Fireplaces', 'Facade',
         'Water Features', 'Garden Furnitures', 'Planters and Stands', 'Vanity and Sinks', 'Bird Bath/Feeder',
         'Pebbles and Landscaping', 'Memorials', 'Statues', 'Brass', 'Plant Venture', 'Other Products']
 
-
+    const optionsList = aspectsList.map((aspect) => ({
+        value: aspect,
+        label: aspect,
+    }));
+    const handleSelectChange = (selectedOptions) => {
+        setAspects(selectedOptions.map((option) => option.value));
+    };
 
     const [validNumber, setValidNumber] = useState(true)
     const validateNumber = (number) => {
@@ -54,15 +64,12 @@ export default function ClientForm() {
 
     async function submitHandler() {
 
-        if (!number || !name || !email || !address || !aspect || !sourceInfo || !delivery || (sourceInfo === 'other' && !specificInfo)) {
+        if (!number || !name || !email || !address || !aspects || !sourceInfo || (sourceInfo === 'other' && !specificInfo)) {
             alert('Please enter all the details')
             return
         }
 
         setLoading(true)
-
-        var today = new Date()
-        var date = today.getDate() + '-' + (today.getMonth() + 1) + '-' + today.getFullYear()
 
         const clientData = {
             clientId: clientId,
@@ -72,10 +79,9 @@ export default function ClientForm() {
             address: address,
             date: date,
             number: '+' + number,
-            aspect: aspect,
+            aspects: aspects,
             sourceInfo: sourceInfo,
             specificInfo: specificInfo,
-            delivery: delivery,
             showroom: showroomName
         }
 
@@ -145,12 +151,13 @@ export default function ClientForm() {
                     {!validNumber && <p className='text-red-500'>Please enter a valid phone number</p>}
 
                     <p className='mt-4'>Interested Aspect:</p>
-                    <select className='p-2 w-full' onChange={(e) => setAspect(e.target.value)}>
-                        {aspects.map((aspect) => (
-                            <option key={aspect} value={aspect}>{aspect}</option>
-                        ))}
-                    </select>
-
+                    <Select
+                        options={optionsList}
+                        isMulti
+                        value={optionsList.filter((option) => aspects.includes(option.value))}
+                        onChange={handleSelectChange}
+                        className='w-full'
+                    />
                     <p className='mt-4'>How did you get to know us:</p>
                     <select className='p-2 w-full' onChange={(e) => setSourceInfo(e.target.value)}>
                         <option value="social media">Social Media</option>
@@ -163,10 +170,11 @@ export default function ClientForm() {
                             className='mt-2 p-2 w-full ' />}
 
                     <p className='mt-4'>Delivery:</p>
-                    <select className='p-2 w-full' onChange={(e) => setAspect(e.target.value)}>
+                    {/* <select className='p-2 w-full' onChange={(e) => setAspect(e.target.value)}>
                         <option value="yes">Yes</option>
                         <option value="no">No</option>
-                    </select>
+                    </select> */}
+                    <p>{date}</p>
                 </div>
             </div>
             <button onClick={submitHandler} className='bg-slate-300 hover:bg-slate-400 p-2 w-1/3 '>

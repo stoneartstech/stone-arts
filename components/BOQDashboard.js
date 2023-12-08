@@ -82,7 +82,6 @@ export default function BOQDashboard() {
                                 <p>Date of Request: {measurementRequest.date}</p>
                                 <p>Interested Aspect: {measurementRequest.aspect}</p>
                                 <p>Request Category: {measurementRequest.option}</p>
-                                <p>Delivery: {measurementRequest.delivery}</p>
                                 <p>How did Client get to know about us:{" "}
                                     {measurementRequest.sourceInfo !== 'other' && measurementRequest.sourceInfo}
                                     {measurementRequest.sourceInfo === 'other' && measurementRequest.specificInfo}

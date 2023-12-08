@@ -50,8 +50,8 @@ export default function ClientHistory({ showroomName }) {
                 || clientRequest.email.toLowerCase().includes(searchParam)
                 || clientRequest.number.toString().includes(searchParam)
                 || clientRequest.address.toLowerCase().includes(searchParam)
-                || clientRequest.date.toString().includes(searchParam)
-                || clientRequest.aspect.toLowerCase().includes(searchParam)
+                || clientRequest.date.toString().toLowerCase().includes(searchParam)
+                || clientRequest.aspects.join('').toLowerCase().includes(searchParam)
                 || clientRequest.option.toLowerCase().includes(searchParam)
                 || clientRequest.sourceInfo.toLowerCase().includes(searchParam)
             )
@@ -83,9 +83,10 @@ export default function ClientHistory({ showroomName }) {
                                 <p>Client Number: {clientRequest.number}</p>
                                 <p>Client Address: {clientRequest.address}</p>
                                 <p>Date of Request: {clientRequest.date}</p>
-                                <p>Interested Aspect: {clientRequest.aspect}</p>
+                                <p>Interested Aspects: {
+                                    clientRequest.aspects.join(', ')
+                                }</p>
                                 <p>Request Category: {clientRequest.option}</p>
-                                <p>Delivery: {clientRequest.delivery}</p>
                                 <p>How did Client get to know about us:{" "}
                                     {clientRequest.sourceInfo !== 'other' && clientRequest.sourceInfo}
                                     {clientRequest.sourceInfo === 'other' && clientRequest.specificInfo}
