@@ -11,7 +11,7 @@ export default function Home() {
   const salesMails = {
     'stoneartsgalleria@stonearts.com': true,
     'stoneartsmirage@stonearts.com': true,
-    'stoneartskisumuu@stonearts.com': true,
+    'stoneartskisumu@stonearts.com': true,
     'stoneartsmombasaroad@stonearts.com': true,
   }
   return (
