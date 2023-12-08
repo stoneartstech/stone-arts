@@ -36,7 +36,7 @@ export default function ClientForm() {
 
     const aspects = ['Claddings', 'Travertine', 'Marble', 'Sintered Stones', 'Pavings', 'Fireplaces', 'Facade',
         'Water Features', 'Garden Furnitures', 'Planters and Stands', 'Vanity and Sinks', 'Bird Bath/Feeder',
-        'Pebbles and Landscaping', 'Memorials', 'Statues', 'Other Products', 'Brass', 'Plant Venture']
+        'Pebbles and Landscaping', 'Memorials', 'Statues', 'Brass', 'Plant Venture', 'Other Products']
 
 
 
