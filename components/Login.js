@@ -16,11 +16,11 @@ function Login() {
             return
         }
         try {
-            const email = username.toLowerCase() + '@stonearts.com'
+            const email = username.toLowerCase().replace(/\s/g, '') + '@stonearts.com'
             await login(email, password)
         }
         catch (err) {
-            conole.log(username)
+            console.log(username)
             setError("Failed to login")
         }
     }
@@ -34,10 +34,10 @@ function Login() {
                 placeholder="password" className=' p-2 w-full sm:max-w-[25vw] my-4' />
             {error && <p className='text-red-500 w-full sm:max-w-[25vw]'>{error}</p>}
             <button onClick={submitHandler} className='bg-slate-300 hover:bg-slate-400 p-2 w-full sm:max-w-[25vw]'>Login</button>
-            <p className='my-8 text-xl'>OR</p>
+            {/* <p className='my-8 text-xl'>OR</p>
             <Link href="/ClientForm" className='bg-slate-900 hover:bg-slate-700 text-white p-3 w-full sm:max-w-[25vw] text-center'>
                 Client Form
-            </Link>
+            </Link> */}
         </div>
     )
 }

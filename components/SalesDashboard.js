@@ -2,9 +2,9 @@ import React from 'react'
 import { useRouter } from 'next/router'
 import ClientHistory from './ClientHistory'
 import { AuthProvider, useAuth } from '../context/AuthContext'
+import Link from 'next/link'
 
-export default function SalesDashboard() {
-    const showroomName = "Galleria Mall Showroom"
+export default function SalesDashboard({ showroomName }) {
     const visitors = 20
     const calls = 1
     const visitorsRecent = 4
@@ -31,7 +31,7 @@ export default function SalesDashboard() {
     return (
         <div>
             <div className='flex flex-col sm:flex-row items-center justify-center gap-12'>
-                <p className='my-4 text-3xl text-center'>{showroomName}</p>
+                <p className='my-4 text-3xl text-center'>{showroomName} Showroom</p>
                 <button className='bg-red-500 p-3 rounded-lg'
                     onClick={logoutHandler}
                 >Logout</button>
@@ -69,7 +69,23 @@ export default function SalesDashboard() {
                 </div>
 
             </div> */}
-            <ClientHistory />
-        </div>
+            <div className='flex flex-col items-center gap-4 mt-6'>
+                <Link href={{
+                    pathname: '/clienthistory',
+                    query: { showroomName: showroomName },
+                }}
+                    className='bg-slate-300 hover:bg-slate-500 text-black p-3 w-full sm:max-w-[25vw] text-center'>
+                    Client History
+                </Link>
+                <Link href={{
+                    pathname: '/ClientForm',
+                    query: { showroomName: showroomName },
+                }}
+                    className='bg-slate-900 hover:bg-slate-700 text-white p-3 w-full sm:max-w-[25vw] text-center'>
+                    Client Form
+                </Link>
+            </div>
+
+        </div >
     )
 }

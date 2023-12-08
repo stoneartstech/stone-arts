@@ -4,8 +4,12 @@ import { db } from '../firebase'
 import { doc, setDoc, collection, getDocs, onSnapshot } from 'firebase/firestore'
 import PhoneInput from 'react-phone-input-2'
 import 'react-phone-input-2/lib/style.css'
+import { useSearchParams } from 'next/navigation'
 
 export default function ClientForm() {
+
+    const searchParams = useSearchParams()
+    const showroomName = searchParams.get('showroomName')
 
     const [clientId, setClientId] = useState()
     const [loading, setLoading] = useState(true)
@@ -71,7 +75,8 @@ export default function ClientForm() {
             aspect: aspect,
             sourceInfo: sourceInfo,
             specificInfo: specificInfo,
-            delivery: delivery
+            delivery: delivery,
+            showroom: showroomName
         }
 
         // await setDoc(doc(db, "clients", clientId), clientData)

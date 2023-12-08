@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import { db } from '../firebase'
 import { collection, getDocs, onSnapshot } from 'firebase/firestore'
 
-export default function ClientHistory() {
+export default function ClientHistory({ showroomName }) {
 
     const [clientRequests, setClientRequests] = useState([])
     const [originalClientRequests, setOriginalClientRequests] = useState([])
@@ -16,6 +16,8 @@ export default function ClientHistory() {
                 id: doc.id,
                 ...doc.data()
             }))
+            clientRequests = clientRequests.filter((clientRequest) => clientRequest.showroom === showroomName)
+
             setClientRequests(clientRequests)
             setOriginalClientRequests(clientRequests)
             setLoading(false)
