@@ -28,7 +28,7 @@ export default function ClientHistory({ showroomName }) {
         })
 
         return fetch
-    }, [])
+    },)
 
     const data = useMemo(() => clientRequests, [clientRequests]);
 
@@ -102,9 +102,10 @@ export default function ClientHistory({ showroomName }) {
                             <table {...getTableProps()} className='border-collapse'>
                                 <thead>
                                     {headerGroups.map((headerGroup) => (
-                                        <tr {...headerGroup.getHeaderGroupProps()}>
+                                        <tr key={headerGroup.id}
+                                            {...headerGroup.getHeaderGroupProps()}>
                                             {headerGroup.headers.map((column) => (
-                                                <th
+                                                <th key={column.id}
                                                     {...column.getHeaderProps()}
                                                     className='border'
                                                     style={{ minWidth: column.minSize }}
@@ -119,9 +120,9 @@ export default function ClientHistory({ showroomName }) {
                                     {rows.map((row) => {
                                         prepareRow(row);
                                         return (
-                                            <tr {...row.getRowProps()} className='border'>
+                                            <tr key={row.id} {...row.getRowProps()} className='border'>
                                                 {row.cells.map((cell) => (
-                                                    <td {...cell.getCellProps()} className='p-6'>
+                                                    <td key={cell.id} {...cell.getCellProps()} className='p-6'>
                                                         {cell.render('Cell')}
                                                     </td>
                                                 ))}
