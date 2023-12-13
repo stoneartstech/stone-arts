@@ -25,7 +25,7 @@ export default function measurement() {
     const [clientData, setClientData] = useState(JSON.parse(query))
 
     async function submitHandler() {
-        if (!cost || !date || !time) {
+        if (!cost || !date || !time || !supplyFix || !contactPerson) {
             alert('Please enter all the details')
             return
         }
@@ -64,19 +64,19 @@ export default function measurement() {
                 <div className='flex flex-col w-full'>
 
                     <div className='flex items-center'>
-                        <p className='mr-8'>Cost:</p>
+                        <p className='mr-8'>Cost:<span className='text-red-500'>*</span></p>
                         <p className='mr-2'>KES</p>
                         <input type="number" value={cost} onChange={(e) => setCost(e.target.value)}
                             className=' p-2 ' />
                     </div>
 
 
-                    <p className='mt-4'>Date for site visit:</p>
+                    <p className='mt-4'>Date for site visit:<span className='text-red-500'>*</span></p>
                     <input type="date" value={date} onChange={(e) => setDate(e.target.value)}
                         className=' p-2 w-full ' />
 
 
-                    <p className='mt-4'>Supply/Supply and Fix:</p>
+                    <p className='mt-4'>Supply/Supply and Fix:<span className='text-red-500'>*</span></p>
                     <select className='p-2 w-full' onChange={(e) => setSupplyFix(e.target.value)}>
                         <option value="supply">Supply</option>
                         <option value="supplyfix">Supply and Fix</option>
@@ -86,10 +86,10 @@ export default function measurement() {
 
                 </div>
                 <div className='flex flex-col w-full'>
-                    <p className='mt-4'>Time for the visit: (Type in 24H format)</p>
+                    <p className='mt-4'>Time for the visit: (Type in 24H format)<span className='text-red-500'>*</span></p>
                     <TimePicker value={time} onChange={setTime} />
 
-                    <p className='mt-4'>Contact person at site:</p>
+                    <p className='mt-4'>Contact person at site:<span className='text-red-500'>*</span></p>
                     <input type="text" value={contactPerson} onChange={(e) => setContactPerson(e.target.value)}
                         className=' p-2 w-full ' />
                 </div>

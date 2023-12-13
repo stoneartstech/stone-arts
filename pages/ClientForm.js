@@ -17,7 +17,6 @@ export default function ClientForm() {
     useEffect(() => {
         const fetch = onSnapshot(collection(db, 'clientId'), (snapshot) => {
             var number = snapshot.docs[0].data()
-            console.log(number)
             setClientId(number.id)
             setLoading(false)
         })

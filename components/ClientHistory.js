@@ -20,7 +20,6 @@ export default function ClientHistory({ showroomName }) {
                 clientRequest.aspects = clientRequest.aspects.join(',')
                 clientRequest.date = clientRequest.date
             })
-            console.log(clientRequests)
 
             setClientRequests(clientRequests)
             setOriginalClientRequests(clientRequests)
