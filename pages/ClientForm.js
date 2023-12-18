@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { db } from '../firebase'
-import { doc, setDoc, collection, getDocs, onSnapshot } from 'firebase/firestore'
+import { doc, setDoc, collection, getDocs, onSnapshot, query, where } from 'firebase/firestore'
 import PhoneInput from 'react-phone-input-2'
 import 'react-phone-input-2/lib/style.css'
 import { useSearchParams } from 'next/navigation'
@@ -14,10 +14,12 @@ export default function ClientForm() {
 
     const [clientId, setClientId] = useState()
     const [loading, setLoading] = useState(true)
+    const [clientCode, setClientCode] = useState('')
     useEffect(() => {
         const fetch = onSnapshot(collection(db, 'clientId'), (snapshot) => {
             var number = snapshot.docs[0].data()
             setClientId(number.id)
+            setClientCode(number.id)
             setLoading(false)
         })
 
@@ -35,6 +37,9 @@ export default function ClientForm() {
     const [aspects, setAspects] = useState([])
     const [sourceInfo, setSourceInfo] = useState('social media')
     const [specificInfo, setSpecificInfo] = useState('')
+
+
+    const [repeatClient, setRepeatClient] = useState(false)
     // const [delivery, setDelivery] = useState('yes')
 
     const aspectsList = ['Claddings', 'Travertine', 'Marble', 'Sintered Stones', 'Pavings', 'Fireplaces', 'Facade',
@@ -61,6 +66,31 @@ export default function ClientForm() {
 
     const router = useRouter()
 
+    async function checkClient() {
+        //check if number exists in any client's data  from firebase
+        const q = query(collection(db, "clients"), where("number", "==", '+' + number))
+        const querySnapshot = await getDocs(q)
+        if (querySnapshot.size > 0) {
+            alert('Repeating client')
+            //fetch the client's data and set it to the respective states
+            const client = querySnapshot.docs[0].data()
+            setName(client.name)
+            setEmail(client.email)
+            setOption(client.option)
+            setAddress(client.address)
+            setAspects(client.aspects)
+            setSourceInfo(client.sourceInfo)
+            setSpecificInfo(client.specificInfo)
+            setClientCode(client.clientCode)
+            setRepeatClient(true)
+            return
+        }
+        else {
+            alert('New client')
+            setRepeatClient(false)
+        }
+    }
+
     async function submitHandler() {
 
         if (!number || !name || !email || !address || !aspects || !sourceInfo || (sourceInfo === 'other' && !specificInfo)) {
@@ -81,7 +111,8 @@ export default function ClientForm() {
             aspects: aspects,
             sourceInfo: sourceInfo,
             specificInfo: specificInfo,
-            showroom: showroomName
+            showroom: showroomName,
+            clientCode: clientCode
         }
 
         // await setDoc(doc(db, "clients", clientId), clientData)
@@ -148,6 +179,9 @@ export default function ClientForm() {
                         }}
                         className='w-full' />
                     {!validNumber && <p className='text-red-500'>Please enter a valid phone number</p>}
+                    <button onClick={checkClient} className='bg-slate-300 hover:bg-slate-400 p-1 w-48'>
+                        Check(recurring client)
+                    </button>
 
                     <p className='mt-4'>Interested Aspect:</p>
                     <Select

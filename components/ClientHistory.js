@@ -33,7 +33,7 @@ export default function ClientHistory({ showroomName }) {
 
     const columns = useMemo(
         () => [
-            { Header: 'Client ID', accessor: 'clientId', minSize: 50 },
+            { Header: 'Client Code', accessor: 'clientCode', minSize: 50 },
             { Header: 'Client Name', accessor: 'name', minSize: 200 },
             { Header: 'Client Email', accessor: 'email', minSize: 200 },
             { Header: 'Client Number', accessor: 'number', minSize: 200 },
@@ -63,7 +63,7 @@ export default function ClientHistory({ showroomName }) {
         setClientRequests(originalClientRequests.filter((clientRequest) => {
             var searchParam = search.toLowerCase()
             return (clientRequest.name.toLowerCase().includes(searchParam)
-                || clientRequest.clientId.toString().includes(searchParam)
+                || clientRequest.clientCode.toString().includes(searchParam)
                 || clientRequest.email.toLowerCase().includes(searchParam)
                 || clientRequest.number.toString().includes(searchParam)
                 || clientRequest.address.toLowerCase().includes(searchParam)
