@@ -125,6 +125,8 @@ export default function ClientForm() {
 
         setLoading(true)
 
+
+
         const clientData = {
             clientId: clientId,
             name: name,
@@ -230,7 +232,7 @@ export default function ClientForm() {
                         <input type="text" value={specificInfo} onChange={(e) => setSpecificInfo(e.target.value)}
                             className='mt-2 p-2 w-full ' />}
 
-                    <p className='mt-4'>Delivery:</p>
+                    <p className='mt-4'>Date:</p>
                     {/* <select className='p-2 w-full' onChange={(e) => setAspect(e.target.value)}>
                         <option value="yes">Yes</option>
                         <option value="no">No</option>
