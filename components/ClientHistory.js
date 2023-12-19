@@ -102,6 +102,12 @@ export default function ClientHistory({ showroomName }) {
         <>
             {!loading && (
                 <div>
+                    <div className='w-full pl-8'>
+                        <button className='bg-slate-300 p-2 rounded-lg'
+                            onClick={() => router.back()}>
+                            Go Back
+                        </button>
+                    </div>
                     <p className='mt-8 text-2xl text-center font-bold mb-4'>
                         Requests from Clients
                     </p>

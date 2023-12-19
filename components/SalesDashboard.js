@@ -51,6 +51,7 @@ export default function SalesDashboard({ showroomName }) {
 
     return (
         <div>
+
             <div className='flex flex-col sm:flex-row items-center justify-center gap-12 mb-4'>
                 <p className='my-4 text-3xl text-center'>{showroomName} Showroom</p>
                 <button className='bg-red-500 p-3 rounded-lg'
