@@ -71,14 +71,11 @@ export default function ClientForm() {
         const q = query(collection(db, "clients"), where("number", "==", '+' + number))
         const querySnapshot = await getDocs(q)
         if (querySnapshot.size > 0) {
-            alert('Repeating client')
             //fetch the client's data and set it to the respective states
             const client = querySnapshot.docs[0].data()
             setName(client.name)
             setEmail(client.email)
-            setOption(client.option)
             setAddress(client.address)
-            setAspects(client.aspects)
             setSourceInfo(client.sourceInfo)
             setSpecificInfo(client.specificInfo)
             setClientCode(client.clientCode)
@@ -86,7 +83,6 @@ export default function ClientForm() {
             return
         }
         else {
-            alert('New client')
             setRepeatClient(false)
         }
     }
@@ -96,14 +92,11 @@ export default function ClientForm() {
         const q = query(collection(db, "clients"), where("email", "==", email))
         const querySnapshot = await getDocs(q)
         if (querySnapshot.size > 0) {
-            alert('Repeating client')
             //fetch the client's data and set it to the respective states
             const client = querySnapshot.docs[0].data()
             setName(client.name)
             setNumber(client.number)
-            setOption(client.option)
             setAddress(client.address)
-            setAspects(client.aspects)
             setSourceInfo(client.sourceInfo)
             setSpecificInfo(client.specificInfo)
             setClientCode(client.clientCode)
@@ -111,7 +104,6 @@ export default function ClientForm() {
             return
         }
         else {
-            alert('New client')
             setRepeatClient(false)
         }
     }
@@ -122,6 +114,9 @@ export default function ClientForm() {
             alert('Please enter all the details')
             return
         }
+
+        checkClient()
+        if (!repeatClient) checkClientEmail()
 
         setLoading(true)
 
