@@ -13,7 +13,7 @@ export default function saleshome() {
             <p className='text-4xl mb-6 text-center'>All Sales Teams</p>
             <div className='flex flex-col'>
                 {Object.keys(salesMails).map((mail) => (
-                    <SalesDashboard showroomName={salesMails[mail]} />
+                    <SalesDashboard key={mail} showroomName={salesMails[mail]} />
                 ))}
             </div>
 
