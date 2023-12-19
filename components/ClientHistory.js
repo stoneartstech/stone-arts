@@ -41,6 +41,7 @@ export default function ClientHistory({ showroomName }) {
             { Header: 'Client Email', accessor: 'email', minSize: 200 },
             { Header: 'Client Number', accessor: 'number', minSize: 200 },
             { Header: 'Date of Request', accessor: 'date', minSize: 200 },
+            { Header: 'Sales Person', accessor: 'salesPerson', minSize: 200 },
             { Header: 'Interested Aspects', accessor: "aspects", minSize: 200 },
             { Header: 'Request Category', accessor: 'option', minSize: 200 },
             { Header: 'Client Source', accessor: 'sourceInfo', minSize: 200 },

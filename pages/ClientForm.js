@@ -37,6 +37,7 @@ export default function ClientForm() {
     const [aspects, setAspects] = useState([])
     const [sourceInfo, setSourceInfo] = useState('social media')
     const [specificInfo, setSpecificInfo] = useState('')
+    const [salesPerson, setSalesPerson] = useState('')
 
 
     const [repeatClient, setRepeatClient] = useState(false)
@@ -110,7 +111,7 @@ export default function ClientForm() {
 
     async function submitHandler() {
 
-        if (!number || !name || !email || !address || !aspects || !sourceInfo || (sourceInfo === 'other' && !specificInfo)) {
+        if (!number || !name || !salesPerson || !address || !aspects || !sourceInfo || (sourceInfo === 'other' && !specificInfo)) {
             alert('Please enter all the details')
             return
         }
@@ -120,12 +121,11 @@ export default function ClientForm() {
 
         setLoading(true)
 
-
-
         const clientData = {
             clientId: clientId,
             name: name,
             email: email,
+            salesPerson: salesPerson,
             option: option,
             address: address,
             date: date,
@@ -169,12 +169,16 @@ export default function ClientForm() {
                     <input type="text" value={name} onChange={(e) => setName(e.target.value)}
                         className=' p-2 w-full ' />
 
-                    <p className='mt-4'>Email ID:<span className='text-red-500'>*</span></p>
+                    <p className='mt-4'>Email ID:</p>
                     <input type="text" value={email} onChange={(e) => setEmail(e.target.value)}
                         className=' p-2 w-full ' />
                     <button onClick={checkClientEmail} className='bg-slate-300 hover:bg-slate-400 p-1 w-48'>
                         Check(recurring client)
                     </button>
+
+                    <p className='mt-4'>Sales Person:<span className='text-red-500'>*</span></p>
+                    <input type="text" value={salesPerson} onChange={(e) => setSalesPerson(e.target.value)}
+                        className=' p-2 w-full ' />
 
                     <p className='mt-4'>Select the Category:</p>
                     <select className='p-2 w-full' onChange={(e) => setOption(e.target.value)}>
