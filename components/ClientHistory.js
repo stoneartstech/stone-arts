@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTable } from 'react-table';
 import { db } from '../firebase';
-import { collection, onSnapshot } from 'firebase/firestore';
+import { collection, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
 
 export default function ClientHistory({ showroomName }) {
     const [clientRequests, setClientRequests] = useState([]);
     const [originalClientRequests, setOriginalClientRequests] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
+
+    const [deleteClient, setDeleteClient] = useState('');
 
     useEffect(() => {
         const fetch = onSnapshot(collection(db, 'clients'), (snapshot) => {
@@ -33,6 +35,7 @@ export default function ClientHistory({ showroomName }) {
 
     const columns = useMemo(
         () => [
+            { Header: 'Id', accessor: 'clientId', minSize: 50 },
             { Header: 'Client Code', accessor: 'clientCode', minSize: 50 },
             { Header: 'Client Name', accessor: 'name', minSize: 200 },
             { Header: 'Client Email', accessor: 'email', minSize: 200 },
@@ -64,6 +67,7 @@ export default function ClientHistory({ showroomName }) {
             var searchParam = search.toLowerCase()
             return (clientRequest.name.toLowerCase().includes(searchParam)
                 || clientRequest.clientCode.toString().includes(searchParam)
+                || clientRequest.clientId.toString().includes(searchParam)
                 || clientRequest.email.toLowerCase().includes(searchParam)
                 || clientRequest.number.toString().includes(searchParam)
                 || clientRequest.address.toLowerCase().includes(searchParam)
@@ -74,6 +78,23 @@ export default function ClientHistory({ showroomName }) {
             )
         }
         ))
+    }
+
+    async function handleDelete() {
+        //delete client with clientId as deleteClient
+        if (deleteClient === '') {
+            alert('Please enter a client id')
+            return
+        }
+        const clientsRef = collection(db, 'clients');
+        try {
+            // Attempt to delete the client with the specified ID
+            await deleteDoc(doc(clientsRef, deleteClient));
+            alert('Client id successfully deleted!');
+        } catch (error) {
+            alert('Error deleting client ', error);
+        }
+
     }
 
     return (
@@ -130,6 +151,24 @@ export default function ClientHistory({ showroomName }) {
                                     })}
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                    <div className='flex flex-col'>
+                        <p className='mt-8 text-2xl text-center font-bold mb-4'>
+                            Delete A Client
+                        </p>
+                        <div className='mx-auto'>
+                            <input
+                                onChange={(e) => setDeleteClient(e.target.value)}
+                                className='mx-auto border-2 border-black p-2'
+                                placeholder='Enter Client Id(Not Code)'
+                            />
+                            <button
+                                className='bg-red-500 hover:bg-red-600 p-3 rounded-lg mx-2'
+                                onClick={handleDelete}
+                            >
+                                Delete
+                            </button>
                         </div>
                     </div>
                 </div>
