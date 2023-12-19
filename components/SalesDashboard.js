@@ -18,7 +18,7 @@ export default function SalesDashboard({ showroomName }) {
     const router = useRouter()
     function BOQHandler() {
         //transfer firebase data of client to BOQ 
-        alert("Data sent to BOQ")
+        return
     }
     const { logout } = useAuth()
     async function logoutHandler() {
@@ -31,29 +31,21 @@ export default function SalesDashboard({ showroomName }) {
         }
     }
 
-    useEffect(() => {
-        // Calculate the sum of the values for the "Visited today" key
-        const visitedTodaySum = Object.values(salesData).slice(1).reduce((acc, value) => acc + value, 0);
-
-        // Update the "Visited today" value in the state
-        setSalesData(prevState => ({
-            ...prevState,
-            "Visited today": visitedTodaySum
-        }));
-    }, [salesData]);
-
     const handleIncrement = (key) => {
         setSalesData(prevState => ({
             ...prevState,
-            [key]: prevState[key] + 1
+            [key]: prevState[key] + 1,
+            "Visited today": prevState["Visited today"] + 1
         }));
     };
 
     const handleDecrement = (key) => {
         setSalesData(prevState => ({
             ...prevState,
-            [key]: Math.max(prevState[key] - 1, 0) // Ensure the value doesn't go below 0
+            [key]: Math.max(prevState[key] - 1, 0), // Ensure the value doesn't go below 0
+            "Visited today": Math.max(prevState["Visited today"] - 1, 0)
         }));
+
     };
 
 
@@ -92,7 +84,8 @@ export default function SalesDashboard({ showroomName }) {
                         pathname: '/ClientRequests',
                         query: { showroomName: showroomName },
                     }}
-                        className='bg-slate-300 hover:bg-slate-500 text-black p-3 w-full sm:max-w-[25vw] text-center'>
+                        className='bg-slate-300 hover:bg-slate-500 text-black p-3 w-full sm:max-w-[25vw] text-center'
+                    >
                         Client History
                     </Link>
                     <button
