@@ -91,6 +91,31 @@ export default function ClientForm() {
         }
     }
 
+    async function checkClientEmail() {
+        //check if email exists in any client's data  from firebase
+        const q = query(collection(db, "clients"), where("email", "==", email))
+        const querySnapshot = await getDocs(q)
+        if (querySnapshot.size > 0) {
+            alert('Repeating client')
+            //fetch the client's data and set it to the respective states
+            const client = querySnapshot.docs[0].data()
+            setName(client.name)
+            setNumber(client.number)
+            setOption(client.option)
+            setAddress(client.address)
+            setAspects(client.aspects)
+            setSourceInfo(client.sourceInfo)
+            setSpecificInfo(client.specificInfo)
+            setClientCode(client.clientCode)
+            setRepeatClient(true)
+            return
+        }
+        else {
+            alert('New client')
+            setRepeatClient(false)
+        }
+    }
+
     async function submitHandler() {
 
         if (!number || !name || !email || !address || !aspects || !sourceInfo || (sourceInfo === 'other' && !specificInfo)) {
@@ -150,6 +175,9 @@ export default function ClientForm() {
                     <p className='mt-4'>Email ID:<span className='text-red-500'>*</span></p>
                     <input type="text" value={email} onChange={(e) => setEmail(e.target.value)}
                         className=' p-2 w-full ' />
+                    <button onClick={checkClientEmail} className='bg-slate-300 hover:bg-slate-400 p-1 w-48'>
+                        Check(recurring client)
+                    </button>
 
                     <p className='mt-4'>Select the Category:</p>
                     <select className='p-2 w-full' onChange={(e) => setOption(e.target.value)}>
