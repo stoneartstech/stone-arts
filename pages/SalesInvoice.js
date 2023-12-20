@@ -2,9 +2,13 @@ import React, { useState, useEffect } from 'react'
 import { db } from '../firebase';
 import { collection, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
 import { useRouter } from 'next/router'
+import { useSearchParams } from 'next/navigation'
 
 
-function SalesInvoice({ showroomName }) {
+function SalesInvoice() {
+
+    const searchParams = useSearchParams()
+    const showroomName = searchParams.get('showroomName')
 
     const [loading, setLoading] = useState(true)
     const [dummyRequests, setDummyRequests] = useState([{
@@ -24,19 +28,18 @@ function SalesInvoice({ showroomName }) {
 
     useEffect(() => {
         const fetch = onSnapshot(collection(db, 'clients'), (snapshot) => {
-            var clientRequests = snapshot.docs.map((doc) => ({
+            var requests = snapshot.docs.map((doc) => ({
                 id: doc.id,
                 ...doc.data()
             }))
-            clientRequests = clientRequests.filter((clientRequest) => clientRequest.showroom === showroomName)
-            clientRequests = clientRequests.filter((clientRequest) => clientRequest.option === "retail")
-            clientRequests.forEach((clientRequest) => {
+            requests = requests.filter((clientRequest) => clientRequest.showroom === showroomName)
+            requests = requests.filter((clientRequest) => clientRequest.option === 'retail')
+            requests.forEach((clientRequest) => {
                 clientRequest.aspects = clientRequest.aspects.join(',')
                 clientRequest.date = clientRequest.date
             })
-
-            setClientRequests(clientRequests)
-            setOriginalClientRequests(clientRequests)
+            setClientRequests(requests)
+            setOriginalClientRequests(requests)
             setLoading(false)
         })
 
@@ -58,7 +61,7 @@ function SalesInvoice({ showroomName }) {
                     </p>
                     <p className='mt-8 text-xl mb-4 text-center font-bold'>Upload Invoice</p>
                     {clientRequests.map((clientRequest) => (
-                        <div className='items-center sm:mx-24 grid grid-cols-3 gap-x-12 mb-4'>
+                        <div key={clientRequest.id} className='items-center sm:mx-24 grid grid-cols-3 gap-x-12 mb-4'>
                             <p className='text-lg'>{clientRequest.name} (<span>{clientRequest.clientCode}</span>)</p>
                             <button className='bg-green-400 hover:bg-green-500 p-2'>Upload</button>
                             <button className='bg-red-400 hover:bg-red-500 p-2'>Confirm</button>
@@ -68,7 +71,7 @@ function SalesInvoice({ showroomName }) {
 
                     <p className='mt-16 text-xl mb-4 text-center font-bold'>Check Uploaded Invoices</p>
                     {invoiceNames.map((name) => (
-                        <div className='items-center sm:mx-24 grid grid-cols-3 gap-x-12 mb-4'>
+                        <div key={name} className='items-center sm:mx-24 grid grid-cols-3 gap-x-12 mb-4'>
                             <p className='text-lg'>{name} </p>
                             <button className='bg-green-400 hover:bg-green-500 p-2'>Check Invoice</button>
                             <button className='bg-green-400 hover:bg-green-500 p-2'>Check Information</button>

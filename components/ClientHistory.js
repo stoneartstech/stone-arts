@@ -16,18 +16,17 @@ export default function ClientHistory({ showroomName }) {
 
     useEffect(() => {
         const fetch = onSnapshot(collection(db, 'clients'), (snapshot) => {
-            var clientRequests = snapshot.docs.map((doc) => ({
+            var requests = snapshot.docs.map((doc) => ({
                 id: doc.id,
                 ...doc.data()
             }))
-            clientRequests = clientRequests.filter((clientRequest) => clientRequest.showroom === showroomName)
-            clientRequests.forEach((clientRequest) => {
+            requests = requests.filter((clientRequest) => clientRequest.showroom === showroomName)
+            requests.forEach((clientRequest) => {
                 clientRequest.aspects = clientRequest.aspects.join(',')
                 clientRequest.date = clientRequest.date
             })
-
-            setClientRequests(clientRequests)
-            setOriginalClientRequests(clientRequests)
+            setClientRequests(requests)
+            setOriginalClientRequests(requests)
             setLoading(false)
         })
 
