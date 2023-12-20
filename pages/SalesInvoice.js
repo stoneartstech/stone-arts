@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { db } from '../firebase';
-import { collection, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
+import { collection, onSnapshot } from 'firebase/firestore';
 import { useRouter } from 'next/router'
 import { useSearchParams } from 'next/navigation'
 
