@@ -73,10 +73,14 @@ export default function SalesDashboard({ showroomName }) {
                     ))}
                 </div>
                 <div className='flex flex-col text-xl gap-4'>
-                    <button
-                        className='bg-slate-300 hover:bg-slate-400 p-2 w-full sm:max-w-[25vw]'>
+                    <Link href={{
+                        pathname: '/SalesInvoice',
+                        query: { showroomName: showroomName },
+                    }}
+                        className='bg-slate-300 hover:bg-slate-500 text-black p-3 w-full sm:max-w-[25vw] text-center'
+                    >
                         Invoicing
-                    </button>
+                    </Link>
                     <button onClick={BOQHandler}
                         className='bg-slate-300 hover:bg-slate-400 p-2 w-full sm:max-w-[25vw]'>
                         Send Information to BOQ

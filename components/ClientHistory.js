@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useTable } from 'react-table';
 import { db } from '../firebase';
 import { collection, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
+import { useRouter } from 'next/router';
 
 export default function ClientHistory({ showroomName }) {
     const [clientRequests, setClientRequests] = useState([]);
@@ -10,6 +11,8 @@ export default function ClientHistory({ showroomName }) {
     const [search, setSearch] = useState('');
 
     const [deleteClient, setDeleteClient] = useState('');
+
+    const router = useRouter();
 
     useEffect(() => {
         const fetch = onSnapshot(collection(db, 'clients'), (snapshot) => {
@@ -29,7 +32,7 @@ export default function ClientHistory({ showroomName }) {
         })
 
         return fetch
-    },)
+    }, [])
 
     const data = useMemo(() => clientRequests, [clientRequests]);
 
