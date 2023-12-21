@@ -172,7 +172,7 @@ export default function ClientForm() {
                         className=' p-2 w-full ' />
 
                     <p className=''>Last Name:<span className='text-red-500'>*</span></p>
-                    <input type="text" value={lastname} onChange={(e) => setLastName(e.target.value)}
+                    <input type="text" value={lastname} onChange={(e) => setLastname(e.target.value)}
                         className=' p-2 w-full ' />
 
                     <p className='mt-4'>Email ID:</p>
