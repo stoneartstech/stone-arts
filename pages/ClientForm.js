@@ -16,6 +16,17 @@ export default function ClientForm() {
     const [loading, setLoading] = useState(false)
     const [clientCode, setClientCode] = useState('')
 
+    useEffect(() => {
+        const fetch = onSnapshot(collection(db, 'clientId'), (snapshot) => {
+            var number = snapshot.docs[0].data()
+            setClientId(number.id)
+            setClientCode(number.id)
+        })
+        return fetch
+    }
+        , [])
+
+
     var today = new Date()
     var date = today.getDate() + '-' + (today.getMonth() + 1) + '-' + today.getFullYear()
 
@@ -109,13 +120,13 @@ export default function ClientForm() {
             return
         }
 
-        const fetch = onSnapshot(collection(db, 'clientId'), (snapshot) => {
-            var number = snapshot.docs[0].data()
-            setClientId(number.id)
-            setClientCode(number.id)
-        })
+        // const fetch = onSnapshot(collection(db, 'clientId'), (snapshot) => {
+        //     var number = snapshot.docs[0].data()
+        //     setClientId(number.id)
+        //     setClientCode(number.id)
+        // })
 
-        await fetch()
+        // await fetch()
 
 
         checkClient()
