@@ -22,7 +22,9 @@ function SalesInvoice() {
     ])
     const [clientRequests, setClientRequests] = useState([])
     const [originalClientRequests, setOriginalClientRequests] = useState([])
-    const [invoiceNames, setInvoiceNames] = useState(['Ben', 'Tom'])
+    const [invoiceRequests, setInvoiceRequest] = useState([])
+
+    const [uploadStatus, setUploadStatus] = useState({});
 
     const router = useRouter()
 
@@ -46,6 +48,29 @@ function SalesInvoice() {
         return fetch
     }, [])
 
+    // Event handler for file input changes
+    const handleFileUpload = (clientId, event) => {
+        const file = event.target.files[0];
+        // Perform the file upload logic, e.g., using Firebase Storage
+        // Once the upload is successful, update the upload status
+        setUploadStatus((prevStatus) => ({
+            ...prevStatus,
+            [clientId]: true,
+        }));
+    };
+
+    // Event handler for confirming the upload
+    const handleConfirm = (clientId) => {
+        // Perform the confirmation logic, e.g., update a confirmation status in the database
+        // You can also add additional logic here
+        clientRequests.forEach((clientRequest) => {
+            if (clientRequest.id === clientId) {
+                setInvoiceRequest((prevInvoiceRequest) => [...prevInvoiceRequest, clientRequest])
+            }
+        })
+        alert(`Invoice for client ${clientId} confirmed!`);
+    };
+
     return (
         <div>
             {!loading && (
@@ -62,17 +87,23 @@ function SalesInvoice() {
                     <p className='mt-8 text-xl mb-4 text-center font-bold'>Upload Invoice</p>
                     {clientRequests.map((clientRequest) => (
                         <div key={clientRequest.id} className='items-center sm:mx-24 grid grid-cols-3 gap-x-12 mb-4'>
-                            <p className='text-lg'>{clientRequest.name} (<span>{clientRequest.clientCode}</span>)</p>
-                            <button className='bg-green-400 hover:bg-green-500 p-2'>Upload</button>
-                            <button className='bg-red-400 hover:bg-red-500 p-2'>Confirm</button>
+                            <p className='text-lg'>{clientRequest.name} (<span>{clientRequest.clientId}</span>)</p>
+                            <input type='file' onChange={(e) => handleFileUpload(clientRequest.id, e)} />
+                            <button
+                                className={`${uploadStatus[clientRequest.id] ? `bg-green-400` : `bg-red-400`}  p-2`}
+                                onClick={() => handleConfirm(clientRequest.id)}
+                                disabled={!uploadStatus[clientRequest.id]}
+                            >
+                                Confirm
+                            </button>
                         </div>
                     ))
                     }
 
                     <p className='mt-16 text-xl mb-4 text-center font-bold'>Check Uploaded Invoices</p>
-                    {invoiceNames.map((name) => (
-                        <div key={name} className='items-center sm:mx-24 grid grid-cols-3 gap-x-12 mb-4'>
-                            <p className='text-lg'>{name} </p>
+                    {invoiceRequests.map((invoiceRequest) => (
+                        <div key={invoiceRequest} className='items-center sm:mx-24 grid grid-cols-3 gap-x-12 mb-4'>
+                            <p className='text-lg'>{invoiceRequest.name} ({invoiceRequest.clientId})</p>
                             <button className='bg-green-400 hover:bg-green-500 p-2'>Check Invoice</button>
                             <button className='bg-green-400 hover:bg-green-500 p-2'>Check Information</button>
                         </div>
