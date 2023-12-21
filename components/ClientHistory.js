@@ -75,6 +75,7 @@ export default function ClientHistory({ showroomName }) {
                 || clientRequest.email.toLowerCase().includes(searchParam)
                 || clientRequest.number.toString().includes(searchParam)
                 || clientRequest.address.toLowerCase().includes(searchParam)
+                || clientRequest.salesPerson.toLowerCase().includes(searchParam)
                 || clientRequest.date.toString().toLowerCase().includes(searchParam)
                 || clientRequest.aspects.toLowerCase().includes(searchParam)
                 || clientRequest.option.toLowerCase().includes(searchParam)
@@ -110,6 +111,24 @@ export default function ClientHistory({ showroomName }) {
                             onClick={() => router.back()}>
                             Go Back
                         </button>
+                    </div>
+                    <div className='flex flex-col'>
+                        <p className='mt-8 text-2xl text-center font-bold mb-4'>
+                            Delete A Client
+                        </p>
+                        <div className='mx-auto'>
+                            <input
+                                onChange={(e) => setDeleteClient(e.target.value)}
+                                className='mx-auto border-2 border-black p-2'
+                                placeholder='Enter Client Id(Not Code)'
+                            />
+                            <button
+                                className='bg-red-500 hover:bg-red-600 p-3 rounded-lg mx-2'
+                                onClick={handleDelete}
+                            >
+                                Delete
+                            </button>
+                        </div>
                     </div>
                     <p className='mt-8 text-2xl text-center font-bold mb-4'>
                         Requests from Clients
@@ -163,24 +182,7 @@ export default function ClientHistory({ showroomName }) {
                             </table>
                         </div>
                     </div>
-                    <div className='flex flex-col'>
-                        <p className='mt-8 text-2xl text-center font-bold mb-4'>
-                            Delete A Client
-                        </p>
-                        <div className='mx-auto'>
-                            <input
-                                onChange={(e) => setDeleteClient(e.target.value)}
-                                className='mx-auto border-2 border-black p-2'
-                                placeholder='Enter Client Id(Not Code)'
-                            />
-                            <button
-                                className='bg-red-500 hover:bg-red-600 p-3 rounded-lg mx-2'
-                                onClick={handleDelete}
-                            >
-                                Delete
-                            </button>
-                        </div>
-                    </div>
+
                 </div>
             )}
         </>
