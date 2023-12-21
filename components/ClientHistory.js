@@ -40,7 +40,7 @@ export default function ClientHistory({ showroomName }) {
             { Header: 'Id', accessor: 'clientId', minSize: 50 },
             { Header: 'Client Code', accessor: 'clientCode', minSize: 50 },
             { Header: 'First Name', accessor: 'name', minSize: 200 },
-            { Header: 'Last Name', accessor: 'lastName', minSize: 200 },
+            { Header: 'Last Name', accessor: 'lastname', minSize: 200 },
             { Header: 'Client Email', accessor: 'email', minSize: 200 },
             { Header: 'Client Number', accessor: 'number', minSize: 200 },
             { Header: 'Client Address', accessor: 'address', minSize: 200 },
@@ -112,7 +112,7 @@ export default function ClientHistory({ showroomName }) {
                             Go Back
                         </button>
                     </div>
-                    {/* <div className='flex flex-col'>
+                    <div className='flex flex-col'>
                         <p className='mt-8 text-2xl text-center font-bold mb-4'>
                             Delete A Client
                         </p>
@@ -129,7 +129,7 @@ export default function ClientHistory({ showroomName }) {
                                 Delete
                             </button>
                         </div>
-                    </div> */}
+                    </div>
                     <p className='mt-8 text-2xl text-center font-bold mb-4'>
                         Requests from Clients
                     </p>

@@ -33,7 +33,7 @@ export default function ClientForm() {
     const [name, setName] = useState('')
     const [lastname, setLastname] = useState('')
     const [email, setEmail] = useState('')
-    const [option, setOption] = useState('retail')
+    const [options, setOptions] = useState([])
     const [address, setAddress] = useState('')
     const [number, setNumber] = useState('')
     const [aspects, setAspects] = useState([])
@@ -49,13 +49,22 @@ export default function ClientForm() {
         'Water Features', 'Garden Furnitures', 'Planters and Stands', 'Vanity and Sinks', 'Bird Bath/Feeder',
         'Pebbles and Landscaping', 'Memorials', 'Statues', 'Brass', 'Plant Venture', 'Other Products']
 
-    const optionsList = aspectsList.map((aspect) => ({
+    const aspectsFinalList = aspectsList.map((aspect) => ({
         value: aspect,
         label: aspect,
     }));
     const handleSelectChange = (selectedOptions) => {
         setAspects(selectedOptions.map((option) => option.value));
     };
+
+    const optionList = ['retail', 'design', 'measurement', 'visiting']
+    const optionFinalList = optionList.map((option) => ({
+        value: option,
+        label: option,
+    }));
+    const handleOptionChange = (selectedOptions) => {
+        setOptions(selectedOptions.map((option) => option.value));
+    }
 
     const [validNumber, setValidNumber] = useState(true)
     const validateNumber = (number) => {
@@ -115,7 +124,7 @@ export default function ClientForm() {
 
     async function submitHandler() {
 
-        if (!number || !name || !lastname || !salesPerson || !address || !aspects || !sourceInfo || (sourceInfo === 'other' && !specificInfo)) {
+        if (!number || !name || !lastname || !salesPerson || !address || !options || !sourceInfo || (sourceInfo === 'other' && !specificInfo)) {
             alert('Please enter all the details')
             return
         }
@@ -140,7 +149,7 @@ export default function ClientForm() {
             lastname: lastname,
             email: email,
             salesPerson: salesPerson,
-            option: option,
+            option: options.join(', '),
             address: address,
             date: date,
             number: '+' + number,
@@ -153,13 +162,10 @@ export default function ClientForm() {
 
         // await setDoc(doc(db, "clients", clientId), clientData)
 
-        const route = '/' + option
-
-
-        if (option == 'measurement') {
+        if (options.includes('measurement')) {
             setLoading(false)
             router.push({
-                pathname: route,
+                pathname: "/measurement",
                 query: { clientData: JSON.stringify(clientData) }
             })
         }
@@ -196,13 +202,13 @@ export default function ClientForm() {
 
 
                     <p className='mt-4'>Select the Category:</p>
-                    <select className='p-2 w-full' onChange={(e) => setOption(e.target.value)}>
-
-                        <option value="retail">Retail</option>
-                        <option value="measurement">Measurement</option>
-                        <option value="design">Design</option>
-
-                    </select>
+                    <Select
+                        options={optionFinalList}
+                        isMulti
+                        value={optionFinalList.filter((option) => options.includes(option.value))}
+                        onChange={handleOptionChange}
+                        className='w-full'
+                    />
 
                     <p className='mt-4'>Address:<span className='text-red-500'>*</span></p>
                     <textarea value={address} onChange={(e) => setAddress(e.target.value)}
@@ -228,11 +234,11 @@ export default function ClientForm() {
                         Check(recurring client)
                     </button>
 
-                    <p className='mt-4'>Interested Aspect:<span className='text-red-500'>*</span></p>
+                    <p className='mt-4'>Interested Aspect:</p>
                     <Select
-                        options={optionsList}
+                        options={aspectsFinalList}
                         isMulti
-                        value={optionsList.filter((option) => aspects.includes(option.value))}
+                        value={aspectsFinalList.filter((option) => aspects.includes(option.value))}
                         onChange={handleSelectChange}
                         className='w-full'
                     />
