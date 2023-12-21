@@ -39,7 +39,8 @@ export default function ClientHistory({ showroomName }) {
         () => [
             { Header: 'Id', accessor: 'clientId', minSize: 50 },
             { Header: 'Client Code', accessor: 'clientCode', minSize: 50 },
-            { Header: 'Client Name', accessor: 'name', minSize: 200 },
+            { Header: 'First Name', accessor: 'name', minSize: 200 },
+            { Header: 'Last Name', accessor: 'lastName', minSize: 200 },
             { Header: 'Client Email', accessor: 'email', minSize: 200 },
             { Header: 'Client Number', accessor: 'number', minSize: 200 },
             { Header: 'Client Address', accessor: 'address', minSize: 200 },

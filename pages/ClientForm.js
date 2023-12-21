@@ -30,6 +30,7 @@ export default function ClientForm() {
     var date = today.getDate() + '-' + (today.getMonth() + 1) + '-' + today.getFullYear()
 
     const [name, setName] = useState('')
+    const [lastname, setLastname] = useState('')
     const [email, setEmail] = useState('')
     const [option, setOption] = useState('measurement')
     const [address, setAddress] = useState('')
@@ -75,6 +76,7 @@ export default function ClientForm() {
             //fetch the client's data and set it to the respective states
             const client = querySnapshot.docs[0].data()
             setName(client.name)
+            if (client.lastname) setLastname(client.lastname)
             setEmail(client.email)
             setAddress(client.address)
             setSourceInfo(client.sourceInfo)
@@ -96,6 +98,7 @@ export default function ClientForm() {
             //fetch the client's data and set it to the respective states
             const client = querySnapshot.docs[0].data()
             setName(client.name)
+            if (client.lastname) setLastname(client.lastname)
             setNumber(client.number)
             setAddress(client.address)
             setSourceInfo(client.sourceInfo)
@@ -111,7 +114,7 @@ export default function ClientForm() {
 
     async function submitHandler() {
 
-        if (!number || !name || !salesPerson || !address || !aspects || !sourceInfo || (sourceInfo === 'other' && !specificInfo)) {
+        if (!number || !name || !lastname || !salesPerson || !address || !aspects || !sourceInfo || (sourceInfo === 'other' && !specificInfo)) {
             alert('Please enter all the details')
             return
         }
@@ -124,6 +127,7 @@ export default function ClientForm() {
         const clientData = {
             clientId: clientId,
             name: name,
+            lastname: lastname,
             email: email,
             salesPerson: salesPerson,
             option: option,
@@ -133,7 +137,7 @@ export default function ClientForm() {
             aspects: aspects,
             sourceInfo: sourceInfo,
             specificInfo: specificInfo,
-            showroom: showroomName,
+            showroom: showroomName, //DELETELATER
             clientCode: clientCode
         }
 
@@ -165,8 +169,12 @@ export default function ClientForm() {
             <div className='flex flex-col sm:flex-row p-8 gap-16 w-full'>
 
                 <div className='flex flex-col w-full'>
-                    <p className=''>Name:<span className='text-red-500'>*</span></p>
+                    <p className=''>First Name:<span className='text-red-500'>*</span></p>
                     <input type="text" value={name} onChange={(e) => setName(e.target.value)}
+                        className=' p-2 w-full ' />
+
+                    <p className=''>Last Name:<span className='text-red-500'>*</span></p>
+                    <input type="text" value={lastname} onChange={(e) => setName(e.target.value)}
                         className=' p-2 w-full ' />
 
                     <p className='mt-4'>Email ID:</p>
