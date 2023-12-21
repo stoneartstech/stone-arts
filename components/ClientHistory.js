@@ -4,6 +4,7 @@ import { db } from '../firebase';
 import { collection, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
 import { useRouter } from 'next/router';
 
+
 export default function ClientHistory({ showroomName }) {
     const [clientRequests, setClientRequests] = useState([]);
     const [originalClientRequests, setOriginalClientRequests] = useState([]);
@@ -76,11 +77,31 @@ export default function ClientHistory({ showroomName }) {
                 || clientRequest.email.toLowerCase().includes(searchParam)
                 || clientRequest.number.toString().includes(searchParam)
                 || clientRequest.address.toLowerCase().includes(searchParam)
-                || clientRequest.date.toString().toLowerCase().includes(searchParam)
                 || clientRequest.aspects.toLowerCase().includes(searchParam)
                 || clientRequest.option.toLowerCase().includes(searchParam)
                 || clientRequest.sourceInfo.toLowerCase().includes(searchParam)
             )
+        }
+        ))
+    }
+
+    function parseDateString(dateString) {
+        const [day, month, year] = dateString.split('-').map(Number);
+        return new Date(year, month - 1, day);
+    }
+
+    function parseDate(dateString) {
+        const [year, month, day] = dateString.split('-').map(Number);
+        return new Date(year, month - 1, day);
+    }
+
+    function handleDateSearch() {
+        setClientRequests(originalClientRequests.filter((clientRequest) => {
+            const requestDate = parseDateString(clientRequest.date);
+            console.log(requestDate)
+            console.log(parseDateString(startDate))
+            return ((requestDate >= parseDate(startDate) || !startDate) &&
+                (requestDate <= new parseDate(endDate) || !endDate))
         }
         ))
     }
@@ -102,6 +123,15 @@ export default function ClientHistory({ showroomName }) {
 
     }
 
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
+
+    const selectionRange = {
+        startDate: new Date(),
+        endDate: new Date(),
+        key: 'selection',
+    }
+
     return (
         <>
             {!loading && (
@@ -112,7 +142,7 @@ export default function ClientHistory({ showroomName }) {
                             Go Back
                         </button>
                     </div>
-                    <div className='flex flex-col'>
+                    {/* <div className='flex flex-col'>
                         <p className='mt-8 text-2xl text-center font-bold mb-4'>
                             Delete A Client
                         </p>
@@ -129,7 +159,7 @@ export default function ClientHistory({ showroomName }) {
                                 Delete
                             </button>
                         </div>
-                    </div>
+                    </div> */}
                     <p className='mt-8 text-2xl text-center font-bold mb-4'>
                         Requests from Clients
                     </p>
@@ -142,6 +172,29 @@ export default function ClientHistory({ showroomName }) {
                             <button
                                 className='bg-slate-300 hover:bg-slate-400 p-3 rounded-lg mx-2'
                                 onClick={handleSearch}
+                            >
+                                Search
+                            </button>
+                        </div>
+                        <p className='mt-8 text-2xl text-center font-bold'>
+                            Search in date range
+                        </p>
+                        <div className='mx-auto flex gap-4'>
+                            <input
+                                type="date"
+                                value={startDate}
+                                onChange={(e) => setStartDate(e.target.value)}
+                                className='border-2 border-black p-2'
+                            />
+                            <input
+                                type="date"
+                                value={endDate}
+                                onChange={(e) => setEndDate(e.target.value)}
+                                className='border-2 border-black p-2'
+                            />
+                            <button
+                                className='bg-slate-300 hover:bg-slate-400 p-3 rounded-lg mx-2'
+                                onClick={handleDateSearch}
                             >
                                 Search
                             </button>
