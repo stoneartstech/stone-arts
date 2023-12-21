@@ -73,6 +73,12 @@ export default function ClientForm() {
         if (number.startsWith('254')) {
             numberPattern = /^\d{12}$/
         }
+        if (number.startsWith('44')) {
+            numberPattern = /^\d{13}$/
+        }
+        if (number.startsWith('1')) {
+            numberPattern = /^\d{11}$/
+        }
         return numberPattern.test(number)
     }
 
