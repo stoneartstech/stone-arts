@@ -76,7 +76,6 @@ export default function ClientHistory({ showroomName }) {
                 || clientRequest.email.toLowerCase().includes(searchParam)
                 || clientRequest.number.toString().includes(searchParam)
                 || clientRequest.address.toLowerCase().includes(searchParam)
-                || clientRequest.salesPerson.toLowerCase().includes(searchParam)
                 || clientRequest.date.toString().toLowerCase().includes(searchParam)
                 || clientRequest.aspects.toLowerCase().includes(searchParam)
                 || clientRequest.option.toLowerCase().includes(searchParam)
@@ -113,7 +112,7 @@ export default function ClientHistory({ showroomName }) {
                             Go Back
                         </button>
                     </div>
-                    <div className='flex flex-col'>
+                    {/* <div className='flex flex-col'>
                         <p className='mt-8 text-2xl text-center font-bold mb-4'>
                             Delete A Client
                         </p>
@@ -130,7 +129,7 @@ export default function ClientHistory({ showroomName }) {
                                 Delete
                             </button>
                         </div>
-                    </div>
+                    </div> */}
                     <p className='mt-8 text-2xl text-center font-bold mb-4'>
                         Requests from Clients
                     </p>
