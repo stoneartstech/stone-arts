@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { db } from '../firebase'
-import { doc, setDoc, collection, getDocs, onSnapshot, query, where } from 'firebase/firestore'
+import { doc, setDoc, collection, getDoc, getDocs, onSnapshot, query, where } from 'firebase/firestore'
 import PhoneInput from 'react-phone-input-2'
 import 'react-phone-input-2/lib/style.css'
 import { useSearchParams } from 'next/navigation'
@@ -13,18 +13,8 @@ export default function ClientForm() {
     const showroomName = searchParams.get('showroomName')
 
     const [clientId, setClientId] = useState()
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(false)
     const [clientCode, setClientCode] = useState('')
-    useEffect(() => {
-        const fetch = onSnapshot(collection(db, 'clientId'), (snapshot) => {
-            var number = snapshot.docs[0].data()
-            setClientId(number.id)
-            setClientCode(number.id)
-            setLoading(false)
-        })
-
-        return fetch
-    }, [])
 
     var today = new Date()
     var date = today.getDate() + '-' + (today.getMonth() + 1) + '-' + today.getFullYear()
@@ -119,6 +109,15 @@ export default function ClientForm() {
             return
         }
 
+        const fetch = onSnapshot(collection(db, 'clientId'), (snapshot) => {
+            var number = snapshot.docs[0].data()
+            setClientId(number.id)
+            setClientCode(number.id)
+        })
+
+        await fetch()
+
+
         checkClient()
         if (!repeatClient) checkClientEmail()
 
@@ -165,7 +164,6 @@ export default function ClientForm() {
     return <>{!loading && (
         <div className='flex flex-col items-center'>
             <p className='text-3xl'>Client Information Form</p>
-            <p>ID:{clientId}</p>
             <div className='flex flex-col sm:flex-row p-8 gap-16 w-full'>
 
                 <div className='flex flex-col w-full'>
@@ -174,7 +172,7 @@ export default function ClientForm() {
                         className=' p-2 w-full ' />
 
                     <p className=''>Last Name:<span className='text-red-500'>*</span></p>
-                    <input type="text" value={lastname} onChange={(e) => setName(e.target.value)}
+                    <input type="text" value={lastname} onChange={(e) => setLastName(e.target.value)}
                         className=' p-2 w-full ' />
 
                     <p className='mt-4'>Email ID:</p>
