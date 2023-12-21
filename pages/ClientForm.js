@@ -32,7 +32,7 @@ export default function ClientForm() {
     const [name, setName] = useState('')
     const [lastname, setLastname] = useState('')
     const [email, setEmail] = useState('')
-    const [option, setOption] = useState('measurement')
+    const [option, setOption] = useState('retail')
     const [address, setAddress] = useState('')
     const [number, setNumber] = useState('')
     const [aspects, setAspects] = useState([])
@@ -184,14 +184,13 @@ export default function ClientForm() {
                         Check(recurring client)
                     </button>
 
-                    <p className='mt-4'>Sales Person:<span className='text-red-500'>*</span></p>
-                    <input type="text" value={salesPerson} onChange={(e) => setSalesPerson(e.target.value)}
-                        className=' p-2 w-full ' />
+
 
                     <p className='mt-4'>Select the Category:</p>
                     <select className='p-2 w-full' onChange={(e) => setOption(e.target.value)}>
-                        <option value="measurement">Measurement</option>
+
                         <option value="retail">Retail</option>
+                        <option value="measurement">Measurement</option>
                         <option value="design">Design</option>
 
                     </select>
@@ -220,7 +219,7 @@ export default function ClientForm() {
                         Check(recurring client)
                     </button>
 
-                    <p className='mt-4'>Interested Aspect:</p>
+                    <p className='mt-4'>Interested Aspect:<span className='text-red-500'>*</span></p>
                     <Select
                         options={optionsList}
                         isMulti
@@ -233,11 +232,17 @@ export default function ClientForm() {
                         <option value="social media">Social Media</option>
                         <option value="website">Website</option>
                         <option value="word of mouth">Word of mouth</option>
+                        <option value="walk in">Walk In</option>
+                        <option value="repeat">Repeat</option>
                         <option value="other">Other (Specify)</option>
                     </select>
-                    {sourceInfo === 'other' &&
-                        <input type="text" value={specificInfo} onChange={(e) => setSpecificInfo(e.target.value)}
+                    {sourceInfo === 'other' || sourceInfo == 'repeat' &&
+                        <input type="text" placeholder="Specify" value={specificInfo} onChange={(e) => setSpecificInfo(e.target.value)}
                             className='mt-2 p-2 w-full ' />}
+
+                    <p className='mt-4'>Sales Person:<span className='text-red-500'>*</span></p>
+                    <input type="text" value={salesPerson} onChange={(e) => setSalesPerson(e.target.value)}
+                        className=' p-2 w-full ' />
 
                     <p className='mt-4'>Date:</p>
                     {/* <select className='p-2 w-full' onChange={(e) => setAspect(e.target.value)}>
