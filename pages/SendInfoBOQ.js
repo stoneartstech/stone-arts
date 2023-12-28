@@ -37,6 +37,17 @@ function SendInfoBOQ() {
         return fetch
     }, [])
 
+    const handleSendInfo = (clientId) => {
+        // Send info to BOQ
+        alert('Info sent to BOQ')
+    }
+    const handleDeleteRequest = (clientId) => {
+        // Delete request
+    }
+    const handleCheckInfo = (clientId) => {
+        // Check info
+    }
+
     return (
         <div>
             {!loading && (
@@ -54,15 +65,23 @@ function SendInfoBOQ() {
                     {clientRequests.map((clientRequest) => (
                         <div key={clientRequest.id} className='items-center sm:mx-24 grid grid-cols-4 gap-x-12 mb-4'>
                             <p className='text-lg'>{clientRequest.name} (<span>{clientRequest.clientId}</span>)</p>
-                            <button className="bg-green-400 hover:bg-green-500 p-2">
+                            <button
+                                className="bg-green-400 hover:bg-green-500 p-2"
+                                onClick={() => handleSendInfo(clientRequest.clientId)}
+                            >
                                 Send to BOQ
                             </button>
-                            <button className="bg-red-400 hover:bg-red-500 p-2">
+                            <button className="bg-red-400 hover:bg-red-500 p-2"
+                                onClick={() => handleDeleteRequest(clientRequest.clientId)}
+                            >
                                 Delete Request
                             </button>
-                            <button className="bg-green-400 hover:bg-green-500 p-2">
+                            <button className="bg-green-400 hover:bg-green-500 p-2"
+                                onClick={() => handleCheckInfo(clientRequest.clientId)}
+                            >
                                 Check Info
                             </button>
+
                         </div>
                     ))
                     }
