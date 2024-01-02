@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { db } from '../firebase';
-import { collection, onSnapshot } from 'firebase/firestore';
+import { db, storage } from '../firebase';
+import { updateDoc, collection, onSnapshot, addDoc, serverTimestamp, doc } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+
+
 import { useRouter } from 'next/router'
 import { useSearchParams } from 'next/navigation'
 
@@ -9,6 +12,25 @@ function SalesInvoice() {
 
     const searchParams = useSearchParams()
     const showroomName = searchParams.get('showroomName')
+
+    const [downloadURLs, setDownloadURLs] = useState({})
+
+    const invoiceDbNames = {
+        "Galleria": "invoices",
+        "Mirage": "mirage-invoices",
+        "Kisumu": "kisumu-invoices",
+        "Mombasa Road": "mombasa-invoices",
+    }
+    const invoiceDbName = invoiceDbNames[showroomName]
+
+    const showroomDbNames = {
+        "Galleria": "clients",
+        "Mirage": "mirage-clients",
+        "Kisumu": "kisumu-clients",
+        "Mombasa Road": "mombasa-clients",
+    }
+    const showroomDbName = showroomDbNames[showroomName]
+    console.log(showroomDbName)
 
     const [loading, setLoading] = useState(true)
     const [dummyRequests, setDummyRequests] = useState([{
@@ -29,47 +51,110 @@ function SalesInvoice() {
     const router = useRouter()
 
     useEffect(() => {
-        const fetch = onSnapshot(collection(db, 'clients'), (snapshot) => {
+        const fetch = onSnapshot(collection(db, showroomDbName), (snapshot) => {
             var requests = snapshot.docs.map((doc) => ({
                 id: doc.id,
                 ...doc.data()
             }))
-            requests = requests.filter((clientRequest) => clientRequest.showroom === showroomName)
             requests = requests.filter((clientRequest) => clientRequest.option === 'retail')
             requests.forEach((clientRequest) => {
                 clientRequest.aspects = clientRequest.aspects.join(',')
                 clientRequest.date = clientRequest.date
             })
-            setClientRequests(requests)
             setOriginalClientRequests(requests)
-            setLoading(false)
+            requests = requests.filter((clientRequest) => !clientRequest.invoice)
+            setClientRequests(requests)
         })
 
+        const fetch2 = onSnapshot(collection(db, invoiceDbName), (snapshot) => {
+            var requests = snapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data()
+            }))
+            setInvoiceRequest(requests)
+            setLoading(false)
+        })
         return fetch
     }, [])
 
     // Event handler for file input changes
-    const handleFileUpload = (clientId, event) => {
+    const handleFileUpload = async (clientId, event) => {
         const file = event.target.files[0];
-        // Perform the file upload logic, e.g., using Firebase Storage
-        // Once the upload is successful, update the upload status
-        setUploadStatus((prevStatus) => ({
-            ...prevStatus,
-            [clientId]: true,
-        }));
+        try {
+            // Upload the file to Firebase Storage
+            const storageRef = ref(storage, `invoices/${clientId}`)
+            await uploadBytes(storageRef, file);
+
+            // Get the download URL for the uploaded file
+            const downloadURL = await getDownloadURL(storageRef);
+            setDownloadURLs((prevDownloadURLs) => ({
+                ...prevDownloadURLs,
+                [clientId]: downloadURL,
+            }));
+            setUploadStatus((prevStatus) => ({
+                ...prevStatus,
+                [clientId]: true,
+            }));
+
+        } catch (error) {
+            console.log(error);
+            alert(`File for client could not be uploaded.`);
+        }
     };
 
     // Event handler for confirming the upload
-    const handleConfirm = (clientId) => {
-        // Perform the confirmation logic, e.g., update a confirmation status in the database
-        // You can also add additional logic here
-        clientRequests.forEach((clientRequest) => {
-            if (clientRequest.id === clientId) {
-                setInvoiceRequest((prevInvoiceRequest) => [...prevInvoiceRequest, clientRequest])
-            }
-        })
-        alert(`Invoice for client ${clientId} confirmed!`);
+    const handleConfirm = async (clientId) => {
+        try {
+            const clientRequest = clientRequests.find((request) => request.id === clientId);
+            const invoiceData = {
+                id: clientRequest.clientId,
+                clientId: clientRequest.clientId,
+                name: clientRequest.name,
+                invoiceURL: downloadURLs[clientId],
+                timestamp: serverTimestamp(), // Add a server timestamp for ordering
+                // Add other relevant data as needed
+            };
+            await addDoc(collection(db, invoiceDbName), invoiceData);
+
+            //edit client request
+            const docRef = doc(db, showroomDbName, clientId);
+            await updateDoc(docRef, {
+                "invoice": true,
+            });
+
+            setInvoiceRequest((prevInvoiceRequest) => [
+                ...prevInvoiceRequest,
+                clientRequest,
+            ]);
+        }
+        catch (error) {
+            console.log(error);
+            alert(`File for client could not be uploaded.`);
+        }
     };
+
+    const handleOpenInvoice = (clientId) => {
+        const invoiceRequest = invoiceRequests.find((request) => request.clientId == clientId);
+        window.open(invoiceRequest.invoiceURL)
+    }
+
+    const handleCheckInfo = (clientId) => {
+        console.log(clientId)
+        const clientRequest = originalClientRequests.find((request) => request.clientId === clientId);
+        console.log(originalClientRequests)
+        console.log(clientRequest)
+        alert(`First Name: ${clientRequest.name}
+        \nLast Name: ${clientRequest.lastName}
+        \nClient Code: ${clientRequest.clientId}
+        \nPhone Number: ${clientRequest.phoneNumber}
+        \nEmail: ${clientRequest.email}
+        \nAddress: ${clientRequest.address}
+        \nDate of Request: ${clientRequest.date}
+        \nSalesperson: ${clientRequest.salesPerson}
+        \nAspects: ${clientRequest.aspects}
+        \nOption: ${clientRequest.option}`)
+
+    }
 
     return (
         <div>
@@ -104,8 +189,8 @@ function SalesInvoice() {
                     {invoiceRequests.map((invoiceRequest) => (
                         <div key={invoiceRequest} className='items-center sm:mx-24 grid grid-cols-3 gap-x-12 mb-4'>
                             <p className='text-lg'>{invoiceRequest.name} ({invoiceRequest.clientId})</p>
-                            <button className='bg-green-400 hover:bg-green-500 p-2'>Check Invoice</button>
-                            <button className='bg-green-400 hover:bg-green-500 p-2'>Check Information</button>
+                            <button onClick={() => handleOpenInvoice(invoiceRequest.clientId)} className='bg-green-400 hover:bg-green-500 p-2'>Check Invoice</button>
+                            <button onClick={() => handleCheckInfo(invoiceRequest.clientId)} className='bg-green-400 hover:bg-green-500 p-2'>Check Information</button>
                         </div>
                     ))
                     }
