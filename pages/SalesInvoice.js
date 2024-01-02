@@ -144,7 +144,7 @@ function SalesInvoice() {
         console.log(originalClientRequests)
         console.log(clientRequest)
         alert(`First Name: ${clientRequest.name}
-        \nLast Name: ${clientRequest.lastName}
+        \nLast Name: ${clientRequest.lastname}
         \nClient Code: ${clientRequest.clientId}
         \nPhone Number: ${clientRequest.phoneNumber}
         \nEmail: ${clientRequest.email}
