@@ -6,6 +6,14 @@ import { useRouter } from 'next/router';
 
 
 export default function ClientHistory({ showroomName }) {
+    const showroomDbNames = {
+        "Galleria": "clients",
+        "Mirage": "mirage-clients",
+        "Kisumu": "kisumu-clients",
+        "Mombasa Road": "mombasa-clients",
+    }
+    console.log(showroomName)
+    const showroomDbName = showroomDbNames[showroomName]
     const [clientRequests, setClientRequests] = useState([]);
     const [originalClientRequests, setOriginalClientRequests] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -16,12 +24,11 @@ export default function ClientHistory({ showroomName }) {
     const router = useRouter();
 
     useEffect(() => {
-        const fetch = onSnapshot(collection(db, 'clients'), (snapshot) => {
+        const fetch = onSnapshot(collection(db, showroomDbName), (snapshot) => {
             var requests = snapshot.docs.map((doc) => ({
                 id: doc.id,
                 ...doc.data()
             }))
-            requests = requests.filter((clientRequest) => clientRequest.showroom === showroomName)
             requests.forEach((clientRequest) => {
                 clientRequest.aspects = clientRequest.aspects.join(',')
                 clientRequest.date = clientRequest.date
@@ -112,7 +119,7 @@ export default function ClientHistory({ showroomName }) {
             alert('Please enter a client id')
             return
         }
-        const clientsRef = collection(db, 'clients');
+        const clientsRef = collection(db, showroomDbName);
         try {
             // Attempt to delete the client with the specified ID
             await deleteDoc(doc(clientsRef, deleteClient));

@@ -11,6 +11,13 @@ export default function ClientForm() {
 
     const searchParams = useSearchParams()
     const showroomName = searchParams.get('showroomName')
+    const showroomDbNames = {
+        "Galleria": "clients",
+        "Mirage": "mirage-clients",
+        "Kisumu": "kisumu-clients",
+        "Mombasa Road": "mombasa-clients",
+    }
+    const showroomDbName = showroomDbNames[showroomName]
 
     const [clientId, setClientId] = useState()
     const [loading, setLoading] = useState(false)
@@ -86,7 +93,7 @@ export default function ClientForm() {
 
     async function checkClient() {
         //check if number exists in any client's data  from firebase
-        const q = query(collection(db, "clients"), where("number", "==", '+' + number))
+        const q = query(collection(db, showroomDbName), where("number", "==", '+' + number))
         const querySnapshot = await getDocs(q)
         if (querySnapshot.size > 0) {
             //fetch the client's data and set it to the respective states
@@ -108,7 +115,7 @@ export default function ClientForm() {
 
     async function checkClientEmail() {
         //check if email exists in any client's data  from firebase
-        const q = query(collection(db, "clients"), where("email", "==", email))
+        const q = query(collection(db, showroomDbName), where("email", "==", email))
         const querySnapshot = await getDocs(q)
         if (querySnapshot.size > 0) {
             //fetch the client's data and set it to the respective states
@@ -162,7 +169,6 @@ export default function ClientForm() {
             aspects: aspects,
             sourceInfo: sourceInfo,
             specificInfo: specificInfo,
-            showroom: showroomName, //DELETELATER
             clientCode: clientCode
         }
 
@@ -172,11 +178,14 @@ export default function ClientForm() {
             setLoading(false)
             router.push({
                 pathname: "/measurement",
-                query: { clientData: JSON.stringify(clientData) }
+                query: {
+                    clientData: JSON.stringify(clientData),
+                    showroomName: showroomName
+                }
             })
         }
         else {
-            await setDoc(doc(db, "clients", clientId.toString()), clientData)
+            await setDoc(doc(db, showroomDbName, clientId.toString()), clientData)
             await setDoc(doc(db, "clientId", "clientId"), { id: clientId + 1 })
             setLoading(false)
             router.push('/success')

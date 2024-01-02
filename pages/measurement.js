@@ -16,13 +16,19 @@ export default function measurement() {
     const [contactPerson, setContactPerson] = useState('')
     const [loading, setLoading] = useState(false)
 
-    const aspects = ['Claddings', 'Travertine', 'Marble', 'Sintered Stones', 'Pavings', 'Fireplaces', 'Facade',
-        'Water Features', 'Garden Furnitures', 'Planters and Stands', 'Vanity and Sinks', 'Bird Bath/Feeder',
-        'Pebbles and Landscaping', 'Memorials', 'Statues', 'Other Products', 'Brass', 'Plant Venture']
 
     const router = useRouter()
     const query = useSearchParams().get("clientData")
+    const showroomName = useSearchParams().get("showroomName")
     const [clientData, setClientData] = useState(JSON.parse(query))
+
+    const showroomDbNames = {
+        "Galleria": "clients",
+        "Mirage": "mirage-clients",
+        "Kisumu": "kisumu-clients",
+        "Mombasa Road": "mombasa-clients",
+    }
+    const showroomDbName = showroomDbNames[showroomName]
 
     async function submitHandler() {
         if (!cost || !date || !time || !supplyFix || !contactPerson) {
@@ -44,7 +50,7 @@ export default function measurement() {
         // console.log(clientData)
         const clientId = clientData.clientId
 
-        await setDoc(doc(db, "clients", clientId.toString()), clientData)
+        await setDoc(doc(db, showroomDbName, clientId.toString()), clientData)
         await setDoc(doc(db, "clientId", "clientId"), { id: clientId + 1 })
         setLoading(false)
         router.push('/success')

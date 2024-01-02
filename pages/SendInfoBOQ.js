@@ -15,15 +15,22 @@ function SendInfoBOQ() {
     const [clientRequests, setClientRequests] = useState([])
     const [originalClientRequests, setOriginalClientRequests] = useState([])
 
+    const showroomDbNames = {
+        "Galleria": "clients",
+        "Mirage": "mirage-clients",
+        "Kisumu": "kisumu-clients",
+        "Mombasa Road": "mombasa-clients",
+    }
+    const showroomDbName = showroomDbNames[showroomName]
+
     const router = useRouter()
 
     useEffect(() => {
-        const fetch = onSnapshot(collection(db, 'clients'), (snapshot) => {
+        const fetch = onSnapshot(collection(db, showroomDbName), (snapshot) => {
             var requests = snapshot.docs.map((doc) => ({
                 id: doc.id,
                 ...doc.data()
             }))
-            requests = requests.filter((clientRequest) => clientRequest.showroom === showroomName)
             requests = requests.filter((clientRequest) => clientRequest.option === 'measurement')
             requests.forEach((clientRequest) => {
                 clientRequest.aspects = clientRequest.aspects.join(',')
