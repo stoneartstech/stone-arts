@@ -139,10 +139,7 @@ function SalesInvoice() {
     }
 
     const handleCheckInfo = (clientId) => {
-        console.log(clientId)
         const clientRequest = originalClientRequests.find((request) => request.clientId === clientId);
-        console.log(originalClientRequests)
-        console.log(clientRequest)
         alert(`First Name: ${clientRequest.name}
         \nLast Name: ${clientRequest.lastname}
         \nClient Code: ${clientRequest.clientId}

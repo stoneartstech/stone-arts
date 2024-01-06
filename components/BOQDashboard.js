@@ -10,7 +10,7 @@ export default function BOQDashboard() {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        const fetch = onSnapshot(collection(db, 'clients'), (snapshot) => {
+        const fetch = onSnapshot(collection(db, 'boq'), (snapshot) => {
             var measurementRequests = snapshot.docs.map((doc) => ({
                 id: doc.id,
                 ...doc.data()
