@@ -127,21 +127,21 @@ export default function SalesDashboard({ showroomName }) {
                         Send Information to BOQ
                     </Link>
                     <Link href={{
-                        pathname: '/ClientRequests',
+                        pathname: '/SalesReports',
                         query: { showroomName: showroomName },
                     }}
                         className='bg-slate-300 hover:bg-slate-500 text-black p-3 w-full sm:max-w-[25vw] text-center'
                     >
-                        Client History
-                    </Link>
-                    <button
-                        className='bg-slate-300 hover:bg-slate-400 p-2 w-full sm:max-w-[25vw]'>
                         Reports
-                    </button>
-                    <button
-                        className='bg-slate-300 hover:bg-slate-400 p-2 w-full sm:max-w-[25vw]'>
+                    </Link>
+                    <Link href={{
+                        pathname: '/UploadOrder',
+                        query: { showroomName: showroomName },
+                    }}
+                        className='bg-slate-300 hover:bg-slate-500 text-black p-3 w-full sm:max-w-[25vw] text-center'
+                    >
                         Upload Order
-                    </button>
+                    </Link>
                     <Link href={{
                         pathname: '/SalesData',
                         query: { showroomName: showroomName },
