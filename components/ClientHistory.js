@@ -182,6 +182,30 @@ export default function ClientHistory({ showroomName }) {
                             >
                                 Search
                             </button>
+                            <div className='bg-slate-300'>
+                                {search && originalClientRequests
+                                    .filter((clientRequest) => {
+                                        var searchParam = search.toLowerCase()
+                                        return (
+                                            clientRequest.name.toLowerCase().includes(searchParam) ||
+                                            clientRequest.clientCode.toString().includes(searchParam)
+                                        )
+                                    })
+                                    .slice(0, 10)
+                                    .map((clientRequest) => (
+                                        <p
+                                            key={clientRequest.clientId}
+                                            onClick={() => {
+                                                setSearch(clientRequest.name);
+                                                handleSearch();
+                                            }}
+                                            className='p-2 text-black cursor-pointer'
+                                        >
+                                            {clientRequest.clientCode} : {clientRequest.name}
+                                        </p>
+                                    ))}
+                            </div>
+
                         </div>
                         <p className='mt-8 text-2xl text-center font-bold'>
                             Search in date range
@@ -243,8 +267,9 @@ export default function ClientHistory({ showroomName }) {
                         </div>
                     </div>
 
-                </div>
-            )}
+                </div >
+            )
+            }
         </>
     );
 }
