@@ -18,6 +18,16 @@ export default function UploadOrder() {
         "Mombasa Road": "mombasa-orders",
     }
     const showroomDbName = showroomDbNames[showroomName]
+
+    const requestShowroomDbNames = {
+        "Galleria": "clients",
+        "Mirage": "mirage-clients",
+        "Kisumu": "kisumu-clients",
+        "Mombasa Road": "mombasa-clients",
+    }
+    const requestShowroomDbName = requestShowroomDbNames[showroomName]
+
+
     const router = useRouter()
 
     const date = new Date().toLocaleDateString()
@@ -64,6 +74,30 @@ export default function UploadOrder() {
         setOrder(list)
     }
 
+    const checkCode = () => {
+        console.log(requestShowroomDbName)
+
+        const fetch = onSnapshot(collection(db, requestShowroomDbName), (snapshot) => {
+            snapshot.forEach((doc) => {
+                if (doc.data().clientCode === clientCode) {
+                    console.log(doc.data().name)
+                    setName(doc.data().name)
+                }
+            })
+        })
+        return fetch
+    }
+    const checkName = () => {
+        const fetch = onSnapshot(collection(db, requestShowroomDbName), (snapshot) => {
+            snapshot.forEach((doc) => {
+                if (doc.data().name === name) {
+                    setClientCode(doc.data().clientCode)
+                }
+            })
+        })
+        return fetch
+    }
+
     return (
         <>
             {!loading && (
@@ -89,8 +123,11 @@ export default function UploadOrder() {
                                 <p className='mt-2'>Date : {date}</p>
                                 <p className='mt-2'>Order ID : {orderId}</p>
                                 <p className='mt-4'>Client Code</p>
-                                <input type="text" value={clientCode} onChange={(e) => setClientCode(e.target.value)}
-                                    className=' p-2 w-full ' />
+                                <div className='flex flex-row gap-2'>
+                                    <input type="text" value={clientCode} onChange={(e) => setClientCode(e.target.value)}
+                                        className=' p-2 w-full ' />
+                                    <button onClick={checkCode} className='p-2 bg-slate-300'>Check</button>
+                                </div>
                                 <p className='mt-2'>Invoice Number</p>
                                 <input type="text" value={invoiceNumber} onChange={(e) => setInvoiceNumber(e.target.value)}
                                     className=' p-2 w-full ' />
@@ -120,8 +157,12 @@ export default function UploadOrder() {
                                 </select>
 
                                 <p className='mt-2'>Client Name</p>
-                                <input type="text" value={name} onChange={(e) => setName(e.target.value)}
-                                    className='p-2 w-full' />
+                                <div className='flex flex-row gap-2'>
+                                    <input type="text" value={name} onChange={(e) => setName(e.target.value)}
+                                        className='p-2 w-full' />
+                                    <button onClick={checkName} className='p-2 bg-slate-300'>Check</button>
+                                </div>
+
                             </div>
                         </div>
                         <table className='w-full mt-6'>
