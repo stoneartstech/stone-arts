@@ -241,7 +241,7 @@ export default function VisitorsReportUpload() {
                     console.log(date)
                     setDoc(doc(db, showroomDbName, `${date}`), reportData)
                     alert('Report Uploaded Successfully')
-                    router.push('/SalesReports')
+                    router.push('/')
                 }}>
                 Upload
             </button>

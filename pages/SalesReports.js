@@ -27,13 +27,13 @@ export default function SalesReports() {
         },
         {
             name: "Showroom Delivery",
-            upload: "/SalesReports/DeliveryUpload",
-            history: "/SalesReports/DeliveryHistory"
+            upload: "/SalesReports/DeliveryReportUpload",
+            history: "/SalesReports/DeliveryReportHistory"
         },
         {
             name: "Showroom Cleanliness",
-            upload: "/SalesReports/CleanlinessUpload",
-            history: "/SalesReports/CleanlinessHistory"
+            upload: "/SalesReports/CleanlinessReportUpload",
+            history: "/SalesReports/CleanlinessReportHistory"
         },
     ]
 
