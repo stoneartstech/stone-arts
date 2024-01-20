@@ -60,30 +60,41 @@ export default function SalesDashboard({ showroomName }) {
     }
 
     const handleIncrement = (key) => {
-        setSalesData(prevState => ({
-            ...prevState,
-            [key]: prevState[key] + 1,
-
-
-        }));
-        setVisitedToday(visitedToday + 1)
-        updateSalesData()
+        setSalesData((prevState) => {
+            const updatedState = {
+                ...prevState,
+                [key]: prevState[key] + 1,
+            };
+            setVisitedToday((prevVisited) => prevVisited + 1);
+            updateSalesData(updatedState);
+            return updatedState;
+        });
     };
 
     const handleDecrement = (key) => {
-        setSalesData(prevState => ({
-            ...prevState,
-            [key]: Math.max(prevState[key] - 1, 0), // Ensure the value doesn't go below 0
-        }));
-        setVisitedToday(visitedToday - 1)
-
+        setSalesData((prevState) => {
+            const updatedState = {
+                ...prevState,
+                [key]: Math.max(prevState[key] - 1, 0),
+            };
+            setVisitedToday((prevVisited) => Math.max(prevVisited - 1, 0));
+            updateSalesData(updatedState);
+            return updatedState;
+        });
     };
 
-    const updateSalesData = () => {
+    const updateSalesData = (updatedState) => {
         // Update data in firebase
-        const salesRef = doc(db, dbName, date)
-        setDoc(salesRef, salesData)
-    }
+        const salesRef = doc(db, dbName, date);
+        const orderedState = {
+            "Called": updatedState["Called"] || 0,
+            "Just visited": updatedState["Just visited"] || 0,
+            "bought OTC": updatedState["bought OTC"] || 0,
+            "asked for quotes": updatedState["asked for quotes"] || 0,
+        };
+        setDoc(salesRef, orderedState);
+    };
+
 
 
     return (
@@ -105,7 +116,7 @@ export default function SalesDashboard({ showroomName }) {
                         <div className='flex items-center gap-2' key={index}>
                             <p className='text-center'>{salesData[key]} {key}</p>
                             <button className='w-8 h-8 bg-green-400' onClick={() => handleIncrement(key)}> + </button>
-                            {/* <button className='w-8 h-8 bg-red-400' onClick={() => handleDecrement(key)}> - </button> */}
+                            <button className='w-8 h-8 bg-red-400' onClick={() => handleDecrement(key)}> - </button>
                         </div>
                     ))}
                 </div>
