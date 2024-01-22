@@ -240,7 +240,7 @@ export default function ClientHistory({ showroomName }) {
                                             {headerGroup.headers.map((column) => (
                                                 <th key={column.id}
                                                     {...column.getHeaderProps()}
-                                                    className='border'
+                                                    className='border-black border'
                                                     style={{ minWidth: column.minSize }}
                                                 >
                                                     {column.render('Header')}
@@ -255,7 +255,8 @@ export default function ClientHistory({ showroomName }) {
                                         return (
                                             <tr key={row.id} {...row.getRowProps()} className='border'>
                                                 {row.cells.map((cell) => (
-                                                    <td key={cell.id} {...cell.getCellProps()} className='p-6'>
+                                                    <td key={cell.id} {...cell.getCellProps()}
+                                                        className='p-6 border-black border'>
                                                         {cell.render('Cell')}
                                                     </td>
                                                 ))}
