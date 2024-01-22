@@ -21,7 +21,7 @@ export default function SalesReports() {
 
 
         {
-            name: "Sales Report",
+            name: "Sales Report(Daily)",
             upload: "/SalesReports/SalesReportUpload",
             history: "/SalesReports/SalesReportHistory"
         },
@@ -29,6 +29,11 @@ export default function SalesReports() {
             name: "Showroom Delivery",
             upload: "/SalesReports/DeliveryReportUpload",
             history: "/SalesReports/DeliveryReportHistory"
+        },
+        {
+            name: "Sales Report(Weekly/Monthly)",
+            upload: "/SalesReports/SalesReport2Upload",
+            history: "/SalesReports/SalesReport2History"
         },
         {
             name: "Showroom Cleanliness",
