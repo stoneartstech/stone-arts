@@ -115,7 +115,7 @@ function SalesData() {
                                 <th className='border border-black p-2'>Date</th>
                                 <th className='border border-black p-2'>Total Visits</th>
                                 <th className='border border-black p-2'>Total Called</th>
-                                <th className='border border-black p-2'>Just Visited.</th>
+                                <th className='border border-black p-2'>Just Visited</th>
                                 <th className='border border-black p-2'>Bought OTC</th>
                                 <th className='border border-black p-2'>Asked for quotes</th>
                             </tr>
