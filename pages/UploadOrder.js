@@ -107,13 +107,13 @@ export default function UploadOrder() {
                             onClick={() => router.back()}>
                             Go Back
                         </button>
-                        <Link className='bg-slate-300 hover:bg-slate-500 p-4 rounded-lg'
+                        {/* <Link className='bg-slate-300 hover:bg-slate-500 p-4 rounded-lg'
                             href={{
                                 pathname: '/OrderHistory',
                                 query: { showroomName: showroomName },
                             }} >
                             <b>Order History</b>
-                        </Link>
+                        </Link> */}
                     </div>
                     <div className='flex flex-col items-center'>
                         <p className='text-3xl'>Upload Order</p>

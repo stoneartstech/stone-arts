@@ -154,12 +154,12 @@ export default function SalesDashboard({ showroomName }) {
                         Reports
                     </Link>
                     <Link href={{
-                        pathname: '/UploadOrder',
+                        pathname: '/OrdersDashboard',
                         query: { showroomName: showroomName },
                     }}
                         className='bg-slate-300 hover:bg-slate-500 text-black p-3 w-full sm:max-w-[25vw] text-center'
                     >
-                        Upload Order
+                        Orders
                     </Link>
                     <Link href={{
                         pathname: '/SalesData',
