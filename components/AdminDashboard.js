@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext'
 function AdminDashboard() {
     const options = [
         { title: "Sales", link: '/saleshome' },
-        { title: "Design", link: '/designhome' },
+        { title: "Design", link: '/designhead' },
         { title: "BOQ", link: '/boqhome' },
         { title: "PMT", link: '/pmthome' },
         { title: "Workshop", link: '/workshophome' },
