@@ -4,7 +4,7 @@ import { db } from '../firebase';
 import { collection, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
 import { useSearchParams } from 'next/navigation'
 
-export default function designhead() {
+export default function DesignHead() {
 
     const router = useRouter();
     const [designReqsShowroom, setDesignReqsShowroom] = useState([{ name: "sample des", id: "0" }, { name: "sample des2", id: "1" },])
@@ -70,7 +70,7 @@ export default function designhead() {
                 <p className='text-xl mx-auto font-bold my-8'>Design Team Members</p>
                 <div className='flex flex-col gap-4 items-center'>
                     {designers.map((designer) => (
-                        <div className='grid grid-cols-4 gap-4 items-center'>
+                        <div key={designer["id"]} className='grid grid-cols-4 gap-4 items-center'>
                             <p>{designer["name"]}</p>
                             <button className='bg-slate-300 p-2 rounded-lg'>Check Assigned Projects</button>
                             <button className='bg-slate-300 p-2 rounded-lg'>Assign a Project</button>
