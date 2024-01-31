@@ -5,8 +5,8 @@ import { useAuth } from '../context/AuthContext'
 import AdminDashboard from '@/components/AdminDashboard'
 import ClientForm from './ClientForm.js'
 import SalesDashboard from '@/components/SalesDashboard'
-import DesignHead from './DesignHead'
-import DesignerDashboard from './DesignerDashboard'
+import DesignHead from 'pages/DesignHead.js'
+import DesignerDashboard from 'pages/DesignerDashboard.js'
 
 export default function Home() {
   const { currentUser } = useAuth()
