@@ -1,8 +1,5 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next/router'
-import { db } from '../firebase';
-import { collection, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
-import { useSearchParams } from 'next/navigation'
 
 export default function DesignHead() {
 
