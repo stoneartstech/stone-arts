@@ -5,6 +5,8 @@ import { useAuth } from '../context/AuthContext'
 import AdminDashboard from '@/components/AdminDashboard'
 import ClientForm from './ClientForm.js'
 import SalesDashboard from '@/components/SalesDashboard'
+import DesignHead from './DesignHead'
+import DesignerDashboard from './DesignerDashboard'
 
 export default function Home() {
   const { currentUser } = useAuth()
@@ -14,6 +16,11 @@ export default function Home() {
     'stoneartskisumu@stonearts.com': "Kisumu",
     'stoneartsmombasaroad@stonearts.com': "Mombasa Road",
   }
+  const designMails = {
+    'designer1@stonearts.com': '1',
+    'designer2@stonearts.com': '2',
+    'designer3@stonearts.com': '3',
+  }
   return (
     <>
       <Head>
@@ -21,9 +28,19 @@ export default function Home() {
         <link rel="icon" href="/logo.png" />
       </Head>
       {!currentUser && <Login />}
+
+      {/* ADMIN */}
       {currentUser && currentUser.email === 'admin@stonearts.com' && <AdminDashboard />}
+
+      {/* SALES */}
       {currentUser && salesMails[currentUser.email] &&
         <SalesDashboard showroomName={salesMails[currentUser.email]} />}
+
+      {/* DESIGN */}
+      {currentUser && currentUser.email === 'designhead@stonearts.com' && <DesignHead />}
+      {currentUser && designMails[currentUser.email] &&
+        <DesignerDashboard designerId={designMails[currentUser.email]} />}
+
     </>
   )
 }

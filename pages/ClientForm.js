@@ -136,9 +136,9 @@ export default function ClientForm() {
     }
 
     async function submitHandler() {
-
         if (!number || !name || !lastname || !salesPerson || !address || !options || !sourceInfo || (sourceInfo === 'other' && !specificInfo)) {
             alert('Please enter all the details')
+            setLoading(false)
             return
         }
 
@@ -190,6 +190,7 @@ export default function ClientForm() {
             setLoading(false)
             router.push('/success')
         }
+        setLoading(false)
 
     }
 
