@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next/router'
+import Link from 'next/link';
 
 export default function DesignHead() {
 
@@ -69,9 +70,30 @@ export default function DesignHead() {
                     {designers.map((designer) => (
                         <div key={designer["id"]} className='grid grid-cols-4 gap-4 items-center'>
                             <p>{designer["name"]}</p>
-                            <button className='bg-slate-300 p-2 rounded-lg'>Check Assigned Projects</button>
-                            <button className='bg-slate-300 p-2 rounded-lg'>Assign a Project</button>
-                            <button className='bg-slate-300 p-2 rounded-lg'>Completed Projects</button>
+                            <Link
+                                href={{
+                                    pathname: 'DesignHead/CheckAssignedProjects',
+                                    query: { id: designer["id"] },
+                                }}
+                                className='bg-slate-300 p-2 rounded-lg text-center'>
+                                Check Assigned Projects
+                            </Link>
+                            <Link
+                                href={{
+                                    pathname: '/DesignHead/AssignProjects',
+                                    query: { id: designer["id"] },
+                                }}
+                                className='bg-slate-300 p-2 rounded-lg text-center'>
+                                Assign a Project
+                            </Link>
+                            <Link
+                                href={{
+                                    pathname: '/DesignHead/CompletedProjects',
+                                    query: { id: designer["id"] },
+                                }}
+                                className='bg-slate-300 p-2 rounded-lg text-center'>
+                                Completed Projects
+                            </Link>
                         </div>
                     ))}
                 </div>
