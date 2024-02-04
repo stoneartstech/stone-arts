@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/router'
 import { db, storage } from '../../firebase';
 import { updateDoc, collection, onSnapshot, setDoc, addDoc, serverTimestamp, doc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import Webcam from 'react-webcam';
+
 
 export default function CleanlinessReportUpload() {
     const searchParams = useSearchParams()
@@ -76,6 +78,20 @@ export default function CleanlinessReportUpload() {
         }
     };
 
+    const [isCameraOpen, setIsCameraOpen] = useState(false);
+    const webcamRef = useRef(null);
+
+    const handleToggleCamera = () => {
+        setIsCameraOpen(!isCameraOpen);
+    };
+
+    const handleCapture = () => {
+        const imageSrc = webcamRef.current.getScreenshot();
+        // Now you can handle the captured image, maybe upload it or display it
+        console.log('Captured Image:', imageSrc);
+        setIsCameraOpen(false);
+    };
+
     return (<>{!loading && <div>
         <div className='w-full pl-8'>
             <button className='bg-slate-300 p-2 rounded-lg'
@@ -121,11 +137,29 @@ export default function CleanlinessReportUpload() {
                                     className='px-2 py-2 w-full' />
                             </td>
                             <td>
-                                <input type="file" onChange={(e) =>
-                                    handleFileUpload(item.Date, index + 1, e)
-                                }
-                                    className='px-4 py-2 w-full'
-                                />
+                                <td>
+                                    {isCameraOpen ? (
+                                        <div>
+                                            <Webcam
+                                                audio={false}
+                                                ref={webcamRef}
+                                                screenshotFormat="image/jpeg"
+                                            />
+                                            <button
+                                                className='bg-slate-300 p-2 rounded-lg'
+                                                onClick={handleCapture}
+                                            >
+                                                Capture
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <input
+                                            type="file"
+                                            onChange={(e) => handleFileUpload(item.Date, index + 1, e)}
+                                            className='px-4 py-2 w-full'
+                                        />
+                                    )}
+                                </td>
                             </td>
                             <td>
                                 <button className='bg-slate-300 p-2 rounded-lg'
