@@ -84,6 +84,12 @@ function SendInfoBOQ() {
     }
 
     function handleDateSearch() {
+        if (startDate && endDate) {
+            if (parseDate(startDate) > parseDate(endDate)) {
+                alert('End date should be greater than start date');
+                return;
+            }
+        }
         setClientRequests(originalClientRequests.filter((clientRequest) => {
             const requestDate = parseDateString(clientRequest.date);
             const visitDate = parseDateString(clientRequest.measurementData.date);

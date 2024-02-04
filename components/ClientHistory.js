@@ -104,6 +104,13 @@ export default function ClientHistory({ showroomName }) {
     }
 
     function handleDateSearch() {
+        //make sure end date is greater than start date
+        if (startDate && endDate) {
+            if (parseDate(startDate) > parseDate(endDate)) {
+                alert('End date should be greater than start date');
+                return;
+            }
+        }
         setClientRequests(originalClientRequests.filter((clientRequest) => {
             const requestDate = parseDateString(clientRequest.date);
             console.log(requestDate)
@@ -142,58 +149,58 @@ export default function ClientHistory({ showroomName }) {
 
     function handleExportToExcel() {
         const sheetData = clientRequests.map((clientRequest) => {
-          // Map the data to match your Excel columns
-          return {
-            'Id': clientRequest.clientId,
-            'Client Code': clientRequest.clientCode,
-            'First Name': clientRequest.name,
-            'Last Name': clientRequest.lastname,
-            'Client Email': clientRequest.email,
-            'Client Number': clientRequest.number,
-            'Client Address': clientRequest.address,
-            'Date of Request': clientRequest.date,
-            'Sales Person': clientRequest.salesPerson,
-            'Interested Aspects': clientRequest.aspects,
-            'Request Category': clientRequest.option,
-            'Client Source': clientRequest.sourceInfo,
-            '(Other Source)': clientRequest.specificInfo,
-            'Measurement Cost': clientRequest.measurementData?.cost,
-            'Measurement Date': clientRequest.measurementData?.date,
-            'Measurement Time': clientRequest.measurementData?.time,
-            'Measurement Supply/Fix': clientRequest.measurementData?.supplyFix,
-            'Measurement Contact Person': clientRequest.measurementData?.contactPerson,
-          };
+            // Map the data to match your Excel columns
+            return {
+                'Id': clientRequest.clientId,
+                'Client Code': clientRequest.clientCode,
+                'First Name': clientRequest.name,
+                'Last Name': clientRequest.lastname,
+                'Client Email': clientRequest.email,
+                'Client Number': clientRequest.number,
+                'Client Address': clientRequest.address,
+                'Date of Request': clientRequest.date,
+                'Sales Person': clientRequest.salesPerson,
+                'Interested Aspects': clientRequest.aspects,
+                'Request Category': clientRequest.option,
+                'Client Source': clientRequest.sourceInfo,
+                '(Other Source)': clientRequest.specificInfo,
+                'Measurement Cost': clientRequest.measurementData?.cost,
+                'Measurement Date': clientRequest.measurementData?.date,
+                'Measurement Time': clientRequest.measurementData?.time,
+                'Measurement Supply/Fix': clientRequest.measurementData?.supplyFix,
+                'Measurement Contact Person': clientRequest.measurementData?.contactPerson,
+            };
         });
-    
+
         const ws = XLSX.utils.json_to_sheet(sheetData);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'ClientRequests');
-    
+
         // Generate a binary Excel file
         const binaryData = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
-    
+
         // Convert the binary data to a Blob
         const blob = new Blob([s2ab(binaryData)], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    
+
         // Save the Blob as an Excel file
         const fileName = 'ClientRequests.xlsx';
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
         link.download = fileName;
         link.click();
-      }
-    
-      // Convert string to ArrayBuffer
-      function s2ab(s) {
+    }
+
+    // Convert string to ArrayBuffer
+    function s2ab(s) {
         const buf = new ArrayBuffer(s.length);
         const view = new Uint8Array(buf);
         for (let i = 0; i < s.length; i++) {
-          view[i] = s.charCodeAt(i) & 0xFF;
+            view[i] = s.charCodeAt(i) & 0xFF;
         }
         return buf;
-      }
-    
-    
+    }
+
+
 
     return (
         <>

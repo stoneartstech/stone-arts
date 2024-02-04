@@ -49,6 +49,12 @@ export default function DeliveryReportHistory() {
         if (startDate === null || endDate === null) {
             alert('Please select a date range')
         }
+        if (startDate && endDate) {
+            if (parseDate(startDate) > parseDate(endDate)) {
+                alert('End date should be greater than start date');
+                return;
+            }
+        }
         else {
             const fetch = onSnapshot(collection(db, showroomDbName), (snapshot) => {
                 var reports = snapshot.docs.map((doc) => ({

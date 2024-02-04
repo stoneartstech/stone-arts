@@ -54,6 +54,12 @@ function SalesData() {
     const [endDate, setEndDate] = useState(null);
 
     function handleDateSearch() {
+        if (startDate && endDate) {
+            if (parseDate(startDate) > parseDate(endDate)) {
+                alert('End date should be greater than start date');
+                return;
+            }
+        }
         const fetch = onSnapshot(collection(db, dbName), (snapshot) => {
             var sales = snapshot.docs.map((doc) => ({
                 id: doc.id,
