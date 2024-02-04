@@ -99,12 +99,17 @@ export default function SalesDashboard({ showroomName }) {
 
     return (
         <div>
-
-            <div className='flex flex-col sm:flex-row items-center justify-center gap-12 mb-4'>
-                <p className='my-4 text-3xl text-center'>{showroomName} Showroom</p>
-                <button className='bg-red-500 p-3 rounded-lg'
+            <div className='w-full px-8 flex flex-row justify-between'>
+                <button className='bg-slate-300 p-2 rounded-lg'
+                    onClick={() => router.back()}>
+                    Go Back
+                </button>
+                <button className='bg-red-500 p-2 rounded-lg'
                     onClick={logoutHandler}
                 >Logout</button>
+            </div>
+            <div className='flex flex-col sm:flex-row items-center justify-center gap-12 my-4'>
+                <p className='my-4 text-3xl text-center'>{showroomName} Showroom</p>
             </div>
 
             <div className='flex flex-col sm:flex-row sm:p-24 items-center justify-center gap-8 sm:gap-24'>

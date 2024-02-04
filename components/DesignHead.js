@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link';
+import { useAuth } from '../context/AuthContext'
 
 export default function DesignHead() {
 
@@ -18,15 +19,29 @@ export default function DesignHead() {
         { name: "Designer 3", id: "3" },
     ])
 
+    const { logout } = useAuth()
+    async function logoutHandler() {
+        try {
+            await logout()
+            router.push('/')
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
+
     return (
         <div>
-            <div className='w-full pl-8'>
+            <div className='w-full px-8 flex flex-row justify-between'>
                 <button className='bg-slate-300 p-2 rounded-lg'
                     onClick={() => router.back()}>
                     Go Back
                 </button>
+                <button className='bg-red-500 p-2 rounded-lg'
+                    onClick={logoutHandler}
+                >Logout</button>
             </div>
-            <div className='flex flex-col'>
+            <div className='flex flex-col mt-4'>
                 <p className='text-2xl mx-auto font-bold'>Design Team Head Dashboard</p>
             </div>
             <div className='flex flex-col gap-4 mt-8 items-center' >

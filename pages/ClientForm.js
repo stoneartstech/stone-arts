@@ -196,6 +196,12 @@ export default function ClientForm() {
 
     return <>{!loading && (
         <div className='flex flex-col items-center'>
+            <div className='w-full pl-6'>
+                <button className='bg-slate-300 p-2 rounded-lg'
+                    onClick={() => router.back()}>
+                    Go Back
+                </button>
+            </div>
             <p className='text-3xl'>Client Information Form</p>
             <div className='flex flex-col sm:flex-row p-8 gap-16 w-full'>
 
