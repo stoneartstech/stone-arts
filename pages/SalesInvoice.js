@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { db, storage } from '../firebase';
 import { updateDoc, collection, onSnapshot, addDoc, serverTimestamp, doc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-
-
 import { useRouter } from 'next/router'
 import { useSearchParams } from 'next/navigation'
+
+import Webcam from 'react-webcam';
 
 
 function SalesInvoice() {
@@ -49,6 +49,20 @@ function SalesInvoice() {
     const [uploadStatus, setUploadStatus] = useState({});
 
     const router = useRouter()
+
+    const [isCameraOpen, setIsCameraOpen] = useState(false);
+    const webcamRef = useRef(null);
+
+    const handleToggleCamera = () => {
+        setIsCameraOpen(!isCameraOpen);
+    };
+
+    const handleCapture = () => {
+        const imageSrc = webcamRef.current.getScreenshot();
+        // Now you can handle the captured image, maybe upload it or display it
+        console.log('Captured Image:', imageSrc);
+        setIsCameraOpen(false);
+    };
 
     useEffect(() => {
         const fetch = onSnapshot(collection(db, showroomDbName), (snapshot) => {
@@ -170,7 +184,28 @@ function SalesInvoice() {
                     {clientRequests.map((clientRequest) => (
                         <div key={clientRequest.id} className='items-center sm:mx-24 grid grid-cols-3 gap-x-12 mb-4'>
                             <p className='text-lg'>{clientRequest.name} (<span>{clientRequest.clientId}</span>)</p>
-                            <input type='file' onChange={(e) => handleFileUpload(clientRequest.id, e)} />
+                            <div>
+                                {isCameraOpen ? (
+                                    <div>
+                                        <Webcam
+                                            audio={false}
+                                            ref={webcamRef}
+                                            screenshotFormat="image/jpeg"
+                                        />
+                                        <button
+                                            className='bg-slate-300 p-2 rounded-lg'
+                                            onClick={handleCapture}
+                                        >
+                                            Capture
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <input
+                                        type="file"
+                                        onChange={(e) => handleFileUpload(clientRequest.id, e)}
+                                    />
+                                )}
+                            </div>
                             <button
                                 className={`${uploadStatus[clientRequest.id] ? `bg-green-400` : `bg-red-400`}  p-2`}
                                 onClick={() => handleConfirm(clientRequest.id)}

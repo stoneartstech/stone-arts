@@ -136,31 +136,31 @@ export default function CleanlinessReportUpload() {
                                 }}
                                     className='px-2 py-2 w-full' />
                             </td>
-                            <td>
-                                <td>
-                                    {isCameraOpen ? (
-                                        <div>
-                                            <Webcam
-                                                audio={false}
-                                                ref={webcamRef}
-                                                screenshotFormat="image/jpeg"
-                                            />
-                                            <button
-                                                className='bg-slate-300 p-2 rounded-lg'
-                                                onClick={handleCapture}
-                                            >
-                                                Capture
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        <input
-                                            type="file"
-                                            onChange={(e) => handleFileUpload(item.Date, index + 1, e)}
-                                            className='px-4 py-2 w-full'
+
+                            <td className='px-4 py-2 w-8'>
+                                {isCameraOpen ? (
+                                    <div>
+                                        <Webcam
+                                            audio={false}
+                                            ref={webcamRef}
+                                            screenshotFormat="image/jpeg"
                                         />
-                                    )}
-                                </td>
+                                        <button
+                                            className='bg-slate-300 p-2 rounded-lg'
+                                            onClick={handleCapture}
+                                        >
+                                            Capture
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <input
+                                        type="file"
+                                        onChange={(e) => handleFileUpload(item.Date, index + 1, e)}
+                                        className=''
+                                    />
+                                )}
                             </td>
+
                             <td>
                                 <button className='bg-slate-300 p-2 rounded-lg'
                                     onClick={() => handleRemoveRow(index)}>
