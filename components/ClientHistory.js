@@ -30,7 +30,7 @@ export default function ClientHistory({ showroomName }) {
                 ...doc.data()
             }))
             requests.forEach((clientRequest) => {
-                clientRequest.aspects = clientRequest.aspects.join(',')
+                if (clientRequest.aspects) clientRequest.aspects = clientRequest.aspects.join(',')
                 clientRequest.date = clientRequest.date
             })
             setClientRequests(requests)

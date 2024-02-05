@@ -8,14 +8,11 @@ import Link from 'next/link'
 export default function VisitorsReportUpload() {
     const searchParams = useSearchParams()
     const showroomName = searchParams.get('showroomName')
-    // const reportType = searchParams.get('reportParam')
-    const [loading, setLoading] = useState(false)
     const showroomDbNames = {
         "Galleria": "galleria-visitors-report",
         "Mirage": "mirage-visitors-report",
         "Kisumu": "kisumu-visitors-report",
         "Mombasa Road": "mombasa-visitors-report"
-
     }
     const showroomDbName = showroomDbNames[showroomName]
 
@@ -66,7 +63,58 @@ export default function VisitorsReportUpload() {
         setReport(list)
     }
 
-    return (
+    const clientShowroomDbNames = {
+        "Galleria": "clients",
+        "Mirage": "mirage-clients",
+        "Kisumu": "kisumu-clients",
+        "Mombasa Road": "mombasa-clients",
+    }
+    const clientShowroomDbName = clientShowroomDbNames[showroomName]
+    const [clientRequests, setClientRequests] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetch = onSnapshot(collection(db, clientShowroomDbName), (snapshot) => {
+            var requests = snapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data()
+            }))
+            requests.forEach((clientRequest) => {
+                clientRequest.aspects = clientRequest.aspects?.join(',')
+            })
+            requests = requests.filter((clientRequest) => clientRequest.date === date)
+            setClientRequests(requests)
+            console.log(clientRequests)
+        })
+        if (clientRequests.length > 0) {
+            const newReport = []
+            clientRequests.forEach((clientRequest, index) => {
+                const row = {
+                    SNo: index + 1,
+                    Date: date,
+                    ClientName: clientRequest.name,
+                    Designer: 'no',
+                    Owner: 'no',
+                    Architect: 'no',
+                    Material: clientRequest.aspects,
+                    SampleCatalogue: '',
+                    Progress: '',
+                    Contact: clientRequest.number,
+                    SiteLocation: clientRequest.address,
+                    FollowUp: '',
+                    Reference: '',
+                    Chances: '',
+                }
+                newReport.push(row)
+            })
+            setReport(newReport)
+        }
+        setLoading(false)
+        console.log(report)
+        return fetch
+    }, [])
+
+    return (<>{!loading &&
         <div>
             <div className='w-full pl-8'>
                 <button className='bg-slate-300 p-2 rounded-lg'
@@ -247,5 +295,6 @@ export default function VisitorsReportUpload() {
             </button>
 
         </div>
+    }</>
     )
 }
