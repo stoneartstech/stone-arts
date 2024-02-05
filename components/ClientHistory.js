@@ -5,7 +5,6 @@ import { collection, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
 import { useRouter } from 'next/router';
 import * as XLSX from 'xlsx';
 
-
 export default function ClientHistory({ showroomName }) {
     const showroomDbNames = {
         "Galleria": "clients",
@@ -183,7 +182,7 @@ export default function ClientHistory({ showroomName }) {
         const blob = new Blob([s2ab(binaryData)], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 
         // Save the Blob as an Excel file
-        const fileName = 'ClientRequests.xlsx';
+        const fileName = `ClientRequests_${showroomName}.xlsx`;
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
         link.download = fileName;
@@ -199,8 +198,6 @@ export default function ClientHistory({ showroomName }) {
         }
         return buf;
     }
-
-
 
     return (
         <>

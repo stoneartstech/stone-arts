@@ -4,6 +4,7 @@ import { db } from '../../firebase';
 import { collection, onSnapshot, setDoc, doc } from 'firebase/firestore';
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import * as XLSX from 'xlsx';
 
 export default function VisitorsReportHistory() {
     const searchParams = useSearchParams()
@@ -75,6 +76,52 @@ export default function VisitorsReportHistory() {
         }
     }
 
+    // Convert string to ArrayBuffer
+    function s2ab(s) {
+        const buf = new ArrayBuffer(s.length);
+        const view = new Uint8Array(buf);
+        for (let i = 0; i < s.length; i++) {
+            view[i] = s.charCodeAt(i) & 0xFF;
+        }
+        return buf;
+    }
+
+    function handleExportToExcel(report) {
+        const ws_data = [
+            ["S. No.", "Date", "Client Name", "Designer", "Owner", "Architect", "Material Of Interest", "Sample Catalogue", "Progress", "Contact", "Site Location", "Follow Up", "Reference", "Chances"],
+            ...Object.keys(report).map((key, index) => [
+                index + 1,
+                report[key].Date,
+                report[key].ClientName,
+                report[key].Designer,
+                report[key].Owner,
+                report[key].Architect,
+                report[key].Material,
+                report[key].SampleCatalogue,
+                report[key].Progress,
+                report[key].Contact,
+                report[key].SiteLocation,
+                report[key].FollowUp,
+                report[key].Reference,
+                report[key].Chances,
+            ]),
+        ];
+
+        const ws = XLSX.utils.aoa_to_sheet(ws_data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Visitors Report');
+
+        // Save the Excel file
+        const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        const excelBlob = new Blob([s2ab(excelBuffer)], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const fileName = `Visitors_Report_${report[0].Date}_${showroomName}.xlsx`;
+
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(excelBlob);
+        link.download = fileName;
+        link.click();
+    }
+
     return (
         <>
             {!loading && (
@@ -105,17 +152,23 @@ export default function VisitorsReportHistory() {
                             className='border-2 border-black p-2'
                         />
                         <button
-                            className='bg-slate-300 hover:bg-slate-400 p-3 rounded-lg mx-2'
+                            className='bg-slate-300 hover:bg-slate-400 p-3 rounded-lg mx-2 '
                             onClick={handleDateSearch}
                         >
                             Search
                         </button>
                     </div>
+
                     <div className='max-w-full overflow-auto'>
                         {reports.map((report) =>
-                            <div key={report[0].Date} className='p-2 bg-slate-300'
+                            <div key={report[0].Date} className='p-2 bg-slate-300  my-2'
                                 onClick={() => handleClick(report[0].Date)}>
-                                <p>Report Date : {report[0].Date}</p>
+                                <div className='flex flex-row justify-between items-center'>
+                                    <p>Report Date : {report[0].Date}</p>
+                                    <button className='bg-slate-400 p-2' onClick={() => handleExportToExcel(report)}>
+                                        Export to Excel
+                                    </button>
+                                </div>
                                 {selectedReportDate === report[0].Date && (
                                     <table className='table-auto w-full mt-4'>
                                         <thead>

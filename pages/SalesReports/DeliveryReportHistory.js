@@ -4,6 +4,7 @@ import { db } from '../../firebase';
 import { collection, onSnapshot, setDoc, doc } from 'firebase/firestore';
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import * as XLSX from 'xlsx';
 
 export default function DeliveryReportHistory() {
     const searchParams = useSearchParams()
@@ -76,6 +77,49 @@ export default function DeliveryReportHistory() {
         }
     }
 
+    // Convert string to ArrayBuffer
+    function s2ab(s) {
+        const buf = new ArrayBuffer(s.length);
+        const view = new Uint8Array(buf);
+        for (let i = 0; i < s.length; i++) {
+            view[i] = s.charCodeAt(i) & 0xFF;
+        }
+        return buf;
+    }
+
+    function handleExportToExcel(report) {
+        const ws_data = [
+            ["S. No.", "Date", "Client Name", "Description of Goods", "Sales Order No.", "Invoice Number", "Invoice Value including TAX", "Purchase Order Np.", "Purchase Order Date", "Expected Delivery Date", "Updated In Application"],
+            ...Object.keys(report).map((key, index) => [
+                index + 1,
+                report[key].Date,
+                report[key].ClientName,
+                report[key].Description,
+                report[key].SalesOrderNumber,
+                report[key].InvoiceNumber,
+                report[key].InvoiceValue,
+                report[key].PurchaseOrderNumber,
+                report[key].PurchaseOrderDate,
+                report[key].ExpectedDeliveryDate,
+                report[key].UpdatedInApp,
+            ]),
+        ];
+
+        const ws = XLSX.utils.aoa_to_sheet(ws_data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Delivery Report');
+
+        // Save the Excel file
+        const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        const excelBlob = new Blob([s2ab(excelBuffer)], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const fileName = `Delivery_Report_${report[0].Date}_${showroomName}.xlsx`;
+
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(excelBlob);
+        link.download = fileName;
+        link.click();
+    }
+
     return (
         <>
             {!loading && (
@@ -114,9 +158,14 @@ export default function DeliveryReportHistory() {
                     </div>
                     <div className='max-w-full overflow-auto'>
                         {reports.map((report) =>
-                            <div key={report[0].Date} className='p-2 bg-slate-300'
+                            <div key={report[0].Date} className='p-2 bg-slate-300  my-2'
                                 onClick={() => handleClick(report[0].Date)}>
-                                <p>Report Date : {report[0].Date}</p>
+                                <div className='flex flex-row justify-between items-center'>
+                                    <p>Report Date : {report[0].Date}</p>
+                                    <button className='bg-slate-400 p-2' onClick={() => handleExportToExcel(report)}>
+                                        Export to Excel
+                                    </button>
+                                </div>
                                 {selectedReportDate === report[0].Date && (
                                     <table className='table-auto w-full mt-4'>
                                         <thead>
