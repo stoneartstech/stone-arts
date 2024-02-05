@@ -70,7 +70,7 @@ export default function VisitorsReportUpload() {
         "Mombasa Road": "mombasa-clients",
     }
     const clientShowroomDbName = clientShowroomDbNames[showroomName]
-    const [clientRequests, setClientRequests] = useState([]);
+    const [todayClients, setTodayClients] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -82,13 +82,25 @@ export default function VisitorsReportUpload() {
             requests.forEach((clientRequest) => {
                 clientRequest.aspects = clientRequest.aspects?.join(',')
             })
-            requests = requests.filter((clientRequest) => clientRequest.date === date)
-            setClientRequests(requests)
-            console.log(clientRequests)
-        })
-        if (clientRequests.length > 0) {
+            setTodayClients(prevClients => {
+                const newClients = [...prevClients];
+                requests.forEach((clientRequest) => {
+                    if (clientRequest.date == date) {
+                        newClients.push(clientRequest);
+                    }
+                });
+
+                return newClients;
+            });
+        });
+        setLoading(false)
+        return fetch
+    }, [])
+
+    useEffect(() => {
+        if (todayClients.length > 0) {
             const newReport = []
-            clientRequests.forEach((clientRequest, index) => {
+            todayClients.forEach((clientRequest, index) => {
                 const row = {
                     SNo: index + 1,
                     Date: date,
@@ -109,10 +121,7 @@ export default function VisitorsReportUpload() {
             })
             setReport(newReport)
         }
-        setLoading(false)
-        console.log(report)
-        return fetch
-    }, [])
+    }, [todayClients]);
 
     return (<>{!loading &&
         <div>
