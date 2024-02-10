@@ -20,12 +20,12 @@ function DesignerDashboard({ designerId }) {
     }
 
     const designPages = [
-        { name: "Design Requests from Showrooms", param: "design-requests" },
-        { name: "Pending Designs to start", param: "pending-designs" },
-        { name: "Ongoing Designs", param: "ongoing-designs" },
-        { name: "Pending Approval from Admin", param: "pending-admin-approval" },
-        { name: "Pending Approval from Client", param: "pending-client-approval" },
-        { name: "Completed Designs", param: "completed-designs" },
+        { name: "Design Requests from Showrooms", path: "Designer/ShowroomDesigns", param: "design-requests" },
+        { name: "Pending Designs to start", path: "Designer/PendingDesigns", param: "pending-designs" },
+        { name: "Ongoing Designs", path: "Designer/OngoingDesigns", param: "ongoing-designs" },
+        { name: "Pending Approval from Admin", path: "Designer/AdminApprovalDesigns", param: "pending-admin-approval" },
+        { name: "Pending Approval from Client", path: "Designer/ClientApprovalDesigns", param: "pending-client-approval" },
+        { name: "Completed Designs", path: "Designer/CompletedDesigns", param: "completed-designs" },
     ]
 
     return (
@@ -47,7 +47,7 @@ function DesignerDashboard({ designerId }) {
                     <Link
                         key={page["param"]}
                         href={{
-                            pathname: '/DesignHead/RequestsDisplay',
+                            pathname: page["path"],
                             query: { param: page["param"] },
                         }}
                         className='bg-slate-300 p-2 rounded-lg text-center sm:w-1/3'>
