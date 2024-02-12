@@ -14,7 +14,6 @@ export default function RequestDetails() {
             "id": designId,
             "name": "Sample Site Request",
             "description": "Sample Description",
-            "status": "Pending"
         }
     )
 
@@ -39,9 +38,9 @@ export default function RequestDetails() {
                 <div className='text-center text-xl'>
                     Description: {request.description}
                 </div>
-                <div className='text-center text-xl'>
+                {/* <div className='text-center text-xl'>
                     Status: {request.status}
-                </div>
+                </div> */}
             </div>
         </div>
     }</>

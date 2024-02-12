@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation';
 
 
-export default function OngoingDesigns() {
+export default function PendingAdminDesigns() {
 
     const router = useRouter()
 
@@ -61,12 +61,16 @@ export default function OngoingDesigns() {
         }
     };
 
-    async function handleSendAdmin(designId) {
+    async function handleSendClient(designId) {
         const designData = designs.find(design => design.id === designId);
-        designData.downloadURL = downloadURLs[designId];
-        await setDoc(doc(db, "pending-admin-approval", designId), designData);
+        await setDoc(doc(db, "pending-client-approval", designId), designData);
         await deleteDoc(doc(db, dbName, designId));
-        alert(`Project ${designId} sent to Admin`);
+        alert(`Project ${designId} sent to Client`);
+    }
+
+    const handleCheckDesign = async (designId) => {
+        const designData = designs.find(design => design.id === designId);
+        window.open(designData.downloadURL)
     }
 
     return (
@@ -78,7 +82,7 @@ export default function OngoingDesigns() {
                 </button>
             </div>
             <div className='flex flex-col sm:flex-row items-center justify-center gap-12 my-4'>
-                <p className='my-4 text-3xl text-center'>Ongoing Designs</p>
+                <p className='my-4 text-3xl text-center'>Designs Pending Admin Approval</p>
             </div>
             <div className='flex flex-col gap-4 mt-8 items-center' >
                 {designs.map((design) => (
@@ -87,15 +91,15 @@ export default function OngoingDesigns() {
                             className=' text-center'>
                             {design["name"]} - {design["id"]} :
                         </p>
-                        <input
-                            type="file"
-                            onChange={(e) => handleUploadDesign(design.id, e)}
-                            className='bg-green-400 p-2 rounded-lg text-center'
-                        />
                         <button
-                            onClick={() => handleSendAdmin(design.id)} // Attach onClick event here
+                            onClick={() => handleCheckDesign(design.id)} // Attach onClick event here
                             className='bg-green-400 p-2 rounded-lg text-center'>
-                            Send Design to Admin
+                            Check Design
+                        </button>
+                        <button
+                            onClick={() => handleSendClient(design.id)} // Attach onClick event here
+                            className='bg-green-400 p-2 rounded-lg text-center'>
+                            Send Design to Client
                         </button>
 
                         <Link

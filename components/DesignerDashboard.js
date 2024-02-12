@@ -23,8 +23,8 @@ function DesignerDashboard({ designerId }) {
         { name: "Design Requests from Showrooms", path: "Designer/ShowroomDesigns", param: "design-requests" },
         { name: "Pending Designs to start", path: "Designer/PendingDesigns", param: "pending-designs" },
         { name: "Ongoing Designs", path: "Designer/OngoingDesigns", param: "ongoing-designs" },
-        { name: "Pending Approval from Admin", path: "Designer/AdminApprovalDesigns", param: "pending-admin-approval" },
-        { name: "Pending Approval from Client", path: "Designer/ClientApprovalDesigns", param: "pending-client-approval" },
+        { name: "Pending Approval from Admin", path: "Designer/PendingAdminDesigns", param: "pending-admin-approval" },
+        { name: "Pending Approval from Client", path: "Designer/PendingClientDesigns", param: "pending-client-approval" },
         { name: "Completed Designs", path: "Designer/CompletedDesigns", param: "completed-designs" },
     ]
 

@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { db, storage } from '../../firebase'
+import { db } from '../../firebase'
 import { collection, onSnapshot, doc, setDocs, setDoc, docRef, deleteDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation';
 
 
-export default function OngoingDesigns() {
+export default function CompletedDesigns() {
 
     const router = useRouter()
 
@@ -41,32 +40,10 @@ export default function OngoingDesigns() {
         setDesigns(updatedDesigns);
     };
 
-    const [downloadURLs, setDownloadURLs] = useState({})
-    const handleUploadDesign = async (designId, event) => {
-        const file = event.target.files[0];
-        try {
-            // Upload the file to Firebase Storage
-            const storageRef = ref(storage, `designs/${designId}`)
-            await uploadBytes(storageRef, file);
 
-            // Get the download URL for the uploaded file
-            const downloadURL = await getDownloadURL(storageRef);
-            setDownloadURLs((prevDownloadURLs) => ({
-                ...prevDownloadURLs,
-                [designId]: downloadURL,
-            }));
-        } catch (error) {
-            console.log(error);
-            alert(`File for client could not be uploaded.`);
-        }
-    };
-
-    async function handleSendAdmin(designId) {
+    const handleCheckDesign = async (designId) => {
         const designData = designs.find(design => design.id === designId);
-        designData.downloadURL = downloadURLs[designId];
-        await setDoc(doc(db, "pending-admin-approval", designId), designData);
-        await deleteDoc(doc(db, dbName, designId));
-        alert(`Project ${designId} sent to Admin`);
+        window.open(designData.downloadURL)
     }
 
     return (
@@ -78,7 +55,7 @@ export default function OngoingDesigns() {
                 </button>
             </div>
             <div className='flex flex-col sm:flex-row items-center justify-center gap-12 my-4'>
-                <p className='my-4 text-3xl text-center'>Ongoing Designs</p>
+                <p className='my-4 text-3xl text-center'>Completed Designs</p>
             </div>
             <div className='flex flex-col gap-4 mt-8 items-center' >
                 {designs.map((design) => (
@@ -87,15 +64,10 @@ export default function OngoingDesigns() {
                             className=' text-center'>
                             {design["name"]} - {design["id"]} :
                         </p>
-                        <input
-                            type="file"
-                            onChange={(e) => handleUploadDesign(design.id, e)}
-                            className='bg-green-400 p-2 rounded-lg text-center'
-                        />
                         <button
-                            onClick={() => handleSendAdmin(design.id)} // Attach onClick event here
+                            onClick={() => handleCheckDesign(design.id)} // Attach onClick event here
                             className='bg-green-400 p-2 rounded-lg text-center'>
-                            Send Design to Admin
+                            Check Design
                         </button>
 
                         <Link
