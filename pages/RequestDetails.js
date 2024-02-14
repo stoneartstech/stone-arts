@@ -7,15 +7,22 @@ export default function RequestDetails() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const designId = searchParams.get('id')
+    const designName = searchParams.get('name')
+    const designDescription = searchParams.get('description')
+    console.log(designId, designName, designDescription)
 
     const [loading, setLoading] = useState(false)
     const [request, setRequest] = useState(
         {
             "id": designId,
-            "name": "Sample Site Request",
-            "description": "Sample Description",
+            "name": designName,
+            "description": designDescription,
         }
     )
+    const handleCheckDesign = async (designId) => {
+        const designData = designs.find(design => design.id === designId);
+        window.open(designData.downloadURL)
+    }
 
     return (<>{!loading &&
         <div>
@@ -30,14 +37,21 @@ export default function RequestDetails() {
             </div>
             <div className='flex flex-col gap-4 mt-8 items-center' >
                 <div className='text-center text-2xl'>
-                    Site ID: {request.id}
+                    Site ID: {designId}
                 </div>
                 <div className='text-center text-2xl '>
-                    Site Name: {request.name}
+                    Site Name: {designName}
                 </div>
                 <div className='text-center text-xl'>
-                    Description: {request.description}
+                    Description: {designDescription}
                 </div>
+                {request.downloadURL &&
+                    <button
+                        onClick={() => handleCheckDesign(design.id)} // Attach onClick event here
+                        className='bg-green-400 p-2 rounded-lg text-center'>
+                        Check Design
+                    </button>
+                }
                 {/* <div className='text-center text-xl'>
                     Status: {request.status}
                 </div> */}

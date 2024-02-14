@@ -12,9 +12,6 @@ export default function PendingAdminDesigns() {
     const router = useRouter()
 
     const [designs, setDesigns] = useState([
-        { name: "Design A", id: "1", infoChecked: false },
-        { name: "Design B", id: "2", infoChecked: false },
-        { name: "Design C", id: "3", infoChecked: false },
     ]);
 
     const params = useSearchParams();

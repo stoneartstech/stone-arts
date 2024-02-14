@@ -38,14 +38,17 @@ export default function AssignProjects() {
     };
 
     async function submitHandler() {
+        if (assigned.length === 0) return;
         for (const designId of assigned) {
-            const docRef = doc(db, "pending-designs", designId);
+            const docRef = doc(db, "pending-designs", designId.toString());
             const designDoc = await getDoc(docRef);
             const designData = designDoc.data();
             deleteDoc(docRef);
             const dbName = "designer" + DesignerId;
-            await setDoc(doc(db, dbName, designId), designData);
+            await setDoc(doc(db, dbName, designId.toString()), designData);
         }
+        alert("Projects assigned successfully");
+        router.back();
     }
 
     const handleUndo = (designId) => {
@@ -67,9 +70,9 @@ export default function AssignProjects() {
         </div>
         <div className='flex flex-col gap-4 mt-8 items-center' >
             {pendingDesigns.map((designReq) => (
-                <div key={pendingDesigns.id} className='grid grid-cols-3 gap-12 items-center'>
-                    <p>{designReq.name}</p>
-                    <button className='bg-green-400 p-2 rounded-lg text-center disabled:opacity-50'
+                <div key={designReq.id} className='grid grid-cols-3 gap-12 items-center'>
+                    <p>{designReq.name} - {designReq.id}</p>
+                    <button className='bg-green-400 p-2 w-32 rounded-lg text-center disabled:opacity-50'
                         onClick={() => handleAssign(designReq.id)}
                         disabled={isAssigned(designReq.id)}
                     >
@@ -77,7 +80,7 @@ export default function AssignProjects() {
                     </button>
                     {isAssigned(designReq.id) && (
                         <button
-                            className='bg-red-400 p-2 rounded-lg text-center'
+                            className='bg-red-400 p-2 w-32 rounded-lg text-center'
                             onClick={() => handleUndo(designReq.id)}>
                             Undo
                         </button>

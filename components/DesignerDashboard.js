@@ -20,7 +20,7 @@ function DesignerDashboard({ designerId }) {
     }
 
     const designPages = [
-        { name: "Design Requests from Showrooms", path: "Designer/ShowroomDesigns", param: "design-requests" },
+        { name: "Design Requests from Showrooms", path: "Designer/DesignReqsShowroom", param: "design-requests" },
         { name: "Pending Designs to start", path: "Designer/PendingDesigns", param: "pending-designs" },
         { name: "Ongoing Designs", path: "Designer/OngoingDesigns", param: "ongoing-designs" },
         { name: "Pending Approval from Admin", path: "Designer/PendingAdminDesigns", param: "pending-admin-approval" },

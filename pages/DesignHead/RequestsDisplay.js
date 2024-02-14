@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import Link from 'next/link';
+import { db, storage } from '../../firebase'
+import { collection, onSnapshot, doc, setDocs, setDoc, docRef, deleteDoc } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import Link from 'next/link'
 import { useSearchParams } from 'next/navigation';
 
 function RequestsDisplay() {
@@ -19,11 +22,18 @@ function RequestsDisplay() {
     const page = designPages.find(page => page.param === param)
 
     const [loading, setLoading] = useState(false)
-    const [requests, setRequests] = useState([
-        { name: "Request 1", id: "1" },
-        { name: "Request 2", id: "2" },
-        { name: "Request 3", id: "3" },
-    ])
+    const [designs, setDesigns] = useState([
+    ]);
+    useEffect(() => {
+        const designsRef = collection(db, page.param);
+        const designsSnapshot = onSnapshot(designsRef, (snapshot) => {
+            const designsList = snapshot.docs.map(
+                (doc) => ({ ...doc.data(), id: doc.id })
+            );
+            designsList.forEach(design => design.infoChecked = false);
+            setDesigns(designsList);
+        });
+    }, []);
 
     return (<>{!loading &&
         <div>
@@ -37,15 +47,15 @@ function RequestsDisplay() {
                 <p className='text-2xl mx-auto font-bold'>{page.name}</p>
             </div>
             <div className='flex flex-col gap-4 mt-8 items-center' >
-                {requests.map((request) => (
+                {designs.map((design) => (
                     <Link
-                        key={request["id"]}
+                        key={design["id"]}
                         href={{
                             pathname: '/RequestDetails',
-                            query: { id: request["id"] },
+                            query: { id: design["id"], name: design["name"], description: design["description"] }
                         }}
                         className='bg-slate-300 p-2 rounded-lg text-center sm:w-1/3'>
-                        {request["name"]}
+                        {design["name"] + " -> " + design["id"]}
                     </Link>
                 ))}
             </div>

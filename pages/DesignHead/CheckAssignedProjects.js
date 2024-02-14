@@ -53,7 +53,7 @@ export default function AssignProjects() {
             <div className='flex flex-col gap-4 mt-8 items-center' >
                 {pendingDesigns.map((designReq) => (
                     <div key={pendingDesigns.id} className='grid grid-cols-4 gap-12 items-center'>
-                        <p>{designReq.name}</p>
+                        <p>{designReq.name} - {designReq.id}</p>
                         <button className='bg-slate-300 p-2 rounded-lg'
                             onClick={() => handleProgressCheck(designReq.id)}>
                             Check Progress
