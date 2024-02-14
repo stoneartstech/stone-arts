@@ -18,7 +18,7 @@ export default function CompletedProjects() {
         { name: "Designer 3", id: "3" },
     ])
     const DesignerName = designers[DesignerId - 1].name;
-    const dbName = "designer" + DesignerId + "-completed";
+    const dbName = "designer" + DesignerId + "-completed-designs";
 
     const [pendingDesigns, setPendingDesigns] = useState([])
     useEffect(() => {

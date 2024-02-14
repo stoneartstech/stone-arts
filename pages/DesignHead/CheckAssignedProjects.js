@@ -33,10 +33,20 @@ export default function AssignProjects() {
     }, [])
 
     const handleProgressCheck = (id) => {
+        const design = pendingDesigns.find((design) => design.id === id);
+        alert("Design is in stage - " + design.status)
     }
     const handleScheduleCheck = (id) => {
     }
     const handleQuoteCheck = (id) => {
+        const design = pendingDesigns.find((design) => design.id === id);
+        const quote = design.quote;
+        if (quote) {
+            alert("Quote is ready - " + quote)
+        }
+        else {
+            alert("Quote is not given yet")
+        }
     }
 
     return (<>
@@ -58,14 +68,22 @@ export default function AssignProjects() {
                             onClick={() => handleProgressCheck(designReq.id)}>
                             Check Progress
                         </button>
-                        <button className='bg-slate-300 p-2 rounded-lg'
-                            onClick={() => handleScheduleCheck(designReq.id)}>
+                        <Link
+                            href={{
+                                pathname: '/DesignHead/CheckSchedule',
+                                query: { id: designReq.id },
+                            }}
+                            className='bg-slate-300 p-2 rounded-lg text-center'>
                             Check Schedule
-                        </button>
-                        <button className='bg-slate-300 p-2 rounded-lg'
-                            onClick={() => handleQuoteCheck(designReq.id)}>
+                        </Link>
+                        <Link
+                            href={{
+                                pathname: '/DesignHead/CheckQuote',
+                                query: { id: designReq.id },
+                            }}
+                            className='bg-slate-300 p-2 rounded-lg text-center'>
                             Check Quote
-                        </button>
+                        </Link>
                     </div>
                 ))}
             </div>
