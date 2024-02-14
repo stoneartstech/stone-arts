@@ -43,6 +43,7 @@ export default function AssignProjects() {
             const docRef = doc(db, "pending-designs", designId.toString());
             const designDoc = await getDoc(docRef);
             const designData = designDoc.data();
+            designData.status = "pending";
             deleteDoc(docRef);
             const dbName = "designer" + DesignerId;
             await setDoc(doc(db, dbName, designId.toString()), designData);
