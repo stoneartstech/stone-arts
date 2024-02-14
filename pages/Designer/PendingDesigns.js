@@ -13,7 +13,11 @@ export default function PendingDesigns() {
     ]);
 
     const params = useSearchParams();
-    const dbName = params.get('param');
+    var dbName = params.get('param');
+    if (dbName.endsWith('pending-designs')) {
+        //remove pending-designs from dbName
+        dbName = dbName.slice(0, -16);
+    }
 
     useEffect(() => {
         const designsRef = collection(db, dbName);
@@ -64,7 +68,7 @@ export default function PendingDesigns() {
                         <Link
                             href={{
                                 pathname: '/RequestDetails',
-                                query: { id: design["id"] },
+                                query: { id: design["id"], name: design["name"], description: design["description"] },
                             }}
                             target='_blank'>
                             <button

@@ -48,7 +48,7 @@ function DesignerDashboard({ designerId }) {
                         key={page["param"]}
                         href={{
                             pathname: page["path"],
-                            query: { param: page["param"] },
+                            query: { param: `designer${designerId}-${page["param"]}` },
                         }}
                         className='bg-slate-300 p-2 rounded-lg text-center sm:w-1/3'>
                         {page["name"]}
