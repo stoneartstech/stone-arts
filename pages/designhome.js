@@ -10,9 +10,9 @@ export default function designhome() {
     }
     return (
         <div>
-            <p className='text-4xl mb-6 text-center'>All Sales Teams</p>
+            {/* <p className='text-4xl mb-6 text-center'>All Sales Teams</p> */}
             <div className='flex flex-col'>
-              <DesignHead />
+                <DesignHead />
             </div>
 
         </div>
