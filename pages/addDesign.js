@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { db } from '@/firebase';
 import { collection, onSnapshot, getDoc, setDoc, doc, deleteDoc } from 'firebase/firestore';
 
-export default function addDesign() {
+export default function AddDesign() {
     const router = useRouter();
 
     const [loading, setLoading] = useState(false);
