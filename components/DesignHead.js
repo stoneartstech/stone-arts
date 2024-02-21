@@ -93,7 +93,15 @@ export default function DesignHead() {
                         </div>
                     ))}
                 </div>
+                <Link
+                    href={{
+                        pathname: '/addDesign',
+                    }}
+                    className='bg-slate-300 p-2 rounded-lg text-center font-bold my-6 w-52 mx-auto'>
+                    Add Design
+                </Link>
             </div>
+
 
         </div>
     )
