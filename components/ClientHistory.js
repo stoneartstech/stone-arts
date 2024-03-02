@@ -33,6 +33,7 @@ export default function ClientHistory({ showroomName }) {
                 if (clientRequest.aspects) clientRequest.aspects = clientRequest.aspects.join(',')
                 clientRequest.date = clientRequest.date
             })
+            requests.sort((a, b) => b.clientId - a.clientId);
             setClientRequests(requests)
             setOriginalClientRequests(requests)
             setLoading(false)
