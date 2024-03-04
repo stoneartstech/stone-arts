@@ -11,7 +11,7 @@ export default function saleshome() {
     return (
         <div>
             <p className='text-4xl mb-6 text-center'>All Sales Teams</p>
-            <div className='flex flex-col'>
+            <div className='flex flex-col gap-24 sm:gap-4'>
                 {Object.keys(salesMails).map((mail) => (
                     <SalesDashboard key={mail} showroomName={salesMails[mail]} />
                 ))}
