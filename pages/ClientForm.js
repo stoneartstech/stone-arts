@@ -273,7 +273,7 @@ export default function ClientForm() {
                         <option value="repeat">Repeat</option>
                         <option value="other">Other (Specify)</option>
                     </select>
-                    {sourceInfo === 'other' || sourceInfo == 'repeat' &&
+                    {(sourceInfo == 'other' || sourceInfo == 'repeat') &&
                         <input type="text" placeholder="Specify" value={specificInfo} onChange={(e) => setSpecificInfo(e.target.value)}
                             className='mt-2 p-2 w-full ' />}
 
