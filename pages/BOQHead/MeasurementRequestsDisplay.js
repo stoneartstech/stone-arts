@@ -1,35 +1,28 @@
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { db } from '../firebase'
+import { db } from '../../firebase'
 import { collection, getDocs, onSnapshot } from 'firebase/firestore'
 
-export default function BOQDashboard() {
+export default function MeasurementRequestsDisplay() {
 
-    const [measurementRequests, setMeasurementRequests] = useState([])
-    const [originalMeasurementRequests, setOriginalMeasurementRequests] = useState([])
-    const [loading, setLoading] = useState(true)
+    const router = useRouter();
+
+    const [loading, setLoading] = useState(false)
+    const [measurementRequests, setMeasurementRequests] = useState([]);
+    const [originalMeasurementRequests, setOriginalMeasurementRequests] = useState([]);
+
 
     useEffect(() => {
-        const fetch = onSnapshot(collection(db, 'boq'), (snapshot) => {
-            var measurementRequests = snapshot.docs.map((doc) => ({
-                id: doc.id,
-                ...doc.data()
-            }))
-            measurementRequests = measurementRequests.filter((request) => request.option === 'measurement')
-            setMeasurementRequests(measurementRequests)
-            setOriginalMeasurementRequests(measurementRequests)
-            setLoading(false)
-        })
+        const requestsRef = collection(db, 'boq');
+        const requestsSnapshot = onSnapshot(requestsRef, (snapshot) => {
+            const requestsList = snapshot.docs.map(
+                (doc) => ({ ...doc.data(), id: doc.id })
+            );
+            setMeasurementRequests(requestsList);
+            setOriginalMeasurementRequests(requestsList);
+        });
+    }, []);
 
-        return fetch
-    }, [])
-
-    // async function getMeasurementRequests() {
-    //     const querySnapshot = await getDocs(collection(db, 'clients'));
-    //     querySnapshot.forEach((doc) => {
-    //         console.log(doc.id, ' => ', doc.data());
-    //     });
-    // };
     function handleButtonClick(name) {
         measurementRequests.forEach((request) => {
             if (request.name === name) {
@@ -60,6 +53,12 @@ export default function BOQDashboard() {
 
     return <>{!loading && (
         <div>
+            <div className='w-full px-8 flex flex-row justify-between'>
+                <button className='bg-slate-300 p-2 rounded-lg'
+                    onClick={() => router.back()}>
+                    Go Back
+                </button>
+            </div>
             <p className='mt-8 text-2xl text-center font-bold mb-4'>Measurement Requests from Clients</p>
             <div className='flex flex-col text-xl gap-4 items-center'>
                 <div className='flex gap-2'>
