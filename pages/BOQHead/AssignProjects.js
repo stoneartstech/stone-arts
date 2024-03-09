@@ -33,31 +33,31 @@ export default function AssignProjects() {
         setLoading(false);
     }, [])
 
-    async function handleAssign(designId) {
-        setAssigned([...assigned, designId]);
+    async function handleAssign(projectId) {
+        setAssigned([...assigned, projectId]);
     };
 
     async function submitHandler() {
         if (assigned.length === 0) return;
-        for (const designId of assigned) {
-            const docRef = doc(db, "pending-designs", designId.toString());
-            const designDoc = await getDoc(docRef);
-            const designData = designDoc.data();
-            designData.status = "pending";
+        for (const projectId of assigned) {
+            const docRef = doc(db, "boq", projectId.toString());
+            const projectDoc = await getDoc(docRef);
+            const projectData = projectDoc.data();
+            projectData.status = "pending";
             deleteDoc(docRef);
-            const dbName = "designer" + DesignerId;
-            await setDoc(doc(db, dbName, designId.toString()), designData);
+            const dbName = "QS" + QSId;
+            await setDoc(doc(db, dbName, projectId.toString()), projectData);
         }
         alert("Projects assigned successfully");
         router.back();
     }
 
-    const handleUndo = (designId) => {
-        const updatedAssigned = assigned.filter((id) => id !== designId);
+    const handleUndo = (projectId) => {
+        const updatedAssigned = assigned.filter((id) => id !== projectId);
         setAssigned(updatedAssigned);
     };
 
-    const isAssigned = (designId) => assigned.includes(designId);
+    const isAssigned = (projectId) => assigned.includes(projectId);
 
     return (<>{!loading && <div>
         <div className='w-full pl-8'>

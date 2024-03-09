@@ -32,22 +32,6 @@ export default function AssignProjects() {
         setLoading(false);
     }, [])
 
-    const handleProgressCheck = (id) => {
-        const design = pendingDesigns.find((design) => design.id === id);
-        alert("Design is in stage - " + design.status)
-    }
-    const handleScheduleCheck = (id) => {
-    }
-    const handleQuoteCheck = (id) => {
-        const design = pendingDesigns.find((design) => design.id === id);
-        const quote = design.quote;
-        if (quote) {
-            alert("Quote is ready - " + quote)
-        }
-        else {
-            alert("Quote is not given yet")
-        }
-    }
 
     return (<>
         {!loading && <div>
@@ -70,7 +54,7 @@ export default function AssignProjects() {
                         </button>
                         <Link
                             href={{
-                                pathname: '/DesignHead/CheckSchedule',
+                                pathname: '/BOQHead/CheckSchedule',
                                 query: { id: project.id },
                             }}
                             className='bg-slate-300 p-2 rounded-lg text-center'>
@@ -78,7 +62,7 @@ export default function AssignProjects() {
                         </Link>
                         <Link
                             href={{
-                                pathname: '/DesignHead/CheckQuote',
+                                pathname: '/BOQHead/CheckQuote',
                                 query: { id: project.id },
                             }}
                             className='bg-slate-300 p-2 rounded-lg text-center'>
