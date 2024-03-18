@@ -32,8 +32,8 @@ export default function SalesReports() {
         },
         {
             name: "Sales Report(Weekly/Monthly)",
-            upload: "/SalesReports/SalesReport2Upload",
-            history: "/SalesReports/SalesReport2History"
+            upload: "/SalesReports/WeeklySalesReport",
+            history: "/SalesReports/MonthlySalesReport"
         },
         {
             name: "Showroom Cleanliness",
@@ -62,7 +62,7 @@ export default function SalesReports() {
                     }}
                         className='bg-slate-300 hover:bg-slate-500 text-black p-3 w-full sm:max-w-[25vw] text-center'
                     >
-                        Upload Report
+                        {report.name === "Sales Report(Weekly/Monthly)" ? "Weekly Report" : "Upload Report"}
                     </Link>
                     <Link href={{
                         pathname: report.history,
@@ -70,7 +70,7 @@ export default function SalesReports() {
                     }}
                         className='bg-slate-300 hover:bg-slate-500 text-black p-3 w-full sm:max-w-[25vw] text-center'
                     >
-                        Report History
+                        {report.name === "Sales Report(Weekly/Monthly)" ? "Monthly Report" : "Report History"}
                     </Link>
                 </div>
             ))}

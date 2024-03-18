@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { db, storage } from '../firebase';
+import { db, storage } from '../../firebase';
 import { updateDoc, collection, onSnapshot, addDoc, serverTimestamp, doc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useRouter } from 'next/router'
@@ -8,7 +8,7 @@ import { useSearchParams } from 'next/navigation'
 import Webcam from 'react-webcam';
 
 
-function SalesInvoice() {
+export default function UploadInvoice() {
 
     const searchParams = useSearchParams()
     const showroomName = searchParams.get('showroomName')
@@ -52,10 +52,6 @@ function SalesInvoice() {
 
     const [isCameraOpen, setIsCameraOpen] = useState(false);
     const webcamRef = useRef(null);
-
-    const handleToggleCamera = () => {
-        setIsCameraOpen(!isCameraOpen);
-    };
 
     const handleCapture = () => {
         const imageSrc = webcamRef.current.getScreenshot();
@@ -147,25 +143,7 @@ function SalesInvoice() {
         }
     };
 
-    const handleOpenInvoice = (clientId) => {
-        const invoiceRequest = invoiceRequests.find((request) => request.clientId == clientId);
-        window.open(invoiceRequest.invoiceURL)
-    }
 
-    const handleCheckInfo = (clientId) => {
-        const clientRequest = originalClientRequests.find((request) => request.clientId === clientId);
-        alert(`First Name: ${clientRequest.name}
-        \nLast Name: ${clientRequest.lastname}
-        \nClient Code: ${clientRequest.clientId}
-        \nPhone Number: ${clientRequest.phoneNumber}
-        \nEmail: ${clientRequest.email}
-        \nAddress: ${clientRequest.address}
-        \nDate of Request: ${clientRequest.date}
-        \nSalesperson: ${clientRequest.salesPerson}
-        \nAspects: ${clientRequest.aspects}
-        \nOption: ${clientRequest.option}`)
-
-    }
 
     return (
         <div>
@@ -217,20 +195,9 @@ function SalesInvoice() {
                     ))
                     }
 
-                    <p className='mt-16 text-xl mb-4 text-center font-bold'>Check Uploaded Invoices</p>
-                    {invoiceRequests.map((invoiceRequest) => (
-                        <div key={invoiceRequest} className='items-center sm:mx-24 grid grid-cols-3 gap-x-12 mb-4'>
-                            <p className='text-lg'>{invoiceRequest.name} ({invoiceRequest.clientId})</p>
-                            <button onClick={() => handleOpenInvoice(invoiceRequest.clientId)} className='bg-green-400 hover:bg-green-500 p-2'>Check Invoice</button>
-                            <button onClick={() => handleCheckInfo(invoiceRequest.clientId)} className='bg-green-400 hover:bg-green-500 p-2'>Check Information</button>
-                        </div>
-                    ))
-                    }
 
                 </div>
             )}
         </div>
     )
 }
-
-export default SalesInvoice

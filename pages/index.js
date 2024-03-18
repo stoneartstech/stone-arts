@@ -7,6 +7,7 @@ import ClientForm from './ClientForm.js'
 import SalesDashboard from '@/components/SalesDashboard'
 import DesignHead from '../components/DesignHead'
 import DesignerDashboard from '../components/DesignerDashboard'
+import BOQHead from '@/components/BOQHead'
 
 export default function Home() {
   const { currentUser } = useAuth()
@@ -40,6 +41,9 @@ export default function Home() {
       {currentUser && currentUser.email === 'designhead@stonearts.com' && <DesignHead />}
       {currentUser && designMails[currentUser.email] &&
         <DesignerDashboard designerId={designMails[currentUser.email]} />}
+
+      {/* BOQ */}
+      {currentUser && currentUser.email === 'boqhead@stonearts.com' && <BOQHead />}
 
     </>
   )

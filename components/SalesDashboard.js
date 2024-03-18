@@ -127,7 +127,7 @@ export default function SalesDashboard({ showroomName }) {
                 </div>
                 <div className='flex flex-col text-xl gap-4'>
                     <Link href={{
-                        pathname: '/SalesInvoice',
+                        pathname: '/Invoicing/SalesInvoice',
                         query: { showroomName: showroomName },
                     }}
                         className='bg-slate-300 hover:bg-slate-500 text-black p-3 w-full sm:max-w-[25vw] text-center'
