@@ -13,11 +13,12 @@ export default function CompletedProjects() {
     const searchParams = useSearchParams();
     const DesignerId = searchParams.get('id');
     const [designers, setDesigners] = useState([
+        { name: "Design Head", id: "0" },
         { name: "Designer 1", id: "1" },
         { name: "Designer 2", id: "2" },
         { name: "Designer 3", id: "3" },
     ])
-    const DesignerName = designers[DesignerId - 1].name;
+    const DesignerName = designers[DesignerId].name;
     const dbName = "designer" + DesignerId + "-completed-designs";
 
     const [pendingDesigns, setPendingDesigns] = useState([])

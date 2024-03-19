@@ -8,6 +8,7 @@ export default function DesignHead() {
     const router = useRouter();
 
     const [designers, setDesigners] = useState([
+        { name: "Design Head", id: "0" },
         { name: "Designer 1", id: "1" },
         { name: "Designer 2", id: "2" },
         { name: "Designer 3", id: "3" },

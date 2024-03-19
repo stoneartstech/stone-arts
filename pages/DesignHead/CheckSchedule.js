@@ -10,6 +10,19 @@ export default function CheckSchedule() {
     const searchParams = useSearchParams();
     const designId = searchParams.get('id');
     const [loading, setLoading] = useState(false);
+    const [schedule, setSchedule] = useState(null);
+    useEffect(() => {
+        const docRef = doc(db, "designs", designId);
+        getDoc(docRef).then((doc) => {
+            if (doc.exists()) {
+                const data = doc.data();
+                setSchedule(data.schedule);
+            }
+        }).catch((error) => {
+            console.log("Error getting document:", error);
+        });
+        setLoading(false);
+    }, [])
 
     return (<>
         {!loading && <div>
@@ -23,6 +36,9 @@ export default function CheckSchedule() {
                 <p className='text-2xl mx-auto font-bold'>Schedule of Design {designId}</p>
             </div>
             <div className='flex flex-col gap-4 mt-8 items-center' >
+                {schedule && <p>Schedule is ready - {schedule}</p>}
+                {!schedule && <p>Schedule is not given yet</p>}
+
             </div>
         </div>}
     </>

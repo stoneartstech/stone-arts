@@ -9,8 +9,20 @@ export default function CheckQuote() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const designId = searchParams.get('id');
-    const quote = searchParams.get('quote');
     const [loading, setLoading] = useState(false);
+    const [quote, setQuote] = useState(null);
+    useEffect(() => {
+        const docRef = doc(db, "designs", designId);
+        getDoc(docRef).then((doc) => {
+            if (doc.exists()) {
+                const data = doc.data();
+                setSchedule(data.schedule);
+            }
+        }).catch((error) => {
+            console.log("Error getting document:", error);
+        });
+        setLoading(false);
+    }, [])
 
     return (<>
         {!loading && <div>
