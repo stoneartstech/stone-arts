@@ -59,7 +59,15 @@ export default function DesignHead() {
                         {page["name"]}
                     </Link>
                 ))}
+                <Link
+                    href={{
+                        pathname: 'DesignHead/AddDesign',
+                    }}
+                    className='bg-slate-300 p-2 rounded-lg text-center font-bold my-4 w-52 mx-auto'>
+                    Add Design
+                </Link>
             </div>
+
             <div className='flex flex-col'>
                 <p className='text-xl mx-auto font-bold my-8'>Design Team Members</p>
                 <div className='flex flex-col gap-4 items-center'>
@@ -93,13 +101,7 @@ export default function DesignHead() {
                         </div>
                     ))}
                 </div>
-                <Link
-                    href={{
-                        pathname: '/AddDesign',
-                    }}
-                    className='bg-slate-300 p-2 rounded-lg text-center font-bold my-6 w-52 mx-auto'>
-                    Add Design
-                </Link>
+
             </div>
 
 
