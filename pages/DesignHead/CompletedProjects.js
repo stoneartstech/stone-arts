@@ -33,13 +33,6 @@ export default function CompletedProjects() {
         setLoading(false);
     }, [])
 
-    const handleProgressCheck = (id) => {
-    }
-    const handleScheduleCheck = (id) => {
-    }
-    const handleQuoteCheck = (id) => {
-    }
-
     return (<>
         {!loading && <div>
             <div className='w-full pl-8'>

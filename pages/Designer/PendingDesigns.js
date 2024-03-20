@@ -39,10 +39,11 @@ export default function PendingDesigns() {
         });
         setDesigns(updatedDesigns);
     };
-
+    const designerId = dbName[8];
     async function handleStartProject(designId) {
         const designData = designs.find(design => design.id === designId);
-        await setDoc(doc(db, "ongoing-designs", designId), designData);
+        designData["designerId"] = designerId;
+        await setDoc(doc(db, "designer" + designerId + "-ongoing", designId), designData);
         await deleteDoc(doc(db, dbName, designId));
         alert(`Project started for design ${designId}`);
     }

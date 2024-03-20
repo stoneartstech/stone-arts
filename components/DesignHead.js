@@ -17,10 +17,10 @@ export default function DesignHead() {
     const designPages = [
         { name: "Design Requests from Showrooms", param: "design-requests" },
         { name: "Pending Designs to start", param: "pending-designs" },
-        { name: "Ongoing Designs", param: "ongoing-designs" },
-        { name: "Pending Approval from Admin", param: "pending-admin-approval" },
-        { name: "Pending Approval from Client", param: "pending-client-approval" },
-        { name: "Completed Designs", param: "completed-designs" },
+        { name: "Ongoing Designs", param: "ongoing" },
+        { name: "Pending Approval from Admin", param: "pending-admin" },
+        { name: "Pending Approval from Client", param: "pending-client" },
+        { name: "Completed Designs", param: "completed" },
     ]
 
     const { logout } = useAuth()

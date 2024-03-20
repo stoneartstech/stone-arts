@@ -83,7 +83,7 @@ export default function PendingAdminDesigns() {
             </div>
             <div className='flex flex-col gap-4 mt-8 items-center' >
                 {designs.map((design) => (
-                    <div key={design["id"]} className='grid grid-cols-4 gap-4 items-center'>
+                    <div key={design["id"]} className='grid grid-cols-3 gap-4 items-center'>
                         <p
                             className=' text-center'>
                             {design["name"]} - {design["id"]} :
@@ -92,11 +92,6 @@ export default function PendingAdminDesigns() {
                             onClick={() => handleCheckDesign(design.id)} // Attach onClick event here
                             className='bg-green-400 p-2 rounded-lg text-center'>
                             Check Design
-                        </button>
-                        <button
-                            onClick={() => handleSendClient(design.id)} // Attach onClick event here
-                            className='bg-green-400 p-2 rounded-lg text-center'>
-                            Send Design to Client
                         </button>
 
                         <Link

@@ -18,6 +18,8 @@ export default function OngoingDesigns() {
     const params = useSearchParams();
     const dbName = params.get('param');
 
+    const [loading, setLoading] = useState(true);
+
     useEffect(() => {
         const designsRef = collection(db, dbName);
         const designsSnapshot = onSnapshot(designsRef, (snapshot) => {
@@ -27,6 +29,7 @@ export default function OngoingDesigns() {
             designsList.forEach(design => design.infoChecked = false);
             setDesigns(designsList);
         });
+        setLoading(false);
     }, []);
 
     const handleCheckInfo = (designId) => {
@@ -41,6 +44,7 @@ export default function OngoingDesigns() {
 
     const [downloadURLs, setDownloadURLs] = useState({})
     const handleUploadDesign = async (designId, event) => {
+
         const file = event.target.files[0];
         try {
             // Upload the file to Firebase Storage
@@ -59,16 +63,21 @@ export default function OngoingDesigns() {
         }
     };
 
+    const designerId = dbName[8];
     async function handleSendAdmin(designId) {
+        if (!downloadURLs[designId]) {
+            alert(`Please try again`);
+            return;
+        }
         const designData = designs.find(design => design.id === designId);
         designData.downloadURL = downloadURLs[designId];
-        await setDoc(doc(db, "pending-admin-approval", designId), designData);
+        await setDoc(doc(db, "designer" + designerId + "-pending-admin", designId), designData);
         await deleteDoc(doc(db, dbName, designId));
         alert(`Project ${designId} sent to Admin`);
     }
 
     return (
-        <div>
+        <>{!loading && <div>
             <div className='w-full px-8 flex flex-row justify-between'>
                 <button className='bg-slate-300 p-2 rounded-lg'
                     onClick={() => router.back()}>
@@ -114,5 +123,6 @@ export default function OngoingDesigns() {
                 ))}
             </div>
         </div>
+        }</>
     )
 }

@@ -14,26 +14,52 @@ function RequestsDisplay() {
     const designPages = [
         { name: "Design Requests from Showrooms", param: "design-requests" },
         { name: "Pending Designs to start", param: "pending-designs" },
-        { name: "Ongoing Designs", param: "ongoing-designs" },
-        { name: "Pending Approval from Admin", param: "pending-admin-approval" },
-        { name: "Pending Approval from Client", param: "pending-client-approval" },
-        { name: "Completed Designs", param: "completed-designs" },
+        { name: "Ongoing Designs", param: "ongoing" },
+        { name: "Pending Approval from Admin", param: "pending-admin" },
+        { name: "Pending Approval from Client", param: "pending-client" },
+        { name: "Completed Designs", param: "completed" },
     ]
     const page = designPages.find(page => page.param === param)
 
-    const [loading, setLoading] = useState(false)
-    const [designs, setDesigns] = useState([
-    ]);
+    const [loading, setLoading] = useState(true)
+
+    const [designers, setDesigners] = useState([
+        { name: "Design Head", id: "0" },
+        { name: "Designer 1", id: "1" },
+        { name: "Designer 2", id: "2" },
+        { name: "Designer 3", id: "3" },
+    ])
+    const [designs, setDesigns] = useState([])
     useEffect(() => {
-        const designsRef = collection(db, page.param);
-        const designsSnapshot = onSnapshot(designsRef, (snapshot) => {
-            const designsList = snapshot.docs.map(
-                (doc) => ({ ...doc.data(), id: doc.id })
-            );
-            designsList.forEach(design => design.infoChecked = false);
-            setDesigns(designsList);
+        setLoading(true); // Set loading to true initially
+
+        // Create an array to store promises
+        const promises = designers.map(async (designer) => {
+            const designerId = designer.id;
+            const dbName = "designer" + designerId + "-" + param;
+            const designsRef = collection(db, dbName);
+
+            // Return a promise that resolves when snapshot is received
+            return new Promise((resolve, reject) => {
+                const designsSnapshot = onSnapshot(designsRef, (snapshot) => {
+                    const designsList = snapshot.docs.map(
+                        (doc) => ({ ...doc.data(), id: doc.id })
+                    );
+                    resolve(designsList); // Resolve the promise with designsList
+                });
+            });
+        });
+
+        // Use Promise.all to wait for all promises to resolve
+        Promise.all(promises).then((designsLists) => {
+            // Flatten the array of arrays into a single array of designs
+            const flattenedDesigns = designsLists.flat();
+            // Set the designs state with the flattened array
+            setDesigns(flattenedDesigns);
+            setLoading(false); // Set loading to false when all promises are resolved
         });
     }, []);
+
 
     return (<>{!loading &&
         <div>
@@ -59,6 +85,7 @@ function RequestsDisplay() {
                     </Link>
                 ))}
             </div>
+
         </div>
     }</>
     )
