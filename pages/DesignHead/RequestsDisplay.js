@@ -30,6 +30,7 @@ function RequestsDisplay() {
         { name: "Designer 3", id: "3" },
     ])
     const [designs, setDesigns] = useState([])
+    const [originalDesigns, setOriginalDesigns] = useState([])
     useEffect(() => {
         setLoading(true); // Set loading to true initially
 
@@ -56,9 +57,23 @@ function RequestsDisplay() {
             const flattenedDesigns = designsLists.flat();
             // Set the designs state with the flattened array
             setDesigns(flattenedDesigns);
+            setOriginalDesigns(flattenedDesigns);
             setLoading(false); // Set loading to false when all promises are resolved
         });
     }, []);
+
+    const [search, setSearch] = useState('')
+    const handleSearch = () => {
+        //name or id
+        setDesigns(originalDesigns.filter((design) => {
+            var searchParam = search.toLowerCase()
+            return (
+                design.name.toLowerCase().includes(searchParam) ||
+                design.id.toString().includes(searchParam)
+            )
+        })
+        )
+    }
 
 
     return (<>{!loading &&
@@ -71,6 +86,44 @@ function RequestsDisplay() {
             </div>
             <div className='flex flex-col mt-4'>
                 <p className='text-2xl mx-auto font-bold'>{page.name}</p>
+            </div>
+            <div className='flex flex-col gap-4 my-4 '>
+                <div className='mx-auto'>
+                    <input
+                        onChange={(e) => setSearch(e.target.value)}
+                        className='mx-auto border-2 border-black p-2'
+                    />
+                    <button
+                        className='bg-slate-300 hover:bg-slate-400 p-3 rounded-lg mx-2'
+                        onClick={handleSearch}
+                    >
+                        Search
+                    </button>
+                    <div className='bg-slate-300'>
+                        {search && originalDesigns
+                            .filter((design) => {
+                                var searchParam = search.toLowerCase()
+                                return (
+                                    design.name.toLowerCase().includes(searchParam) ||
+                                    design.id.toString().includes(searchParam)
+                                )
+                            })
+                            .slice(0, 10)
+                            .map((design) => (
+                                <p
+                                    key={design.id}
+                                    onClick={() => {
+                                        setSearch(design.name);
+                                        handleSearch();
+                                    }}
+                                    className='p-2 text-black cursor-pointer'
+                                >
+                                    {design.id} : {design.name}
+                                </p>
+                            ))}
+                    </div>
+
+                </div>
             </div>
             <div className='flex flex-col gap-4 mt-8 items-center' >
                 {designs.map((design) => (

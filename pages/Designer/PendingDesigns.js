@@ -11,6 +11,7 @@ export default function PendingDesigns() {
 
     const [designs, setDesigns] = useState([
     ]);
+    const [originalDesigns, setOriginalDesigns] = useState([]);
 
     const params = useSearchParams();
     var dbName = params.get('param');
@@ -27,6 +28,7 @@ export default function PendingDesigns() {
             );
             designsList.forEach(design => design.infoChecked = false);
             setDesigns(designsList);
+            setOriginalDesigns(designsList);
         });
     }, []);
 
@@ -48,6 +50,19 @@ export default function PendingDesigns() {
         alert(`Project started for design ${designId}`);
     }
 
+    const [search, setSearch] = useState('')
+    const handleSearch = () => {
+        //name or id
+        setDesigns(originalDesigns.filter((design) => {
+            var searchParam = search.toLowerCase()
+            return (
+                design.name.toLowerCase().includes(searchParam) ||
+                design.id.toString().includes(searchParam)
+            )
+        })
+        )
+    }
+
     return (
         <div>
             <div className='w-full px-8 flex flex-row justify-between'>
@@ -58,6 +73,44 @@ export default function PendingDesigns() {
             </div>
             <div className='flex flex-col sm:flex-row items-center justify-center gap-12 my-4'>
                 <p className='my-4 text-3xl text-center'>Pending Designs</p>
+            </div>
+            <div className='flex flex-col gap-4 my-4 '>
+                <div className='mx-auto'>
+                    <input
+                        onChange={(e) => setSearch(e.target.value)}
+                        className='mx-auto border-2 border-black p-2'
+                    />
+                    <button
+                        className='bg-slate-300 hover:bg-slate-400 p-3 rounded-lg mx-2'
+                        onClick={handleSearch}
+                    >
+                        Search
+                    </button>
+                    <div className='bg-slate-300'>
+                        {search && originalDesigns
+                            .filter((design) => {
+                                var searchParam = search.toLowerCase()
+                                return (
+                                    design.name.toLowerCase().includes(searchParam) ||
+                                    design.id.toString().includes(searchParam)
+                                )
+                            })
+                            .slice(0, 10)
+                            .map((design) => (
+                                <p
+                                    key={design.id}
+                                    onClick={() => {
+                                        setSearch(design.name);
+                                        handleSearch();
+                                    }}
+                                    className='p-2 text-black cursor-pointer'
+                                >
+                                    {design.id} : {design.name}
+                                </p>
+                            ))}
+                    </div>
+
+                </div>
             </div>
             <div className='flex flex-col gap-4 mt-8 items-center' >
                 {designs.map((design) => (

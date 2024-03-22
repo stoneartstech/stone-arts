@@ -23,6 +23,7 @@ export default function RequestsDisplay() {
     const page = BOQPages.find(page => page.param === param)
 
     const [loading, setLoading] = useState(false)
+    const [originalRequests, setOriginalRequests] = useState([])
     const [requests, setRequests] = useState([]);
 
 
@@ -32,9 +33,22 @@ export default function RequestsDisplay() {
             const requestsList = snapshot.docs.map(
                 (doc) => ({ ...doc.data(), id: doc.id })
             );
+            setOriginalRequests(requestsList);
             setRequests(requestsList);
         });
     }, []);
+
+    const handleSearch = () => {
+        //name or id
+        setRequests(originalRequests.filter((request) => {
+            var searchParam = search.toLowerCase()
+            return (
+                request.name.toLowerCase().includes(searchParam) ||
+                request.id.toString().includes(searchParam)
+            )
+        }))
+    }
+    const [search, setSearch] = useState('')
 
 
     return <>{!loading && (
@@ -48,6 +62,7 @@ export default function RequestsDisplay() {
             <div className='flex flex-col mt-4'>
                 <p className='text-2xl mx-auto font-bold'>{page.name}</p>
             </div>
+
             <div className='flex flex-col gap-4 mt-8 items-center' >
                 {requests.map((request) => (
                     <Link
