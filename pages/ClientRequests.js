@@ -1,37 +1,38 @@
-'use client'
-
-import React from 'react'
-import ClientHistory from '../components/ClientHistory'
-import { useAuth } from '../context/AuthContext'
-import { useRouter } from 'next/router'
-import { useSearchParams } from 'next/navigation'
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useRouter } from 'next/router';
+import { collection, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
+import { db } from '../firebase';
+import * as XLSX from 'xlsx';
+import ClientHistory from '../components/ClientHistory';
 
 export default function ClientRequests() {
+  const router = useRouter();
+  const { currentUser } = useAuth();
+  const searchParams = new URLSearchParams(window.location.search);
+  const showroomName = searchParams.get('showroomName');
+  const [deleteClient, setDeleteClient] = useState('');
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
-    const router = useRouter()
+  if (!currentUser) {
+    router.push('/login');
+    return null;
+  }
 
-    const searchParams = useSearchParams()
-    const showroomName = searchParams.get('showroomName')
+  const handleEditClient = (clientId) => {
+    router.push(`/EditClient?clientId=${clientId}&showroomName=${showroomName}`);
+  };
 
-    const { logout } = useAuth()
-    async function logoutHandler() {
-        try {
-            await logout()
-            router.push('/')
-        }
-        catch (err) {
-            console.log(err)
-        }
-    }
-    return (
-        <div>
-            <div className='flex flex-col sm:flex-row items-center justify-center gap-12'>
-                <p className='my-4 text-3xl text-center'>{showroomName} Showroom</p>
-                <button className='bg-red-500 p-3 rounded-lg'
-                    onClick={logoutHandler}
-                >Logout</button>
-            </div>
-            <ClientHistory showroomName={showroomName} />
-        </div>
-    )
+  return (
+    <div>
+      <div className='flex flex-col sm:flex-row items-center justify-center gap-12'>
+        <p className='my-4 text-3xl text-center'>{showroomName} Showroom</p>
+      </div>
+      <ClientHistory
+        showroomName={showroomName}
+        onEditClient={handleEditClient}
+      />
+    </div>
+  );
 }
