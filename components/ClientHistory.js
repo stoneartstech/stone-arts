@@ -64,7 +64,7 @@ export default function ClientHistory({ showroomName, onEditClient }) {
       {
         Header: 'Edit', accessor: 'id',
         Cell: ({ row }) => (
-          <button onClick={() => handleEditClient(row.original.id)}>Edit</button>
+          <button onClick={() => handleEditClient(row.original.id)} className='hover:underline'>Edit</button>
         )
       },
     ],
@@ -116,75 +116,75 @@ export default function ClientHistory({ showroomName, onEditClient }) {
                 onChange={(e) => setSearch(e.target.value)}
                 className='mx-auto
                 border-2 border-black p-2'
-                />
-                <button
-                  className='bg-slate-300 hover:bg-slate-400 p-3 rounded-lg mx-2'
-                  onClick={handleSearch}
-                >
-                  Search
-                </button>
-                <div className='bg-slate-300'>
-                  {search && originalClientRequests
-                    .filter((clientRequest) => {
-                      var searchParam = search.toLowerCase();
-                      return (
-                        clientRequest.name.toLowerCase().includes(searchParam) ||
-                        clientRequest.clientCode.toString().includes(searchParam)
-                      );
-                    })
-                    .slice(0, 10)
-                    .map((clientRequest) => (
-                      <p
-                        key={clientRequest.clientId}
-                        onClick={() => {
-                          setSearch(clientRequest.name);
-                          handleSearch();
-                        }}
-                        className='p-2 text-black cursor-pointer'
-                      >
-                        {clientRequest.clientCode} : {clientRequest.name}
-                      </p>
-                    ))}
-                </div>
-              </div>
-              <div className='table-container overflow-x-auto'>
-                <table {...getTableProps()} className='border-collapse'>
-                  <thead>
-                    {headerGroups.map((headerGroup) => (
-                      <tr key={headerGroup.id} {...headerGroup.getHeaderGroupProps()}>
-                        {headerGroup.headers.map((column) => (
-                          <th
-                            key={column.id}
-                            {...column.getHeaderProps()}
-                            className='border-black border'
-                            style={{ minWidth: column.minSize }}
-                          >
-                            {column.render('Header')}
-                          </th>
-                        ))}
-                      </tr>
-                    ))}
-                  </thead>
-                  <tbody {...getTableBodyProps()}>
-                    {rows.map((row) => {
-                      prepareRow(row);
-                      return (
-                        <tr key={row.id} {...row.getRowProps()} className='border'>
-                          {row.cells.map((cell) => (
-                            <td key={cell.id} {...cell.getCellProps()} className='p-6 border-black border'>
-                              {cell.render('Cell')}
-                            </td>
-                          ))}
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+              />
+              <button
+                className='bg-slate-300 hover:bg-slate-400 p-3 rounded-lg mx-2'
+                onClick={handleSearch}
+              >
+                Search
+              </button>
+              <div className='bg-slate-300'>
+                {search && originalClientRequests
+                  .filter((clientRequest) => {
+                    var searchParam = search.toLowerCase();
+                    return (
+                      clientRequest.name.toLowerCase().includes(searchParam) ||
+                      clientRequest.clientCode.toString().includes(searchParam)
+                    );
+                  })
+                  .slice(0, 10)
+                  .map((clientRequest) => (
+                    <p
+                      key={clientRequest.clientId}
+                      onClick={() => {
+                        setSearch(clientRequest.name);
+                        handleSearch();
+                      }}
+                      className='p-2 text-black cursor-pointer'
+                    >
+                      {clientRequest.clientCode} : {clientRequest.name}
+                    </p>
+                  ))}
               </div>
             </div>
+            <div className='table-container overflow-x-auto'>
+              <table {...getTableProps()} className='border-collapse'>
+                <thead>
+                  {headerGroups.map((headerGroup) => (
+                    <tr key={headerGroup.id} {...headerGroup.getHeaderGroupProps()}>
+                      {headerGroup.headers.map((column) => (
+                        <th
+                          key={column.id}
+                          {...column.getHeaderProps()}
+                          className='border-black border'
+                          style={{ minWidth: column.minSize }}
+                        >
+                          {column.render('Header')}
+                        </th>
+                      ))}
+                    </tr>
+                  ))}
+                </thead>
+                <tbody {...getTableBodyProps()}>
+                  {rows.map((row) => {
+                    prepareRow(row);
+                    return (
+                      <tr key={row.id} {...row.getRowProps()} className='border'>
+                        {row.cells.map((cell) => (
+                          <td key={cell.id} {...cell.getCellProps()} className='p-6 border-black border'>
+                            {cell.render('Cell')}
+                          </td>
+                        ))}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
-        )}
-      </>
-    );
-  }
-  
+        </div>
+      )}
+    </>
+  );
+}
+
