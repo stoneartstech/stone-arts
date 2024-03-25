@@ -15,6 +15,12 @@ export default function EditClient() {
   const fetchedClientRef = useRef(null);
 
   useEffect(() => {
+    if (!currentUser || currentUser.email !== 'admin@stonearts.com') {
+      setLoading(false); // Stop loading
+    }
+  }, [currentUser]);
+
+  useEffect(() => {
     const fetchClient = async () => {
       if (!clientId || !currentUser) {
         return;
@@ -65,9 +71,15 @@ export default function EditClient() {
     }
   };
 
-  if (!currentUser) {
-    router.push("/login");
-    return null;
+  if (!currentUser || currentUser.email !== 'admin@stonearts.com') {
+    return <div>
+      <div className='w-full mb-8 flex justify-start items-start'>
+        <button className='bg-slate-300 p-2 rounded-lg' onClick={() => router.back()}>
+          Go Back
+        </button>
+      </div>
+      Only Admin can access this page.
+    </div>;
   }
 
   if (loading) {
