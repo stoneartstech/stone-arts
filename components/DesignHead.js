@@ -23,6 +23,17 @@ export default function DesignHead() {
         { name: "Completed Designs", param: "completed" },
     ]
 
+    const { logout } = useAuth()
+    async function logoutHandler() {
+        try {
+            await logout()
+            router.push('/')
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
+
     const { currentUser } = useAuth();
 
     if (!currentUser || (currentUser.email !== 'admin@stonearts.com' &&
@@ -35,17 +46,6 @@ export default function DesignHead() {
             </div>
             Only Design Head can access this page.
         </div>;
-    }
-
-    const { logout } = useAuth()
-    async function logoutHandler() {
-        try {
-            await logout()
-            router.push('/')
-        }
-        catch (err) {
-            console.log(err)
-        }
     }
 
     return (
@@ -61,7 +61,8 @@ export default function DesignHead() {
             </div>
             <div className='flex flex-col mt-4'>
                 <p className='text-2xl mx-auto font-bold'>
-                    {currentUser.email === 'designhead@stonearts.com' ? 'Design Head Dashboard' : 'Admin Design Dashboard'}
+                    {currentUser.email === 'designhead@stonearts.com'
+                        ? 'Design Head Dashboard' : 'Admin Design Dashboard'}
                 </p>
             </div>
             <div className='flex flex-col gap-4 mt-8 items-center' >
