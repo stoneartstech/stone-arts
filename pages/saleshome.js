@@ -2,7 +2,7 @@ import React from 'react'
 import SalesDashboard from '../components/SalesDashboard'
 import { useAuth } from '../context/AuthContext'
 
-export default function saleshome() {
+export default function SalesHome() {
     const salesMails = {
         'stoneartsgalleria@stonearts.com': "Galleria",
         'stoneartsmirage@stonearts.com': "Mirage",
