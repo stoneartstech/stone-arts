@@ -23,6 +23,20 @@ export default function DesignHead() {
         { name: "Completed Designs", param: "completed" },
     ]
 
+    const { currentUser } = useAuth();
+
+    if (!currentUser || (currentUser.email !== 'admin@stonearts.com' &&
+        currentUser.email !== 'designhead@stonearts.com')) {
+        return <div>
+            <div className='w-full mb-8 flex justify-start items-start'>
+                <button className='bg-slate-300 p-2 rounded-lg' onClick={() => router.back()}>
+                    Go Back
+                </button>
+            </div>
+            Only Design Head can access this page.
+        </div>;
+    }
+
     const { logout } = useAuth()
     async function logoutHandler() {
         try {
@@ -46,7 +60,9 @@ export default function DesignHead() {
                 >Logout</button>
             </div>
             <div className='flex flex-col mt-4'>
-                <p className='text-2xl mx-auto font-bold'>Design Team Head Dashboard</p>
+                <p className='text-2xl mx-auto font-bold'>
+                    {currentUser.email === 'designhead@stonearts.com' ? 'Design Head Dashboard' : 'Admin Design Dashboard'}
+                </p>
             </div>
             <div className='flex flex-col gap-4 mt-8 items-center' >
                 {designPages.map((page) => (
