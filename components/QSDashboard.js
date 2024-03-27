@@ -35,3 +35,5 @@ function QSDashboard({ qsId }) {
         </div>
     )
 }
+
+export default QSDashboard
