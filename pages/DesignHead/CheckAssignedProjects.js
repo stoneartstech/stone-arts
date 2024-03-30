@@ -96,10 +96,19 @@ export default function AssignProjects() {
                 {pendingDesigns.map((designReq) => (
                     <div key={pendingDesigns.id} className='grid grid-cols-4 gap-12 items-center'>
                         <p>{designReq.name} - {designReq.id}</p>
-                        <button className='bg-slate-300 p-2 rounded-lg'
-                            onClick={() => handleProgressCheck("pending")}>
+                        <Link
+                            href={{
+                                pathname: '/DesignHead/CheckProgress',
+                                query: {
+                                    id: designReq.id,
+                                    name: designReq.name,
+                                    downloadURL: designReq.downloadURL,
+                                    status: "pending",
+                                },
+                            }}
+                            className='bg-slate-300 p-2 rounded-lg text-center'>
                             Check Progress
-                        </button>
+                        </Link>
                         <Link
                             href={{
                                 pathname: '/DesignHead/CheckSchedule',
@@ -122,10 +131,19 @@ export default function AssignProjects() {
                 {ongoingDesigns.map((designReq) => (
                     <div key={ongoingDesigns.id} className='grid grid-cols-4 gap-12 items-center'>
                         <p>{designReq.name} - {designReq.id}</p>
-                        <button className='bg-slate-300 p-2 rounded-lg'
-                            onClick={() => handleProgressCheck("ongoing")}>
+                        <Link
+                            href={{
+                                pathname: '/DesignHead/CheckProgress',
+                                query: {
+                                    id: designReq.id,
+                                    name: designReq.name,
+                                    downloadURL: designReq.downloadURL,
+                                    status: "ongoing",
+                                },
+                            }}
+                            className='bg-slate-300 p-2 rounded-lg text-center'>
                             Check Progress
-                        </button>
+                        </Link>
                         <Link
                             href={{
                                 pathname: '/DesignHead/CheckSchedule',
@@ -148,10 +166,19 @@ export default function AssignProjects() {
                 {pendingAdminDesigns.map((designReq) => (
                     <div key={pendingAdminDesigns.id} className='grid grid-cols-4 gap-12 items-center'>
                         <p>{designReq.name} - {designReq.id}</p>
-                        <button className='bg-slate-300 p-2 rounded-lg'
-                            onClick={() => handleProgressCheck("pending-admin")}>
+                        <Link
+                            href={{
+                                pathname: '/DesignHead/CheckProgress',
+                                query: {
+                                    id: designReq.id,
+                                    name: designReq.name,
+                                    downloadURL: designReq.downloadURL,
+                                    status: "pending admin approval",
+                                },
+                            }}
+                            className='bg-slate-300 p-2 rounded-lg text-center'>
                             Check Progress
-                        </button>
+                        </Link>
                         <Link
                             href={{
                                 pathname: '/DesignHead/CheckSchedule',
@@ -174,10 +201,19 @@ export default function AssignProjects() {
                 {pendingClientDesigns.map((designReq) => (
                     <div key={pendingClientDesigns.id} className='grid grid-cols-4 gap-12 items-center'>
                         <p>{designReq.name} - {designReq.id}</p>
-                        <button className='bg-slate-300 p-2 rounded-lg'
-                            onClick={() => handleProgressCheck("pending-client")}>
+                        <Link
+                            href={{
+                                pathname: '/DesignHead/CheckProgress',
+                                query: {
+                                    id: designReq.id,
+                                    name: designReq.name,
+                                    downloadURL: designReq.downloadURL,
+                                    status: "pending client approval",
+                                },
+                            }}
+                            className='bg-slate-300 p-2 rounded-lg text-center'>
                             Check Progress
-                        </button>
+                        </Link>
                         <Link
                             href={{
                                 pathname: '/DesignHead/CheckSchedule',
