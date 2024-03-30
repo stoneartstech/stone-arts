@@ -12,6 +12,7 @@ export default function EditClient() {
   const [notification, setNotification] = useState("");
   const [error, setError] = useState("");
   const clientId = router.query.clientId;
+  const showroomName = router.query.showroomName;
   const fetchedClientRef = useRef(null);
 
   useEffect(() => {
@@ -20,6 +21,15 @@ export default function EditClient() {
     }
   }, [currentUser]);
 
+  const showroomDbNames = {
+    "Galleria": "clients",
+    "Mirage": "mirage-clients",
+    "Kisumu": "kisumu-clients",
+    "Mombasa Road": "mombasa-clients",
+  };
+
+  const showroomDbName = showroomDbNames[showroomName];
+
   useEffect(() => {
     const fetchClient = async () => {
       if (!clientId || !currentUser) {
@@ -27,7 +37,7 @@ export default function EditClient() {
       }
 
       try {
-        const clientDoc = await getDoc(doc(db, "clients", clientId));
+        const clientDoc = await getDoc(doc(db, showroomDbName, clientId));
         if (clientDoc.exists()) {
           fetchedClientRef.current = clientDoc.data();
           setClient(fetchedClientRef.current);
@@ -58,7 +68,7 @@ export default function EditClient() {
 
   const handleUpdateClient = async () => {
     try {
-      await updateDoc(doc(db, "clients", clientId), client);
+      await updateDoc(doc(db, showroomDbName, clientId), client);
       setNotification("Client updated successfully");
       setTimeout(() => {
 
