@@ -17,28 +17,6 @@ export default function RequestDetails() {
 
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    console.log("ID:", id);
-    console.log("Name:", name);
-    console.log("Description:", description);
-    console.log("Client First Name:", clientFirstName);
-    console.log("Client Last Name:", clientLastName);
-    console.log("Client Phone Number:", clientPhoneNumber);
-    console.log("Client Email:", clientEmail);
-    console.log("Client Address:", clientAddress);
-    console.log("Download URL:", downloadURL);
-  }, [
-    id,
-    name,
-    description,
-    clientFirstName,
-    clientLastName,
-    clientPhoneNumber,
-    clientEmail,
-    clientAddress,
-    downloadURL,
-  ]);
-
   return (
     <>
       {!loading && (
@@ -60,6 +38,15 @@ export default function RequestDetails() {
             <div className="text-center text-xl">
               Description: {description}
             </div>
+            {downloadURL && <button
+              onClick={() => window.open(downloadURL)}
+              className="bg-green-400 p-2 rounded-lg text-center"
+            >
+              Check Design
+            </button>}
+            <div className="text-center text-xl font-bold mt-6">
+              Client Info:
+            </div>
             <div className="text-center text-xl my-1">
               Client First Name: {clientFirstName}
             </div>
@@ -74,21 +61,6 @@ export default function RequestDetails() {
             </div>
             <div className="text-center text-xl">
               Client Address: {clientAddress}
-            </div>
-
-            {downloadURL && (
-              <div className="mt-4">
-                <img src={downloadURL} alt="Design Image" className="max-w-full h-auto" />
-              </div>
-            )}
-
-            <div className="mt-4">
-              <button
-                onClick={() => window.open(downloadURL)}
-                className="bg-green-400 p-2 rounded-lg text-center"
-              >
-                Check Design
-              </button>
             </div>
           </div>
         </div>

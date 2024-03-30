@@ -127,7 +127,7 @@ export default function PendingAdminDesigns() {
                   return (
                     design.name.toLowerCase().includes(searchParam) ||
                     design.id.toString().includes(searchParam)
-                   
+
                   );
                 })
                 .slice(0, 10)
@@ -163,7 +163,7 @@ export default function PendingAdminDesigns() {
             </button>
 
             <Link
-               href={{
+              href={{
                 pathname: "/RequestDetails",
                 query: {
                   title: design["title"],
@@ -176,7 +176,7 @@ export default function PendingAdminDesigns() {
                   clientAddress: design["clientAddress"],
                   downloadURL: design["downloadURL"]
                 },
-              }} 
+              }}
               passHref
               className="bg-green-400 p-2 rounded-lg text-center"
               target="_blank"
@@ -188,15 +188,7 @@ export default function PendingAdminDesigns() {
                 Check Info
               </button>
             </Link>
-          
-             {design.downloadURL && (
-              <button
-                onClick={() => window.open(design.downloadURL, "_blank")}
-                className="bg-blue-400 p-2 rounded-lg text-center"
-              >
-                View Image
-              </button>
-            )}
+
           </div>
         ))}
       </div>

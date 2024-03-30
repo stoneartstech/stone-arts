@@ -161,13 +161,12 @@ function RequestsDisplay() {
             {designs.map((design) => (
               <div
                 key={design["id"]}
-                className={` w-full md:w-[83%] xl:w-[45%] grid ${
-                  page.param === "pending-admin" &&
+                className={` w-full md:w-[83%] xl:w-[45%] grid ${page.param === "pending-admin" &&
                   currentUser &&
                   currentUser.email === "admin@stonearts.com"
-                    ? "grid-cols-7"
-                    : " grid-cols-5 "
-                } gap-3 bg-gray-500 sm:bg-gray-200 p-2 rounded-md `}
+                  ? "grid-cols-7"
+                  : " grid-cols-5 "
+                  } gap-3 bg-gray-500 sm:bg-gray-200 p-2 rounded-md `}
               >
                 <Link
                   href={{
@@ -189,7 +188,7 @@ function RequestsDisplay() {
                 >
                   {design["name"] + " -> " + design["id"]}
                 </Link>
-                <button
+                {page.param === "pending-admin" && <button
                   onClick={() => {
                     setSelectedDesign(design);
                     setIsDetailsPage(true);
@@ -197,7 +196,7 @@ function RequestsDisplay() {
                   className=" px-4 py-2 bg-slate-400 hover:bg-slate-500 col-span-3 sm:col-span-1 rounded-lg"
                 >
                   View
-                </button>
+                </button>}
                 {/* to make it visible only to admin ------------------------------------------ */}
                 {page.param === "pending-admin" &&
                   currentUser &&
@@ -229,12 +228,11 @@ function RequestsDisplay() {
                     Design Name: {selectedDesign?.name}{" "}
                   </h3>
                   <span
-                    className={`ml-4 px-2 rounded-md capitalize text-xs md:text-sm  ${
-                      String(selectedDesign?.status).toLocaleLowerCase() ===
+                    className={`ml-4 px-2 rounded-md capitalize text-xs md:text-sm  ${String(selectedDesign?.status).toLocaleLowerCase() ===
                       "pending"
-                        ? "bg-red-400"
-                        : ""
-                    } `}
+                      ? "bg-red-400"
+                      : ""
+                      } `}
                   >
                     status: {selectedDesign.status}
                   </span>
