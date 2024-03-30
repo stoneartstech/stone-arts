@@ -27,7 +27,7 @@ export default function OngoingDesigns() {
 
   useEffect(() => {
     const designsRef = collection(db, dbName);
-    const designsSnapshot = onSnapshot(designsRef, (snapshot) => {
+    const unsubscribe = onSnapshot(designsRef, (snapshot) => {
       const designsList = snapshot.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
@@ -35,9 +35,14 @@ export default function OngoingDesigns() {
       designsList.forEach((design) => (design.infoChecked = false));
       setDesigns(designsList);
       setOriginalDesigns(designsList);
+      setLoading(false);
     });
-    setLoading(false);
-  }, []);
+
+    // Clean up the listener when the component unmounts or the effect runs again
+    return () => {
+      unsubscribe();
+    };
+  }, []); // Empty dependency array, runs only once on mount and unmount
 
   const [search, setSearch] = useState("");
   const handleSearch = () => {
@@ -176,7 +181,18 @@ export default function OngoingDesigns() {
                 <Link
                   href={{
                     pathname: "/RequestDetails",
-                    query: { id: design["id"] },
+                    query: {
+                      title: design["title"],
+                      id: design["id"],
+                      name: design["name"],
+                      description: design["description"],
+                      clientFirstName: design["clientFirstName"],
+                      clientLastName: design["clientLastName"],
+                      clientPhoneNumber: design["clientPhoneNumber"],
+                      clientEmail: design["clientEmail"],
+                      clientAddress: design["clientAddress"],
+                      downloadURL: design["downloadURL"],
+                    },
                   }}
                   className="bg-green-400 p-2 rounded-lg text-center"
                   target="_blank"

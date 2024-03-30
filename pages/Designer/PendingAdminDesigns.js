@@ -127,6 +127,7 @@ export default function PendingAdminDesigns() {
                   return (
                     design.name.toLowerCase().includes(searchParam) ||
                     design.id.toString().includes(searchParam)
+                   
                   );
                 })
                 .slice(0, 10)
@@ -162,19 +163,40 @@ export default function PendingAdminDesigns() {
             </button>
 
             <Link
-              href={{
+               href={{
                 pathname: "/RequestDetails",
-                query: { id: design["id"] },
-              }}
+                query: {
+                  title: design["title"],
+                  description: design["description"],
+                  designId: design["designId"],
+                  clientFirstName: design["clientFirstName"],
+                  clientLastName: design["clientLastName"],
+                  clientPhoneNumber: design["clientPhoneNumber"],
+                  clientEmail: design["clientEmail"],
+                  clientAddress: design["clientAddress"],
+                  downloadURL: design["downloadURL"]
+                },
+              }} 
+              passHref
               className="bg-green-400 p-2 rounded-lg text-center"
               target="_blank"
             >
               <button
                 onClick={() => handleCheckInfo(design.id)} // Attach onClick event here
+                className="bg-green-400 p-2 rounded-lg text-center"
               >
                 Check Info
               </button>
             </Link>
+          
+             {design.downloadURL && (
+              <button
+                onClick={() => window.open(design.downloadURL, "_blank")}
+                className="bg-blue-400 p-2 rounded-lg text-center"
+              >
+                View Image
+              </button>
+            )}
           </div>
         ))}
       </div>
