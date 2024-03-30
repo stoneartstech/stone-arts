@@ -173,9 +173,16 @@ function RequestsDisplay() {
                   href={{
                     pathname: "/RequestDetails",
                     query: {
+                      title: design["title"],
                       id: design["id"],
                       name: design["name"],
                       description: design["description"],
+                      clientFirstName: design["clientFirstName"],
+                      clientLastName: design["clientLastName"],
+                      clientPhoneNumber: design["clientPhoneNumber"],
+                      clientEmail: design["clientEmail"],
+                      clientAddress: design["clientAddress"],
+                      downloadURL: design["downloadURL"],
                     },
                   }}
                   className="bg-slate-300 p-2 rounded-lg text-center col-span-full sm:col-span-4 "

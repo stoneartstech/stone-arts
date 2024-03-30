@@ -173,7 +173,18 @@ export default function PendingClientDesigns() {
             <Link
               href={{
                 pathname: "/RequestDetails",
-                query: { id: design["id"] },
+                query: {
+                  title: design["title"],
+                  id: design["id"],
+                  name: design["name"],
+                  description: design["description"],
+                  clientFirstName: design["clientFirstName"],
+                  clientLastName: design["clientLastName"],
+                  clientPhoneNumber: design["clientPhoneNumber"],
+                  clientEmail: design["clientEmail"],
+                  clientAddress: design["clientAddress"],
+                  downloadURL: design["downloadURL"],
+                },
               }}
               className="bg-green-400 p-2 rounded-lg text-center"
               target="_blank"
