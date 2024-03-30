@@ -23,13 +23,11 @@ export default function AssignProjects() {
     const dbNameOngoing = dbNamePending + "-ongoing";
     const dbNamePendingAdmin = dbNamePending + "-pending-admin";
     const dbNamePendingClient = dbNamePending + "-pending-client";
-    const dbNameCompleted = dbNamePending + "-completed";
 
     const [pendingDesigns, setPendingDesigns] = useState([])
     const [ongoingDesigns, setOngoingDesigns] = useState([])
     const [pendingAdminDesigns, setPendingAdminDesigns] = useState([])
     const [pendingClientDesigns, setPendingClientDesigns] = useState([])
-    const [completedDesigns, setCompletedDesigns] = useState([])
 
     useEffect(() => {
         const querySnapshot = onSnapshot(collection(db, dbNamePending), (snapshot) => {
@@ -60,25 +58,9 @@ export default function AssignProjects() {
             }));
             setPendingClientDesigns(pendingClientDesigns);
         })
-        const querySnapshotCompleted = onSnapshot(collection(db, dbNameCompleted), (snapshot) => {
-            const completedDesigns = snapshot.docs.map((doc) => ({
-                id: doc.id,
-                ...doc.data(),
-            }));
-            setCompletedDesigns(completedDesigns);
-        })
         setLoading(false);
     }, [])
 
-    const handleProgressCheck = (status) => {
-        const statusTexts = {
-            "pending": "Pending",
-            "ongoing": "Ongoing",
-            "pending-admin": "Pending for Admin Approval",
-            "pending-client": "Pending for Client Approval",
-        }
-        alert("Design is in stage - " + statusTexts[status])
-    }
 
     return (<>
         {!loading && <div>
@@ -104,6 +86,7 @@ export default function AssignProjects() {
                                     name: designReq.name,
                                     downloadURL: designReq.downloadURL,
                                     status: "pending",
+                                    dbName: dbNamePending,
                                 },
                             }}
                             className='bg-slate-300 p-2 rounded-lg text-center'>
@@ -139,6 +122,7 @@ export default function AssignProjects() {
                                     name: designReq.name,
                                     downloadURL: designReq.downloadURL,
                                     status: "ongoing",
+                                    dbName: dbNameOngoing,
                                 },
                             }}
                             className='bg-slate-300 p-2 rounded-lg text-center'>
@@ -174,6 +158,7 @@ export default function AssignProjects() {
                                     name: designReq.name,
                                     downloadURL: designReq.downloadURL,
                                     status: "pending admin approval",
+                                    dbName: dbNamePendingAdmin,
                                 },
                             }}
                             className='bg-slate-300 p-2 rounded-lg text-center'>
@@ -209,6 +194,7 @@ export default function AssignProjects() {
                                     name: designReq.name,
                                     downloadURL: designReq.downloadURL,
                                     status: "pending client approval",
+                                    dbName: dbNamePendingClient,
                                 },
                             }}
                             className='bg-slate-300 p-2 rounded-lg text-center'>

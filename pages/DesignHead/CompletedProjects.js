@@ -25,7 +25,7 @@ export default function CompletedProjects() {
     { name: "Designer 3", id: "3" },
   ]);
   const DesignerName = designers[DesignerId].name;
-  const dbName = "designer" + DesignerId + "-completed-designs";
+  const dbName = "designer" + DesignerId + "-completed";
 
   const [originalDesigns, setOriginalDesigns] = useState([]);
   const [designs, setDesigns] = useState([]);
