@@ -134,16 +134,18 @@ export default function CompletedDesigns() {
               href={{
                 pathname: "/RequestDetails",
                 query: {
-                    title: design["title"],
-                    id: design["id"],
-                    name: design["name"],
-                    description: design["description"],
-                    clientFirstName: design["clientFirstName"],
-                    clientLastName: design["clientLastName"],
-                    clientPhoneNumber: design["clientPhoneNumber"],
-                    clientEmail: design["clientEmail"],
-                    clientAddress: design["clientAddress"],
-                    downloadURL: design["downloadURL"],
+                  title: design["title"],
+                  id: design["id"],
+                  name: design["name"],
+                  description: design["description"],
+                  clientFirstName: design["clientFirstName"],
+                  clientLastName: design["clientLastName"],
+                  clientPhoneNumber: design["clientPhoneNumber"],
+                  clientEmail: design["clientEmail"],
+                  clientAddress: design["clientAddress"],
+                  downloadURL: design["downloadURL"],
+                  notes: design["notes"],
+                  imageUrl: design["imageUrl"],
                 },
               }}
               className="bg-green-400 p-2 rounded-lg text-center"

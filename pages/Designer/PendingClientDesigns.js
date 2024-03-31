@@ -184,6 +184,8 @@ export default function PendingClientDesigns() {
                   clientEmail: design["clientEmail"],
                   clientAddress: design["clientAddress"],
                   downloadURL: design["downloadURL"],
+                  notes: design["notes"],
+                  imageUrl: design["imageUrl"],
                 },
               }}
               className="bg-green-400 p-2 rounded-lg text-center"

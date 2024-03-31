@@ -174,7 +174,9 @@ export default function PendingAdminDesigns() {
                   clientPhoneNumber: design["clientPhoneNumber"],
                   clientEmail: design["clientEmail"],
                   clientAddress: design["clientAddress"],
-                  downloadURL: design["downloadURL"]
+                  downloadURL: design["downloadURL"],
+                  notes: design["notes"],
+                  imageUrl: design["imageUrl"],
                 },
               }}
               passHref

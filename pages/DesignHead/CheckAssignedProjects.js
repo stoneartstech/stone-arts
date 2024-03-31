@@ -86,6 +86,7 @@ export default function AssignProjects() {
                                     name: designReq.name,
                                     downloadURL: designReq.downloadURL,
                                     status: "pending",
+                                    notesOld: designReq.notes,
                                     dbName: dbNamePending,
                                 },
                             }}
@@ -123,6 +124,7 @@ export default function AssignProjects() {
                                     downloadURL: designReq.downloadURL,
                                     status: "ongoing",
                                     dbName: dbNameOngoing,
+                                    notesOld: designReq.notes,
                                 },
                             }}
                             className='bg-slate-300 p-2 rounded-lg text-center'>
@@ -158,6 +160,7 @@ export default function AssignProjects() {
                                     name: designReq.name,
                                     downloadURL: designReq.downloadURL,
                                     status: "pending admin approval",
+                                    notesOld: designReq.notes,
                                     dbName: dbNamePendingAdmin,
                                 },
                             }}
@@ -194,6 +197,7 @@ export default function AssignProjects() {
                                     name: designReq.name,
                                     downloadURL: designReq.downloadURL,
                                     status: "pending client approval",
+                                    notesOld: designReq.notes,
                                     dbName: dbNamePendingClient,
                                 },
                             }}

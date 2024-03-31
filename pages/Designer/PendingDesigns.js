@@ -148,6 +148,8 @@ export default function PendingDesigns() {
                   clientEmail: design["clientEmail"],
                   clientAddress: design["clientAddress"],
                   downloadURL: design["downloadURL"],
+                  notes: design["notes"],
+                  imageUrl: design["imageUrl"],
                 },
               }}
               target="_blank"
@@ -160,9 +162,8 @@ export default function PendingDesigns() {
               </button>
             </Link>
             <button
-              className={`p-2 rounded-lg text-center ${
-                design.infoChecked ? "bg-green-400" : "bg-red-300"
-              }`}
+              className={`p-2 rounded-lg text-center ${design.infoChecked ? "bg-green-400" : "bg-red-300"
+                }`}
               disabled={!design.infoChecked}
               onClick={() => handleStartProject(design.id)}
             >

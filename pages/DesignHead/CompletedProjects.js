@@ -127,6 +127,8 @@ export default function CompletedProjects() {
                     clientEmail: design["clientEmail"],
                     clientAddress: design["clientAddress"],
                     downloadURL: design["downloadURL"],
+                    notes: design["notes"],
+                    imageUrl: design["imageUrl"],
                   },
                 }}
                 className="bg-slate-300 p-2 rounded-lg text-center sm:w-1/3"

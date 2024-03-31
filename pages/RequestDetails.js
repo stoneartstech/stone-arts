@@ -66,11 +66,15 @@ export default function RequestDetails() {
             <div className="text-center text-xl">
               Client Address: {clientAddress}
             </div>
-            <div className="text-center text-xl">Admin Notes: {notes}</div>
+
+            {notes && <div className="text-center text-xl mt-6">Admin Notes: {notes}</div>}
             {imageUrl && (
-              <div className="text-center text-xl">
-                Progress Image: <img src={imageUrl} alt="Uploaded" />
-              </div>
+              <button
+                onClick={() => window.open(imageUrl)}
+                className="bg-green-400 p-2 rounded-lg text-center"
+              >
+                Progress Image
+              </button>
             )}
           </div>
         </div>
