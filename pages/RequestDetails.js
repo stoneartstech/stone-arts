@@ -13,6 +13,8 @@ export default function RequestDetails() {
     clientEmail,
     clientAddress,
     downloadURL,
+    notes,
+    imageUrl,
   } = router.query;
 
   const [loading, setLoading] = useState(false);
@@ -38,12 +40,14 @@ export default function RequestDetails() {
             <div className="text-center text-xl">
               Description: {description}
             </div>
-            {downloadURL && <button
-              onClick={() => window.open(downloadURL)}
-              className="bg-green-400 p-2 rounded-lg text-center"
-            >
-              Check Design
-            </button>}
+            {downloadURL && (
+              <button
+                onClick={() => window.open(downloadURL)}
+                className="bg-green-400 p-2 rounded-lg text-center"
+              >
+                Check Design
+              </button>
+            )}
             <div className="text-center text-xl font-bold mt-6">
               Client Info:
             </div>
@@ -62,6 +66,12 @@ export default function RequestDetails() {
             <div className="text-center text-xl">
               Client Address: {clientAddress}
             </div>
+            <div className="text-center text-xl">Admin Notes: {notes}</div>
+            {imageUrl && (
+              <div className="text-center text-xl">
+                Progress Image: <img src={imageUrl} alt="Uploaded" />
+              </div>
+            )}
           </div>
         </div>
       )}
