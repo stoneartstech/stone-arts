@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { db } from '@/firebase';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { db } from "@/firebase";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 export default function CheckProgress() {
   const router = useRouter();
@@ -11,6 +11,7 @@ export default function CheckProgress() {
   const [image, setImage] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
   const [isFormValid, setIsFormValid] = useState(false);
+  const [notification, setNotification] = useState(null);
 
   const handleNoteChange = (event) => {
     setNotes(event.target.value);
@@ -27,7 +28,7 @@ export default function CheckProgress() {
     try {
       const designRef = doc(db, dbName, id);
       const designSnapshot = await getDoc(designRef);
-      
+
       if (designSnapshot.exists()) {
         const updatedData = {
           notes,
@@ -41,6 +42,12 @@ export default function CheckProgress() {
         if (image) {
           setImageUrl(URL.createObjectURL(image));
         }
+
+        // Show success notification
+        setNotification("Design updated successfully!");
+        setTimeout(() => {
+          setNotification(null);
+        }, 3000); // Clear notification after 3 seconds
       } else {
         console.error("Design does not exist.");
       }
@@ -59,25 +66,19 @@ export default function CheckProgress() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
-      <button
-        onClick={() => router.back()}
-        className="absolute top-0 left-0 mt-4 ml-4 bg-slate-300 p-2 rounded-lg"
-      >
-        Go Back
-      </button>
-      <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+      <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full max-w-lg">
         <div className="mb-6">
-          <p className="text-xl font-bold mb-2">Design ID: {id}</p>
-          <p className="text-xl font-bold mb-2">Design Name: {name}</p>
+          <p className="text-xl font-bold mb-3">Design ID: {id}</p>
+          <p className="text-xl font-bold mb-4">Design Name: {name}</p>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Add Note:
             </label>
-            <input
-              type="text"
+            <textarea
               value={notes}
               onChange={handleNoteChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-2"
+              rows="5"
               placeholder="Enter your notes"
             />
           </div>
@@ -99,6 +100,9 @@ export default function CheckProgress() {
           >
             Submit
           </button>
+          {notification && (
+            <div className="text-green-600 text-sm mt-2">{notification}</div>
+          )}
         </div>
       </div>
     </div>
