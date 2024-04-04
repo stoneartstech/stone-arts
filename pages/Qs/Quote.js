@@ -200,7 +200,7 @@ export const Quote = ({ quoteData, setIsQuote }) => {
       return (
         <View style={styles.titleContainer}>
           <View style={styles.spaceBetween}>
-            <Image style={styles.logo} src="/logo.png" />
+            <Image style={styles.logo} src="/logo.png" alt="logo" />
             <Text style={styles.reportTitle}>Stone Arts</Text>
           </View>
         </View>
