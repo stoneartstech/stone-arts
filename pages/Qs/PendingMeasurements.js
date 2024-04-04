@@ -11,12 +11,15 @@ import {
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { Quote } from "./Quote";
 
 export default function PendingMeasurements() {
   const router = useRouter();
 
   const [Measurements, setMeasurements] = useState([]);
   const [originalMeasurements, setOriginalMeasurements] = useState([]);
+  const [isQuote, setIsQuote] = useState(false);
+  const [quoteData, setQuoteData] = useState({});
 
   const params = useSearchParams();
   var dbName = params.get("param");
@@ -110,12 +113,12 @@ export default function PendingMeasurements() {
             onChange={(e) => setSearch(e.target.value)}
             className="mx-auto border-2 border-black p-2"
           />
-          <buttonq
+          <button
             className="bg-slate-300 hover:bg-slate-400 p-3 rounded-lg mx-2"
             onClick={handleSearch}
           >
             Search
-          </buttonq>
+          </button>
           <div className="bg-slate-300">
             {search &&
               originalMeasurements
@@ -142,11 +145,12 @@ export default function PendingMeasurements() {
           </div>
         </div>
       </div>
+      {isQuote && <Quote quoteData={quoteData} setIsQuote={setIsQuote} />}
       <div className="flex flex-col gap-5 mt-8 items-center">
         {Measurements.map((qs) => (
           <div
             key={qs["id"]}
-            className=" w-[70%] grid grid-cols-4 items-center"
+            className=" w-[70%] grid grid-cols-5 items-center"
           >
             <p className=" text-center">
               {qs["name"]} - {qs["id"]} :
@@ -176,8 +180,18 @@ export default function PendingMeasurements() {
                 Check Info
               </button>
             </Link>
+            <button
+              onClick={() => {
+                setIsQuote(true);
+                setQuoteData(qs);
+              }}
+              className="bg-gray-300 hover:bg-gray-400 mb-2 p-2 rounded-lg text-center"
+            >
+              Generate Quote
+            </button>
+
             <input
-              className=""
+              className=" mx-4"
               disabled={!qs.infoChecked}
               id="measuremnt-image"
               name="measuremnt-image"
@@ -185,7 +199,7 @@ export default function PendingMeasurements() {
               onChange={(e) => handleUploadMeasurement(qs.id, e)}
             />
             <button
-              className={`p-2 rounded-lg text-sm text-center capitalize ${
+              className={`p-2 font-medium rounded-lg text-sm text-center capitalize ${
                 qs.infoChecked && downloadURLs[qs.id]
                   ? "bg-green-400"
                   : "bg-red-300"
