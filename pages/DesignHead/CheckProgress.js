@@ -93,7 +93,13 @@ export default function CheckProgress() {
                     <p className="text-xl font-bold mb-3">Design ID: {id}</p>
                     <p className="text-xl font-bold mb-4">Design Name: {name}</p>
                     <p className="text-xl font-bold mb-4">Progress: {status}</p>
-                    <div className="mb-4">
+                    {downloadURL && <button
+                        onClick={() => window.open(downloadURL)}
+                        className="bg-green-400 p-2 rounded-lg text-center"
+                    >
+                        Check Design
+                    </button>}
+                    <div className="my-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2">
                             Add Note:
                         </label>
