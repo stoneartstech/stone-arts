@@ -1,23 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { AiTwotoneFilePdf } from "react-icons/ai";
 import { IoClose } from "react-icons/io5";
-import { db, storage } from "../../firebase";
+import { storage } from "../../firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { BlobProvider, PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
-import {
-  Image,
-  Text,
-  View,
-  Page,
-  Document,
-  StyleSheet,
-} from "@react-pdf/renderer";
+import { BlobProvider, Image, PDFDownloadLink } from "@react-pdf/renderer";
+import { Text, View, Page, Document, StyleSheet } from "@react-pdf/renderer";
 import { Fragment } from "react";
 import { useSearchParams } from "next/navigation";
-import { deleteDoc, doc, setDoc } from "firebase/firestore";
-import { saveAs } from "file-saver";
+import { deleteDoc } from "firebase/firestore";
 
-export const Quote = ({ quoteData, setIsQuote }) => {
+export const Quote = ({ setQuotePdfUrl, quoteData, setIsQuote }) => {
   const targetRef = useRef();
 
   const [total, setTotal] = useState(0);
@@ -105,24 +97,24 @@ export const Quote = ({ quoteData, setIsQuote }) => {
   const params = useSearchParams();
   var dbName = params.get("param");
 
-  async function handleUploadQuote(qsId) {
-    const qsData = {
-      user: quoteData,
-      name: quoteData.name,
-      id: quoteData.id,
-      data: data,
-    };
-    // await setDoc(
-    //   doc(db, dbName.slice(0, 3) + "-generated-quotes", qsId),
-    //   qsData
-    // );
-    alert("Quote Uploaded");
-  }
-  const handleShare = async (blob) => {
-    await saveAs(blob, `invoice.pdf`);
-    window.location.href = `mailto:?subject=${encodeURIComponent(
-      `Invoice`
-    )}&body=${encodeURIComponent(`Kindly find attached invoice`)}`;
+  const handleShare = async (url, blob) => {
+    try {
+      const storageRef = ref(
+        storage,
+        `PdfQuotes/${dbName.slice(0, 3)}/${quoteData.id}.pdf`
+      );
+
+      // // Upload the blob to Firebase Storage
+      const uploadTaskSnapshot = await uploadBytes(storageRef, blob);
+
+      // // Get the download URL for the uploaded file
+      const downloadURL = await getDownloadURL(uploadTaskSnapshot.ref);
+      setQuotePdfUrl({ id: quoteData.id, link: downloadURL });
+      // alert(downloadURL);
+      alert("Uploaded");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const Invoice = () => {
@@ -200,7 +192,13 @@ export const Quote = ({ quoteData, setIsQuote }) => {
       return (
         <View style={styles.titleContainer}>
           <View style={styles.spaceBetween}>
-            <Image style={styles.logo} src="/logo.png" alt="logo" />
+            <Image
+              width={100}
+              height={100}
+              style={styles.logo}
+              src="/logo.png"
+              alt="logo"
+            />
             <Text style={styles.reportTitle}>Stone Arts</Text>
           </View>
         </View>
@@ -313,13 +311,13 @@ export const Quote = ({ quoteData, setIsQuote }) => {
             <Text>Total</Text>
           </View>
           <View style={styles.total}>
-            <Text> {total}</Text>
+            <Text> $ {total}</Text>
           </View>
           <View style={styles.tbody}>
             <Text>Grand Total</Text>
           </View>
           <View style={styles.tbody}>
-            <Text>{total - 100 + total * 0.16}</Text>
+            <Text>$ {total - 100 + total * 0.16}</Text>
           </View>
         </View>
       );
@@ -399,12 +397,11 @@ export const Quote = ({ quoteData, setIsQuote }) => {
               <BlobProvider document={<Invoice />}>
                 {({ url, blob }) => (
                   <button
-                    // onClick={() => handleShare(url, blob)}
-                    onClick={() => handleUploadQuote(quoteData?.id)}
+                    onClick={() => handleShare(url, blob)}
                     className=" bg-green-400 hover:bg-green-500 w-fit rounded-md
                     text-white font-semibold py-1 px-5"
                   >
-                    {console.log(blob)}
+                    {/* {console.log(blob)} */}
                     Upload
                   </button>
                 )}
@@ -559,7 +556,7 @@ export const Quote = ({ quoteData, setIsQuote }) => {
                   {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((index) => {
                     return <td key={index}></td>;
                   })}
-                  <td className=" text-center">{total}</td>
+                  <td className=" text-center">$ {total}</td>
                 </tr>
                 <tr className=" bg-orange-100">
                   <td>Discount</td>
@@ -573,7 +570,7 @@ export const Quote = ({ quoteData, setIsQuote }) => {
                   {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((index) => {
                     return <td key={index}></td>;
                   })}
-                  <td className=" text-center">+{0.16 * total}</td>
+                  <td className=" text-center">+{(0.16 * total).toFixed(2)}</td>
                 </tr>
                 <tr className=" bg-orange-100">
                   <td className=" font-bold">Grand Total</td>

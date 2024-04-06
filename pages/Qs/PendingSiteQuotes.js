@@ -156,18 +156,32 @@ export default function PendingSiteQuotes() {
             </p>
             <Link
               href={{
-                pathname: "/RequestDetails",
+                pathname: "/ViewQuoteDetails",
                 query: {
-                  title: qs["title"],
                   id: qs["id"],
-                  name: qs["name"],
+                  dbName: dbName,
                   description: qs["description"],
-                  clientFirstName: qs["clientFirstName"],
-                  clientLastName: qs["clientLastName"],
-                  clientPhoneNumber: qs["clientPhoneNumber"],
-                  clientEmail: qs["clientEmail"],
-                  clientAddress: qs["clientAddress"],
-                  downloadURL: qs["downloadURL"],
+                  clientId: qs["clientId"],
+                  clientFirstName: qs["name"],
+                  clientLastName: qs["lastName"],
+                  clientPhoneNumber: qs["number"],
+                  clientEmail: qs["email"],
+                  clientAddress: qs["address"],
+                  salesPerson: qs["salesPerson"],
+                  sourceInfo: qs["sourceInfo"],
+                  specificInfo: qs["specificInfo"],
+                  status: qs["status"],
+                  option: qs["option"],
+                  date: qs["date"],
+                  aspects: qs["aspects"],
+                  address: qs["address"],
+                  measurementDataContactPerson:
+                    qs["measurementData"].contactPerson,
+                  measurementDataCost: qs["measurementData"].cost,
+                  measurementDataDate: qs["measurementData"].date,
+                  measurementDataSupplyFix: qs["measurementData"].supplyFix,
+                  measurementDataTime: qs["measurementData"].time,
+                  // downloadURL: qs["downloadURL"],
                 },
               }}
               target="_blank"
