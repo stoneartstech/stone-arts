@@ -3,7 +3,7 @@ import { AiTwotoneFilePdf } from "react-icons/ai";
 import { IoClose } from "react-icons/io5";
 import { storage } from "../../firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { BlobProvider, Image, PDFDownloadLink } from "@react-pdf/renderer";
+import { BlobProvider, PDFDownloadLink } from "@react-pdf/renderer";
 import { Text, View, Page, Document, StyleSheet } from "@react-pdf/renderer";
 import { Fragment } from "react";
 import { useSearchParams } from "next/navigation";
@@ -192,13 +192,6 @@ export const Quote = ({ setQuotePdfUrl, quoteData, setIsQuote }) => {
       return (
         <View style={styles.titleContainer}>
           <View style={styles.spaceBetween}>
-            <Image
-              width={100}
-              height={100}
-              style={styles.logo}
-              src="/logo.png"
-              alt="logo"
-            />
             <Text style={styles.reportTitle}>Stone Arts</Text>
           </View>
         </View>
