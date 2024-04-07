@@ -9,7 +9,7 @@ import { Fragment } from "react";
 import { useSearchParams } from "next/navigation";
 import { deleteDoc } from "firebase/firestore";
 
-export const Quote = ({ setQuotePdfUrl, quoteData, setIsQuote }) => {
+export default function Quote({ setQuotePdfUrl, quoteData, setIsQuote }) {
   const targetRef = useRef();
 
   const [total, setTotal] = useState(0);
@@ -590,4 +590,4 @@ export const Quote = ({ setQuotePdfUrl, quoteData, setIsQuote }) => {
       </div>
     </>
   );
-};
+}
