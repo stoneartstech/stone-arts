@@ -15,6 +15,7 @@ import Link from "next/link";
 import { IoClose } from "react-icons/io5";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import Image from "next/image";
 
 function RequestsDisplay() {
   const router = useRouter();
@@ -262,8 +263,8 @@ function RequestsDisplay() {
                   Design Preview
                 </h3>
                 <Link href={selectedDesign.downloadURL} target="_blank">
-                  <img
-                    className=" w-[95%] mt-3 object-contain"
+                  <Image
+                    className="w-[95%] mt-3 object-contain"
                     src={selectedDesign.downloadURL}
                     alt="Design-Preview"
                   />
