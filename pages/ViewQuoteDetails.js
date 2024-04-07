@@ -3,11 +3,10 @@ import { useRouter } from "next/router";
 import { db, storage } from "@/firebase";
 import { getDownloadURL, listAll, ref } from "firebase/storage";
 import { collection, onSnapshot } from "firebase/firestore";
-import {
+import CheckProgressImages, {
   CheckDeliveryNotes,
-  CheckProgressImages,
   CheckSiteImages,
-} from "./Qs/components/ViewQuoteComponents";
+} from "@/components/ViewQuoteComponents";
 
 export default function ViewQuoteDetails() {
   const router = useRouter();

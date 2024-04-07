@@ -168,13 +168,13 @@ export const CheckSiteImages = ({
     </div>
   );
 };
-export const CheckProgressImages = ({
+export default function CheckProgressImages({
   dbName,
   setIsProgressImages,
   id,
   downloadProgressImgURLs,
   setDownloadProgressImgURLs,
-}) => {
+}) {
   const [progressImages, setProgressImages] = useState(false);
   const uploadImages = async () => {
     try {
@@ -266,4 +266,4 @@ export const CheckProgressImages = ({
       ;
     </div>
   );
-};
+}
