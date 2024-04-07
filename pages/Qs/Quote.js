@@ -60,15 +60,16 @@ export default function Quote({ setQuotePdfUrl, quoteData, setIsQuote }) {
   };
 
   useEffect(() => {
-    const calculateSumTotal = () => {
-      const sum = data.reduce((accumulator, row) => {
-        const total = parseFloat(row.total);
-        return isNaN(total) ? accumulator : accumulator + total;
-      }, 0);
-      setTotal(sum);
-    };
     calculateSumTotal();
   }, [handleQuoteChange, rowCount]);
+
+  const calculateSumTotal = () => {
+    const sum = data.reduce((accumulator, row) => {
+      const total = parseFloat(row.total);
+      return isNaN(total) ? accumulator : accumulator + total;
+    }, 0);
+    setTotal(sum);
+  };
 
   const CurrDate = new Date();
 
