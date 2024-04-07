@@ -7,7 +7,7 @@ import {
   CheckDeliveryNotes,
   CheckProgressImages,
   CheckSiteImages,
-} from "./Qs/ViewQuoteComponents";
+} from "./Qs/components/ViewQuoteComponents";
 
 export default function ViewQuoteDetails() {
   const router = useRouter();
