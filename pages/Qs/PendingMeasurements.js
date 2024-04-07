@@ -3,10 +3,10 @@ import { useRouter } from "next/router";
 import { db, storage } from "../../firebase";
 import {
   collection,
-  onSnapshot,
-  doc,
-  setDoc,
   deleteDoc,
+  doc,
+  onSnapshot,
+  setDoc,
 } from "firebase/firestore";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -20,6 +20,7 @@ export default function PendingMeasurements() {
   const [originalMeasurements, setOriginalMeasurements] = useState([]);
   const [isQuote, setIsQuote] = useState(false);
   const [quoteData, setQuoteData] = useState({});
+  const [quotePdfUrl, setQuotePdfUrl] = useState({ id: "", link: "" });
 
   const params = useSearchParams();
   var dbName = params.get("param");
@@ -79,16 +80,17 @@ export default function PendingMeasurements() {
     }
   };
   async function handleSendAdmin(qsId) {
-    console.log(downloadURLs);
     if (!downloadURLs[qsId]) {
       alert(`Please try again`);
       return;
     }
     const qsData = Measurements.find((qs) => qs.id === qsId);
+    // console.log(qsData2);
     qsData.downloadURL = downloadURLs[qsId];
+    var qsData2 = { ...qsData, quotePdf: quotePdfUrl.link };
     await setDoc(
       doc(db, dbName.slice(0, 3) + "-pending-site-quotes", qsId),
-      qsData
+      qsData2
     );
     await deleteDoc(doc(db, dbName, qsId));
     alert(`Project ${qsId} sent to pending-site-quotes`);
@@ -145,30 +147,52 @@ export default function PendingMeasurements() {
           </div>
         </div>
       </div>
-      {isQuote && <Quote quoteData={quoteData} setIsQuote={setIsQuote} />}
+      {isQuote && (
+        <Quote
+          setQuotePdfUrl={setQuotePdfUrl}
+          quoteData={quoteData}
+          setIsQuote={setIsQuote}
+          dbName={dbName}
+        />
+      )}
       <div className="flex flex-col gap-5 mt-8 items-center">
         {Measurements.map((qs) => (
           <div
             key={qs["id"]}
             className=" w-[70%] grid grid-cols-5 items-center"
           >
+            {/* {console.log(qs)} */}
             <p className=" text-center">
               {qs["name"]} - {qs["id"]} :
             </p>
             <Link
               href={{
-                pathname: "/RequestDetails",
+                pathname: "/ViewQuoteDetails",
                 query: {
-                  title: qs["title"],
                   id: qs["id"],
-                  name: qs["name"],
+                  dbName: dbName,
                   description: qs["description"],
-                  clientFirstName: qs["clientFirstName"],
-                  clientLastName: qs["clientLastName"],
-                  clientPhoneNumber: qs["clientPhoneNumber"],
-                  clientEmail: qs["clientEmail"],
-                  clientAddress: qs["clientAddress"],
-                  downloadURL: qs["downloadURL"],
+                  clientId: qs["clientId"],
+                  clientFirstName: qs["name"],
+                  clientLastName: qs["lastName"],
+                  clientPhoneNumber: qs["number"],
+                  clientEmail: qs["email"],
+                  clientAddress: qs["address"],
+                  salesPerson: qs["salesPerson"],
+                  sourceInfo: qs["sourceInfo"],
+                  specificInfo: qs["specificInfo"],
+                  status: qs["status"],
+                  option: qs["option"],
+                  date: qs["date"],
+                  aspects: qs["aspects"],
+                  address: qs["address"],
+                  measurementDataContactPerson:
+                    qs["measurementData"].contactPerson,
+                  measurementDataCost: qs["measurementData"].cost,
+                  measurementDataDate: qs["measurementData"].date,
+                  measurementDataSupplyFix: qs["measurementData"].supplyFix,
+                  measurementDataTime: qs["measurementData"].time,
+                  // downloadURL: qs["downloadURL"],
                 },
               }}
               target="_blank"
@@ -180,15 +204,25 @@ export default function PendingMeasurements() {
                 Check Info
               </button>
             </Link>
-            <button
-              onClick={() => {
-                setIsQuote(true);
-                setQuoteData(qs);
-              }}
-              className="bg-gray-300 hover:bg-gray-400 mb-2 p-2 rounded-lg text-center"
-            >
-              Generate Quote
-            </button>
+            {quotePdfUrl.link !== "" && qs["id"] === quotePdfUrl.id ? (
+              <Link
+                href={quotePdfUrl.link}
+                target="_blank"
+                className="bg-gray-400 hover:bg-gray-500 mb-2 p-2 rounded-lg text-center"
+              >
+                View Quote
+              </Link>
+            ) : (
+              <button
+                onClick={() => {
+                  setIsQuote(true);
+                  setQuoteData(qs);
+                }}
+                className="bg-gray-300 hover:bg-gray-400 mb-2 p-2 rounded-lg text-center"
+              >
+                Generate Quote
+              </button>
+            )}
 
             <input
               className=" mx-4"

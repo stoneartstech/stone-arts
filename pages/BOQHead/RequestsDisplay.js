@@ -133,35 +133,92 @@ export default function RequestsDisplay() {
                 {requests.map((request) => (
                   <div
                     key={request["id"]}
-                    className={` w-[30%] grid ${
+                    className={` w-[50%] grid ${
                       param === "pending-admin-quotes"
-                        ? "grid-cols-4"
-                        : "grid-cols-2"
+                        ? "grid-cols-5"
+                        : "grid-cols-3"
                     } gap-6 items-center`}
                   >
-                    {param === "pending-measurements" ? (
+                    {param === "pending-measurements" ||
+                    param === "pending-site-quotes" ? (
                       <>
                         <Link
                           href={{
-                            pathname: "/RequestDetails",
+                            pathname: "/ViewQuoteDetails",
                             query: {
-                              title: request["title"],
                               id: request["id"],
-                              name: request["name"],
+                              dbName: `qs${qs}`,
                               description: request["description"],
-                              clientFirstName: request["clientFirstName"],
-                              clientLastName: request["clientLastName"],
-                              clientPhoneNumber: request["clientPhoneNumber"],
-                              clientEmail: request["clientEmail"],
-                              clientAddress: request["clientAddress"],
-                              downloadURL: request["downloadURL"],
-                              notes: request["notes"],
-                              imageUrl: request["imageUrl"],
+                              clientId: request["clientId"],
+                              clientFirstName: request["name"],
+                              clientLastName: request["lastName"],
+                              clientPhoneNumber: request["number"],
+                              clientEmail: request["email"],
+                              clientAddress: request["address"],
+                              salesPerson: request["salesPerson"],
+                              sourceInfo: request["sourceInfo"],
+                              specificInfo: request["specificInfo"],
+                              status: request["status"],
+                              option: request["option"],
+                              date: request["date"],
+                              aspects: request["aspects"],
+                              address: request["address"],
+                              measurementDataContactPerson:
+                                request["measurementData"]?.contactPerson,
+                              measurementDataCost:
+                                request["measurementData"]?.cost,
+                              measurementDataDate:
+                                request["measurementData"]?.date,
+                              measurementDataSupplyFix:
+                                request["measurementData"]?.supplyFix,
+                              measurementDataTime:
+                                request["measurementData"]?.time,
+                              // downloadURL: request["downloadURL"],
                             },
                           }}
-                          className="bg-slate-300 p-2 rounded-lg text-center col-span-full sm:col-span-4 "
+                          target="_blank"
                         >
                           {request["name"] + " -> " + request["id"]}
+                        </Link>
+                        <Link
+                          href={{
+                            pathname: "/ViewQuoteDetails",
+                            query: {
+                              id: request["id"],
+                              dbName: `qs${qs}`,
+                              description: request["description"],
+                              clientId: request["clientId"],
+                              clientFirstName: request["name"],
+                              clientLastName: request["lastName"],
+                              clientPhoneNumber: request["number"],
+                              clientEmail: request["email"],
+                              clientAddress: request["address"],
+                              salesPerson: request["salesPerson"],
+                              sourceInfo: request["sourceInfo"],
+                              specificInfo: request["specificInfo"],
+                              status: request["status"],
+                              option: request["option"],
+                              date: request["date"],
+                              aspects: request["aspects"],
+                              address: request["address"],
+                              measurementDataContactPerson:
+                                request["measurementData"]?.contactPerson,
+                              measurementDataCost:
+                                request["measurementData"]?.cost,
+                              measurementDataDate:
+                                request["measurementData"]?.date,
+                              measurementDataSupplyFix:
+                                request["measurementData"]?.supplyFix,
+                              measurementDataTime:
+                                request["measurementData"]?.time,
+                              // downloadURL: request["downloadURL"],
+                            },
+                          }}
+                          target="_blank"
+                        >
+                          <button className=" px-4 py-2 bg-green-400 text-sm font-medium">
+                            Check Details
+                          </button>
                         </Link>
                       </>
                     ) : (
@@ -169,6 +226,45 @@ export default function RequestsDisplay() {
                         <p className=" text-center">
                           {request["name"]} - {request["id"]} :
                         </p>
+                        <Link
+                          href={{
+                            pathname: "/ViewQuoteDetails",
+                            query: {
+                              id: request["id"],
+                              dbName: `qs${qs}`,
+                              description: request["description"],
+                              clientId: request["clientId"],
+                              clientFirstName: request["name"],
+                              clientLastName: request["lastName"],
+                              clientPhoneNumber: request["number"],
+                              clientEmail: request["email"],
+                              clientAddress: request["address"],
+                              salesPerson: request["salesPerson"],
+                              sourceInfo: request["sourceInfo"],
+                              specificInfo: request["specificInfo"],
+                              status: request["status"],
+                              option: request["option"],
+                              date: request["date"],
+                              aspects: request["aspects"],
+                              address: request["address"],
+                              measurementDataContactPerson:
+                                request["measurementData"]?.contactPerson,
+                              measurementDataCost:
+                                request["measurementData"]?.cost,
+                              measurementDataDate:
+                                request["measurementData"]?.date,
+                              measurementDataSupplyFix:
+                                request["measurementData"]?.supplyFix,
+                              measurementDataTime:
+                                request["measurementData"]?.time,
+                              // downloadURL: request["downloadURL"],
+                            },
+                          }}
+                          target="_blank"
+                          className="bg-green-400 p-2 w-full rounded-md mr-3 text-center"
+                        >
+                          Check Details
+                        </Link>
                         <Link
                           href={request?.downloadURL}
                           className="bg-gray-400 p-2 w-fit px-5 rounded-md mr-3 text-center"

@@ -100,11 +100,48 @@ export default function PendingMeasurements() {
         {Measurements.map((qs) => (
           <div
             key={qs["id"]}
-            className=" w-[30%] grid grid-cols-2 items-center"
+            className=" w-[30%] grid grid-cols-3 items-center"
           >
             <p className=" text-center">
               {qs["name"]} - {qs["id"]} :
             </p>
+            <Link
+              href={{
+                pathname: "/ViewQuoteDetails",
+                query: {
+                  id: qs["id"],
+                  dbName: dbName,
+                  description: qs["description"],
+                  clientId: qs["clientId"],
+                  clientFirstName: qs["name"],
+                  clientLastName: qs["lastName"],
+                  clientPhoneNumber: qs["number"],
+                  clientEmail: qs["email"],
+                  clientAddress: qs["address"],
+                  salesPerson: qs["salesPerson"],
+                  sourceInfo: qs["sourceInfo"],
+                  specificInfo: qs["specificInfo"],
+                  status: qs["status"],
+                  option: qs["option"],
+                  date: qs["date"],
+                  aspects: qs["aspects"],
+                  address: qs["address"],
+                  measurementDataContactPerson:
+                    qs["measurementData"].contactPerson,
+                  measurementDataCost: qs["measurementData"].cost,
+                  measurementDataDate: qs["measurementData"].date,
+                  measurementDataSupplyFix: qs["measurementData"].supplyFix,
+                  measurementDataTime: qs["measurementData"].time,
+                  // downloadURL: qs["downloadURL"],
+                },
+              }}
+              target="_blank"
+            >
+              <button className="bg-green-400 p-2 rounded-lg text-center">
+                Check Info
+              </button>
+            </Link>
+
             <Link
               href={qs.downloadURL}
               className="bg-gray-400 p-2 w-fit px-10 rounded-md mr-3 text-center"
