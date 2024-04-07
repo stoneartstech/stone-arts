@@ -26,6 +26,8 @@ export default function Home() {
 
   const qsMails = {
     'qs1@stonearts.com': '1',
+    'qs2@stonearts.com': '2',
+    'qs3@stonearts.com': '3',
   }
 
   return (
