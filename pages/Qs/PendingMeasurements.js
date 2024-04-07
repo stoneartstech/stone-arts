@@ -11,7 +11,7 @@ import {
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { Quote } from "./Quote";
+import Quote from "./Quote";
 
 export default function PendingMeasurements() {
   const router = useRouter();
