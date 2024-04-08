@@ -9,6 +9,7 @@ import DesignHead from '../components/DesignHead'
 import DesignerDashboard from '../components/DesignerDashboard'
 import BOQHead from '@/components/BOQHead'
 import QSDashboard from '@/components/QSDashboard'
+import WorkshopDashboard from '@/components/WorkshopDashboard'
 
 export default function Home() {
   const { currentUser } = useAuth()
@@ -53,6 +54,9 @@ export default function Home() {
       {/* BOQ */}
       {currentUser && currentUser.email === 'boqhead@stonearts.com' && <BOQHead />}
       {currentUser && qsMails[currentUser.email] && <QSDashboard qsId={qsMails[currentUser.email]} />}
+
+      {/* Workshop */}
+      {currentUser && currentUser.email === 'workshop@stonearts.com' && <WorkshopDashboard />}
 
     </>
   )
