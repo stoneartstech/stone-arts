@@ -57,6 +57,27 @@ export default function WorkshopDashboard() {
                         : "Admin Workshop Dashboard"}
                 </p>
             </div>
+            <div className="flex flex-col mt-6">
+                <div className='items-center sm:mx-24 grid grid-cols-3 gap-x-12 mb-4'>
+                    <p className='text-lg text-center'>Workshop Report</p>
+                    <Link href={{
+                        pathname: "/Workshop/WorkshopReportUpload",
+
+                    }}
+                        className='bg-slate-300 hover:bg-slate-500 text-black p-3 w-full sm:max-w-[25vw] text-center'
+                    >
+                        Upload
+                    </Link>
+                    <Link href={{
+                        pathname: "/Workshop/WorkshopReportHistory",
+
+                    }}
+                        className='bg-slate-300 hover:bg-slate-500 text-black p-3 w-full sm:max-w-[25vw] text-center'
+                    >
+                        History
+                    </Link>
+                </div>
+            </div>
         </div>
     );
 
