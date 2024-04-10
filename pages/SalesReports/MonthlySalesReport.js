@@ -121,7 +121,6 @@ const MonthlySalesReport = () => {
     ];
     arrayOfArray.unshift(headers);
     arrayOfArray.push(totals);
-
     const workSheet = XLSX.utils.aoa_to_sheet(arrayOfArray);
     const workBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workBook, workSheet, "Sheet 1");
