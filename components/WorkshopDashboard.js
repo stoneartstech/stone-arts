@@ -52,7 +52,7 @@ export default function WorkshopDashboard() {
       </div>
       <div className="flex flex-col mt-4">
         <p className="text-2xl mx-auto font-bold">
-          {currentUser.email === "boqhead@stonearts.com"
+          {currentUser.email === "workshop@stonearts.com"
             ? "Workshop Dashboard"
             : "Admin Workshop Dashboard"}
         </p>
