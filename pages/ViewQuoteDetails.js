@@ -1,15 +1,19 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
 import { db, storage } from "@/firebase";
-import { getDownloadURL, listAll, ref } from "firebase/storage";
+import { deleteObject, getDownloadURL, listAll, ref } from "firebase/storage";
 import { collection, onSnapshot } from "firebase/firestore";
 import CheckProgressImages, {
   CheckDeliveryNotes,
   CheckSiteImages,
 } from "@/components/ViewQuoteComponents";
+import { useAuth } from "../context/AuthContext";
+import EditQuote from "./BOQHead/EditQuote";
 
 export default function ViewQuoteDetails() {
   const router = useRouter();
+  const { currentUser } = useAuth();
+
   const {
     id,
     dbName,
@@ -42,6 +46,7 @@ export default function ViewQuoteDetails() {
   const [isSiteImages, setIsSiteImages] = useState(false);
   const [isProgressImages, setIsProgressImages] = useState(false);
   const [isDeliveryNotes, setIsDeliveryNotes] = useState(false);
+  const [isEditQuote, setIsEditQuote] = useState(false);
 
   const checkQuote = async () => {
     try {
@@ -127,6 +132,25 @@ export default function ViewQuoteDetails() {
     }
   };
 
+  const deleteQuote = async () => {
+    var response = confirm("Quote of this Client will be  Deleted.");
+    if (response === true) {
+      try {
+        const storageRef = ref(storage, `PdfQuotes/${dbName}/${clientId}.pdf`);
+        // Delete the file
+        deleteObject(storageRef)
+          .then(() => {
+            alert("Quote Deleted");
+          })
+          .catch((error) => {
+            console.log(error);
+            alert("Try again later !!");
+          });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
   return (
     <>
       {!loading && (
@@ -212,6 +236,40 @@ export default function ViewQuoteDetails() {
             >
               Check Quote
             </button>
+
+            {currentUser && currentUser.email === "admin@stonearts.com" && (
+              <>
+                {currentUser &&
+                  currentUser.email === "admin@stonearts.com" &&
+                  isEditQuote && (
+                    <EditQuote
+                      dbName={dbName}
+                      clientId={clientId}
+                      clientFirstName={clientFirstName}
+                      clientLastName={clientLastName}
+                      clientAddress={clientAddress}
+                      setIsEditQuote={setIsEditQuote}
+                    />
+                  )}
+                <button
+                  onClick={() => {
+                    setIsEditQuote(true);
+                  }}
+                  className=" bg-[#f2e44e] hover:bg-[#d3e551] border border-black px-14 py-3 font-medium "
+                >
+                  Edit Quote
+                </button>
+                <button
+                  onClick={() => {
+                    deleteQuote();
+                  }}
+                  className=" bg-red-500 hover:bg-red-600 border border-black px-14 py-3 font-medium "
+                >
+                  Delete Quote
+                </button>
+              </>
+            )}
+
             {!loading ? (
               <button
                 onClick={() => {
