@@ -57,7 +57,24 @@ export default function WorkshopDashboard() {
             : "Admin Workshop Dashboard"}
         </p>
       </div>
-      <div className="flex flex-col mt-6">
+      <div className="flex flex-col">
+        <div className="flex flex-col items-center my-12 gap-6">
+          <Link
+            href={{
+              pathname: '/Workshop/PendingOrders',
+            }}
+            className='bg-slate-300 p-2 rounded-lg text-center sm:w-1/3'>
+            Pending Orders
+          </Link>
+          <Link
+            href={{
+              pathname: '/Workshop/CompletedOrders',
+            }}
+            className='bg-slate-300 p-2 rounded-lg text-center sm:w-1/3'>
+            Completed Orders
+          </Link>
+        </div>
+
         <div className="items-center sm:mx-24 grid grid-cols-3 gap-x-12 mb-4">
           <p className="text-lg text-center">Workshop Report</p>
           <Link
