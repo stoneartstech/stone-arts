@@ -1,16 +1,11 @@
 import React from "react";
 import Link from "next/link";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 
-function AdminDashboard() {
+function Erpag() {
   const options = [
-    { title: "Sales", link: "/SalesAdmin" },
-    { title: "Design", link: "/designhome" },
-    { title: "BOQ", link: "/boqhome" },
-    { title: "PMT", link: "/pmthome" },
-    { title: "Workshop", link: "/workshophome" },
-    { title: "Logistics", link: "/logisticshome" },
-    { title: "Drivers", link: "/drivershome" },
+    { title: "Invoice", link: "/erpag/Invoice" },
+    { title: "Sales Order", link: "/erpag/SalesOrder" },
   ];
   const { logout } = useAuth();
   async function logoutHandler() {
@@ -25,7 +20,7 @@ function AdminDashboard() {
   return (
     <div>
       <div className="flex flex-col sm:flex-row items-center justify-center gap-12">
-        <p className="text-2xl text-center">Admin Home Page</p>
+        <p className="text-2xl text-center">ERPAG Pages</p>
         <button className="bg-red-500 p-3 rounded-lg" onClick={logoutHandler}>
           Logout
         </button>
@@ -41,15 +36,9 @@ function AdminDashboard() {
             {option.title}
           </Link>
         ))}
-        <Link
-          href={"/erpag/Erpag"}
-          className="bg-slate-300 hover:bg-slate-400 p-2 w-full text-center sm:max-w-[25vw]"
-        >
-          ERPAG
-        </Link>
       </div>
     </div>
   );
 }
 
-export default AdminDashboard;
+export default Erpag;

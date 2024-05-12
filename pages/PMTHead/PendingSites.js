@@ -314,9 +314,13 @@ export default function PendingSites() {
                 <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border  w-[300px]">
                   Assign People
                 </button>
-                <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border  w-[300px]">
-                  Create Job Card
-                </button>
+                <Link
+                  href={`/PMTHead/actions/JobCards?qsName=${selectedClient?.qsName}&clientName=${selectedClient?.name}+${selectedClient?.lastname}`}
+                >
+                  <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border  w-[300px]">
+                    Create Job Card
+                  </button>
+                </Link>
                 <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border  w-[300px]">
                   Start Project
                 </button>
