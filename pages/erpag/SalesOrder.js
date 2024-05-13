@@ -353,8 +353,8 @@ const Invoice = () => {
     };
 
     const TableBody = () => {
-      return rows?.map((receipt) => (
-        <Fragment key={receipt.id}>
+      return rows?.map((receipt, index) => (
+        <Fragment key={index}>
           <View style={{ width: "100%", flexDirection: "row" }}>
             <View style={[styles.tbody]}>
               <Text>{receipt.id}</Text>

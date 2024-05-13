@@ -309,7 +309,7 @@ const CreateSalesOrder = ({ compType, handEditSalesOrder, selectedOrder }) => {
                           >
                             {subItem?.options?.map((option, index2) => {
                               return (
-                                <option value={option?.value}>
+                                <option key={index2} value={option?.value}>
                                   {option?.name}
                                 </option>
                               );
