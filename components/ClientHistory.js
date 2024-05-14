@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTable } from 'react-table';
-import { collection, onSnapshot, deleteDoc } from 'firebase/firestore';
+import { collection, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useRouter } from 'next/router';
 import * as XLSX from 'xlsx';
@@ -67,6 +67,12 @@ export default function ClientHistory({ showroomName, onEditClient }) {
           <button onClick={() => handleEditClient(row.original.id)} className='hover:underline'>Edit</button>
         )
       },
+      {
+        Header: 'Delete', accessor: 'delete',
+        Cell: ({ row }) => (
+          <button onClick={() => handleDeleteClient(row.original.id)} className='hover:underline text-red-500'>Delete</button>
+        )
+      }
     ],
     []
   );
@@ -81,6 +87,12 @@ export default function ClientHistory({ showroomName, onEditClient }) {
 
   function handleEditClient(clientId) {
     onEditClient(clientId);
+  }
+
+  async function handleDeleteClient(clientId) {
+    if (confirm('Are you sure you want to delete this client request?')) {
+      await deleteDoc(doc(db, showroomDbName, clientId));
+    }
   }
 
   function handleSearch() {
