@@ -441,12 +441,15 @@ const Invoice = () => {
           ...doc.data(),
         }));
         // setData(reports[0]?.);
-        const newObjectsArray = reports[0].data.map((obj) => ({
-          ...obj,
-          ...reports[0]?.details,
-        }));
-
-        // console.log([mainObj]);
+        console.log(reports);
+        var newObjectsArray = [];
+        reports.forEach((item) => {
+          const updatedItem = item.data.map((obj) => ({
+            ...obj,
+            ...item[0]?.details,
+          }));
+          newObjectsArray.push(updatedItem);
+        });
         console.log(newObjectsArray);
         setData(newObjectsArray);
         setLoading(false);
@@ -462,16 +465,13 @@ const Invoice = () => {
   };
   const router = useRouter();
   return (
-    <>
+    <div div className="">
       {loading ? (
         <div className=" w-full h-full flex items-center justify-center">
           Loading...
         </div>
       ) : (
-        <div
-          style={{ height: 400, width: "100%" }}
-          className=" overflow-x-auto"
-        >
+        <div className=" overflow-x-auto w-full h-full">
           <div className=" flex w-full py-2 items-center justify-between">
             <div className=" relative flex items-center gap-2">
               <button
@@ -555,8 +555,8 @@ const Invoice = () => {
                         <input
                           disabled
                           className="w-full px-2 border-none outline-none"
-                          title={item?.id}
-                          value={item?.id}
+                          title={item[0]?.id}
+                          value={item[0]?.id}
                         />
                       </td>
                       <td className="bg-white  relative border border-gray-400 text-center">
@@ -570,77 +570,78 @@ const Invoice = () => {
                         <input
                           disabled
                           className="w-full px-2 font-medium underline cursor-pointer hover:text-blue-600 border-none outline-none"
-                          title={item?.number}
-                          value={item?.number}
+                          title={item[0]?.number}
+                          value={item[0]?.number}
                         />
                       </td>
                       <td className="bg-white border border-gray-400 text-center">
                         <input
                           disabled
                           className="w-full px-2 border-none outline-none"
-                          title={item?.tag}
-                          value={item?.tag}
+                          title={item[0]?.tag}
+                          value={item[0]?.tag}
                         />
                       </td>
                       <td className="bg-white border border-gray-400 text-center">
                         <input
                           disabled
                           className="w-fit text-center px-2 border-none outline-none"
-                          title={item?.dateAndTime}
-                          value={item?.dateAndTime}
+                          title={item[0]?.dateAndTime}
+                          value={item[0]?.dateAndTime}
                         />
                       </td>
                       <td className="bg-white border border-gray-400 text-center">
                         <input
                           disabled
                           className="w-full px-2 border-none outline-none"
-                          title={item?.customer}
-                          value={item?.customer}
+                          title={item[0]?.customer}
+                          value={item[0]?.customer}
                         />
                       </td>
                       <td className="bg-white border border-gray-400 text-center">
                         <input
                           disabled
                           className={`w-full px-2 ${
-                            item?.status?.toLowerCase() === "completed"
+                            item[0]?.status?.toLowerCase() === "completed"
                               ? "bg-green-400"
-                              : item?.status?.toLowerCase() === "packed"
+                              : item[0]?.status?.toLowerCase() === "packed"
                               ? " bg-yellow-300"
-                              : item?.status?.toLowerCase() === "approved"
+                              : item[0]?.status?.toLowerCase() === "approved"
                               ? " bg-blue-400"
                               : ""
                           } border-none outline-none`}
-                          title={item?.status}
-                          value={item?.status}
+                          title={item[0]?.status}
+                          value={item[0]?.status}
                         />
                       </td>
                       <td className="bg-white border border-gray-400 text-center">
                         <input
                           disabled
                           className={`w-full px-2 ${
-                            item?.quantityStatus?.toLowerCase() === "fulfilled"
+                            item[0]?.quantityStatus?.toLowerCase() ===
+                            "fulfilled"
                               ? "bg-green-400"
-                              : item?.quantityStatus?.toLowerCase() ===
+                              : item[0]?.quantityStatus?.toLowerCase() ===
                                 "no quantity"
                               ? " bg-red-300"
-                              : item?.quantityStatus?.toLowerCase() ===
+                              : item[0]?.quantityStatus?.toLowerCase() ===
                                 "available quantity"
                               ? " bg-blue-400"
                               : ""
                           } border-none outline-none`}
-                          title={item?.quantityStatus}
-                          value={item?.quantityStatus}
+                          title={item[0]?.quantityStatus}
+                          value={item[0]?.quantityStatus}
                         />
                       </td>
                       <td className="bg-white border border-gray-400 text-center relative">
                         <p
                           className={` w-full px-2 ${
-                            item?.shippingStatus?.toLowerCase() === "shipped"
+                            item[0]?.shippingStatus?.toLowerCase() === "shipped"
                               ? " w-full bg-green-400"
-                              : item?.shippingStatus?.toLowerCase() ===
+                              : item[0]?.shippingStatus?.toLowerCase() ===
                                 "ready for shipping"
                               ? " "
-                              : item?.shippingStatus?.toLowerCase() ===
+                              : item[0]?.shippingStatus?.toLowerCase() ===
                                 "partly-shipped"
                               ? " w-[50px] bg-yellow-300"
                               : ""
@@ -649,68 +650,69 @@ const Invoice = () => {
                         <input
                           disabled
                           className="w-full px-2 absolute inset-0 z-50 bg-transparent border-none outline-none"
-                          title={item?.shippingStatus}
-                          value={item?.shippingStatus}
+                          title={item[0]?.shippingStatus}
+                          value={item[0]?.shippingStatus}
                         />
                       </td>
                       <td className="bg-white border border-gray-400 text-center">
                         <input
                           disabled
                           className={`w-full px-2 ${
-                            item?.paymentStatus?.toLowerCase() === "paid"
+                            item[0]?.paymentStatus?.toLowerCase() === "paid"
                               ? "bg-green-400"
-                              : item?.paymentStatus?.toLowerCase() ===
+                              : item[0]?.paymentStatus?.toLowerCase() ===
                                 "partly-advance"
                               ? " bg-yellow-200"
-                              : item?.paymentStatus?.toLowerCase() ===
+                              : item[0]?.paymentStatus?.toLowerCase() ===
                                 "advance-payment"
                               ? " bg-blue-400"
-                              : item?.paymentStatus?.toLowerCase() === "unpaid"
+                              : item[0]?.paymentStatus?.toLowerCase() ===
+                                "unpaid"
                               ? " bg-red-400"
                               : ""
                           } border-none outline-none`}
-                          title={item?.paymentStatus}
-                          value={item?.paymentStatus}
+                          title={item[0]?.paymentStatus}
+                          value={item[0]?.paymentStatus}
                         />
                       </td>
                       <td className="bg-white border border-gray-400 text-center">
                         <input
                           disabled
                           className="w-full px-2 border-none outline-none"
-                          title={item?.amount}
-                          value={item?.amount}
+                          title={item[0]?.amount}
+                          value={item[0]?.amount}
                         />
                       </td>
                       <td className="bg-white border border-gray-400 text-center">
                         <input
                           disabled
                           className="w-full px-2 border-none outline-none"
-                          title={item?.totalAmount}
-                          value={item?.totalAmount}
+                          title={item[0]?.totalAmount}
+                          value={item[0]?.totalAmount}
                         />
                       </td>
                       <td className="bg-white border border-gray-400 text-center">
                         <input
                           disabled
                           className="w-full px-2 border-none outline-none"
-                          title={item?.unpaidAmt}
-                          value={item?.unpaidAmt}
+                          title={item[0]?.unpaidAmt}
+                          value={item[0]?.unpaidAmt}
                         />
                       </td>
                       <td className="bg-white border border-gray-400 text-center">
                         <input
                           disabled
                           className="w-full px-2 border-none outline-none"
-                          title={item?.advanceAmt}
-                          value={item?.advanceAmt}
+                          title={item[0]?.advanceAmt}
+                          value={item[0]?.advanceAmt}
                         />
                       </td>
                       <td className="bg-white border border-gray-400 text-center">
                         <input
                           disabled
                           className="w-full px-2 border-none outline-none"
-                          title={item?.warehouse}
-                          value={item?.warehouse}
+                          title={item[0]?.warehouse}
+                          value={item[0]?.warehouse}
                         />
                       </td>
                     </tr>
@@ -721,7 +723,7 @@ const Invoice = () => {
           )}
         </div>
       )}
-    </>
+    </div>
   );
 };
 export default Invoice;

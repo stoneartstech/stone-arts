@@ -6,6 +6,8 @@ function Erpag() {
   const options = [
     { title: "Invoice", link: "/erpag/Invoice" },
     { title: "Sales Order", link: "/erpag/SalesOrder" },
+    { title: "Inventory", link: "/erpag/Inventory" },
+    { title: "View Inventory", link: "/erpag/ViewInventory" },
   ];
   const { logout } = useAuth();
   async function logoutHandler() {
