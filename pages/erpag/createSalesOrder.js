@@ -1,5 +1,5 @@
 import { db } from "@/firebase";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 
@@ -140,6 +140,7 @@ const CreateSalesOrder = ({ compType, handEditSalesOrder, selectedOrder }) => {
           value: customer,
           valueTag: "customer",
           options: [
+            { name: "seelct Customer", value: "" },
             { name: "customer 1", value: "customer-1" },
             { name: "customer 2", value: "customer-2" },
             { name: "customer 3", value: "customer-3" },
@@ -218,7 +219,7 @@ const CreateSalesOrder = ({ compType, handEditSalesOrder, selectedOrder }) => {
   const [report, setReport] = useState([
     {
       SNo: 1,
-      description: "",
+      name: "",
       sku: "",
       quantity: "",
       UOM: "",
@@ -232,7 +233,7 @@ const CreateSalesOrder = ({ compType, handEditSalesOrder, selectedOrder }) => {
   const handleAddRow = () => {
     const row = {
       SNo: report.length + 1,
-      description: "",
+      name: "",
       sku: "",
       quantity: "",
       UOM: "",
@@ -249,20 +250,82 @@ const CreateSalesOrder = ({ compType, handEditSalesOrder, selectedOrder }) => {
     list.splice(-1);
     setReport(list);
   };
-
+  const [isOkay, setIsOkay] = useState(false);
+  const updateData = async (productName, prodQuantity) => {
+    const docRef = doc(db, "erpag/Inventory/mainWarehouse", productName);
+    const docSnap = (await getDoc(docRef)).data();
+    // console.log(docSnap);
+    if (
+      Number(docSnap?.quantity) > 0 &&
+      Number(docSnap?.quantity) < Number(prodQuantity)
+    ) {
+      alert(
+        `only ${docSnap?.quantity} ${docSnap?.UOM} ${productName} Avaialable`
+      );
+      setIsOkay(false);
+    } else if (Number(docSnap?.quantity) > 0) {
+      const newData = {
+        ...docSnap,
+        quantity: Number(docSnap?.quantity) - prodQuantity,
+      };
+      if (docSnap) {
+        setDoc(doc(db, `erpag/Inventory/mainWarehouse`, productName), newData);
+        setIsOkay(true);
+      }
+    } else {
+      alert(`${productName} Not Avaialable`);
+      setIsOkay(false);
+    }
+    // console.log(newData);
+  };
   return (
     <div className=" w-full h-full pb-10 bg-gray-200 ">
       <h1 className=" font-semibold capitalize text-[27px] text-center text-gray-800 my-2 ">
         {compType} Sales Order
       </h1>
-      <div className=" flex flex-col pb-10 bg-gray-200">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          try {
+            report.forEach((object) => {
+              // console.log(object.name?.toLowerCase()?.replace(/\s+/g, "-"));
+              updateData(
+                object?.name?.toLowerCase()?.replace(/\s+/g, "-"),
+                object?.quantity
+              );
+            });
+            // alert(isOkay);
+            if (isOkay) {
+              setDoc(
+                doc(db, "erpag/reports/salesOrder", `Order-${date}-${time}`),
+                {
+                  details: data,
+                  data: report,
+                  date,
+                  time,
+                }
+              );
+              // console.log(getDoc(db,`erpag/Inventory/mainWarehouse/${report[0].name}`))
+              if (compType?.toLowerCase() === "edit") {
+                alert("Invoice Edited Successfully");
+              } else {
+                alert("Invoice Created Successfully");
+              }
+              router.push("/erpag/Erpag");
+            }
+          } catch (error) {
+            alert("Error Creating Sales Order");
+          }
+        }}
+        className=" flex flex-col pb-10 bg-gray-200"
+      >
         {FormFields?.map((form, index) => {
           return (
-            <div key={index}>
+            <div key={index} className="">
               <h3 className=" font-semibold text-[18px] text-gray-800 my-2 ">
                 {form?.name}
               </h3>
-              <div className=" grid grid-cols-7 items-center gap-2 flex-wrap">
+              <div className=" grid grid-cols-2 md:grid-cols-7 items-center gap-2 flex-wrap">
                 {form?.form?.map((subItem, index1) => {
                   return (
                     <div key={index1}>
@@ -331,7 +394,7 @@ const CreateSalesOrder = ({ compType, handEditSalesOrder, selectedOrder }) => {
           <thead className="bg-blue-500 text-white">
             <tr>
               <th className="px-2 border-gray-400 border">Sl.</th>
-              <th className="px-2 border-gray-400 border">Description.</th>
+              <th className="px-2 border-gray-400 border">Name</th>
               <th className="px-2 border-gray-400 border">SKU</th>
               <th className="px-2 border-gray-400 border">Quantity</th>
               <th className="px-2 border-gray-400 border">UOM</th>
@@ -351,10 +414,11 @@ const CreateSalesOrder = ({ compType, handEditSalesOrder, selectedOrder }) => {
                 <td className="bg-white border border-gray-400">
                   <input
                     type="text"
-                    value={item.description}
+                    value={item.name}
+                    required
                     onChange={(e) => {
                       const list = [...report];
-                      list[index].description = e.target.value;
+                      list[index].name = e.target.value;
                       setReport(list);
                     }}
                     className="w-full px-2 border-none outline-none"
@@ -376,6 +440,7 @@ const CreateSalesOrder = ({ compType, handEditSalesOrder, selectedOrder }) => {
                   <input
                     type="text"
                     value={item.quantity}
+                    required
                     onChange={(e) => {
                       const list = [...report];
                       list[index].quantity = e.target.value;
@@ -400,6 +465,7 @@ const CreateSalesOrder = ({ compType, handEditSalesOrder, selectedOrder }) => {
                   <input
                     type="number"
                     value={item.price}
+                    required
                     onChange={(e) => {
                       const list = [...report];
                       list[index].price = e.target.value;
@@ -463,42 +529,29 @@ const CreateSalesOrder = ({ compType, handEditSalesOrder, selectedOrder }) => {
         <div className=" flex items-center justify-between">
           <div className=" flex items-center">
             <button
-              className="bg-slate-400 w-fit mt-2 font-semibold text-sm hover:bg-green-500 p-2.5 rounded-lg"
+              className="bg-slate-400 w-fit mt-2 font-semibold text-xs md:text-sm hover:bg-green-500 p-2 md:p-2.5 rounded-lg"
               onClick={handleAddRow}
             >
               + Add Row
             </button>
             <button
-              className="bg-slate-400 w-fit mt-2 ml-2 font-semibold text-sm hover:bg-red-500 p-2.5 rounded-lg"
+              className="bg-slate-400 w-fit mt-2 ml-2 font-semibold text-xs md:text-sm hover:bg-red-500 p-2 md:p-2.5 rounded-lg"
               onClick={handleRemoveRow}
             >
               Remove Row
             </button>
           </div>
           <button
-            disabled={data.customer === "" || report[0].description === ""}
-            className=" w-fit mt-2 font-semibold text-sm bg-green-500 disabled:bg-gray-400 text-white p-2.5 rounded-lg"
-            onClick={() => {
-              setDoc(doc(db, "erpag/reports/salesOrder", `Order-${date}`), {
-                details: data,
-                data: report,
-                date,
-                time,
-              });
-              if (compType?.toLowerCase() === "edit") {
-                alert("Invoice Edited Successfully");
-              } else {
-                alert("Invoice Created Successfully");
-              }
-              router.push("/erpag");
-            }}
+            type="submit"
+            disabled={data.customer === "" || report[0].name === ""}
+            className=" w-fit mt-2 font-semibold text-xs md:text-sm bg-green-500 disabled:bg-gray-400 text-white p-2 md:p-2.5 rounded-lg"
           >
             {compType?.toLowerCase() === "edit"
               ? "Edit Invoice"
               : "Create Invoice"}
           </button>
         </div>
-      </div>
+      </form>
     </div>
   );
 };
