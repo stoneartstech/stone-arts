@@ -1,5 +1,12 @@
 import { db } from "@/firebase";
-import { deleteDoc, disableNetwork, doc, setDoc } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  disableNetwork,
+  doc,
+  onSnapshot,
+  setDoc,
+} from "firebase/firestore";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 
@@ -24,6 +31,11 @@ const Inventory = ({ compType, handEditSalesOrder, selectedOrder }) => {
   const seconds = ("0" + currentDate.getSeconds()).slice(-2);
 
   const time = hours + "-" + minutes + "-" + seconds;
+  const [isDialog, setIsDialog] = useState(false);
+  const [resolveDialog, setResolveDialog] = useState(null);
+  const [dialogData, setDialogData] = useState("");
+  const [newQty, setNewQty] = useState([]);
+  const [exData, setExData] = useState([]);
   const [data, setData] = useState({
     number: "",
     tag: "",
@@ -46,6 +58,16 @@ const Inventory = ({ compType, handEditSalesOrder, selectedOrder }) => {
     if (compType?.toLowerCase() === "edit") {
       setData(selectedOrder);
     }
+    const fetch = onSnapshot(
+      collection(db, "erpag/Inventory/mainWarehouse"),
+      (snapshot) => {
+        var reports = snapshot.docs.map((doc) => ({
+          ...doc.data(),
+        }));
+        setExData(reports);
+        console.log(reports);
+      }
+    );
   }, []);
   const { number, tag, dateAndTime, warehouse, name } = data;
   const FormFields = [
@@ -105,7 +127,6 @@ const Inventory = ({ compType, handEditSalesOrder, selectedOrder }) => {
       quantity: "",
       UOM: "",
       stockPrice: "",
-      stockAmount: "",
       addInfo: "",
     },
   ]);
@@ -117,7 +138,6 @@ const Inventory = ({ compType, handEditSalesOrder, selectedOrder }) => {
       quantity: "",
       UOM: "",
       stockPrice: "",
-      stockAmount: "",
       addInfo: "",
     };
     setReport([...report, row]);
@@ -146,20 +166,96 @@ const Inventory = ({ compType, handEditSalesOrder, selectedOrder }) => {
       <h1 className=" font-semibold capitalize text-[27px] text-center text-gray-800 my-2 ">
         Create Inventory
       </h1>
+      {isDialog && (
+        <div className="w-full h-full fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+          <div className="bg-white flex flex-col items-center justify-center w-[90%] md:w-[45%] h-fit md:max-h-[400px] min-h-[250px]">
+            <div className="flex flex-col md:text-[17px]">
+              <p>
+                <b className="capitalize">{dialogData[0]?.name}</b> is already
+                present in Inventory.
+              </p>
+              <p className="mb-6 text-center mt-1">
+                Quantity : {dialogData[0]?.quantity} {dialogData[0]?.UOM}
+              </p>
+            </div>
+            <div className="flex flex-col items-center gap-4">
+              <button
+                onClick={() => {
+                  setDoc(
+                    doc(
+                      db,
+                      `erpag/Inventory/mainWarehouse`,
+                      `${dialogData[0]?.name
+                        ?.toLowerCase()
+                        ?.replace(/\s+/g, "-")}`
+                    ),
+                    {
+                      ...newQty[0],
+                      quantity: Number(newQty[0]?.quantity),
+                    }
+                  );
+                  setIsDialog(false);
+                  if (resolveDialog) resolveDialog();
+                }}
+                className="py-2 px-4 rounded-full border border-green-400 text-sm bg-green-200 text-green-700 font-medium"
+              >
+                Make Total Quantity {newQty[0]?.quantity} {dialogData[0]?.UOM}
+              </button>
+              <button
+                onClick={() => {
+                  setDoc(
+                    doc(
+                      db,
+                      `erpag/Inventory/mainWarehouse`,
+                      `${dialogData[0]?.name
+                        ?.toLowerCase()
+                        ?.replace(/\s+/g, "-")}`
+                    ),
+                    {
+                      ...newQty[0],
+                      quantity:
+                        Number(newQty[0]?.quantity) +
+                        Number(dialogData[0]?.quantity),
+                    }
+                  );
+                  setIsDialog(false);
+                  if (resolveDialog) resolveDialog();
+                }}
+                className="py-2 px-4 rounded-full border border-blue-400 text-sm bg-blue-200 text-blue-700 font-medium"
+              >
+                Make Total Quantity {newQty[0]?.quantity}+
+                {dialogData[0]?.quantity} {dialogData[0]?.UOM}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <form
-        onSubmit={(e) => {
+        onSubmit={async (e) => {
           e.preventDefault();
           try {
-            report.forEach((object) => {
-              setDoc(
-                doc(
-                  db,
-                  `erpag/Inventory/mainWarehouse`,
-                  `${object?.name?.toLowerCase()?.replace(/\s+/g, "-")}`
-                ),
-                object
-              );
-            });
+            for (const object of report) {
+              const existingItem = exData.find((i) => i?.name === object?.name);
+              if (existingItem) {
+                setDialogData([existingItem]);
+                setNewQty([object]);
+                setIsDialog(true);
+
+                await new Promise((resolve) => {
+                  setResolveDialog(() => resolve);
+                });
+              } else {
+                await setDoc(
+                  doc(
+                    db,
+                    `erpag/Inventory/mainWarehouse`,
+                    `${object?.name?.toLowerCase()?.replace(/\s+/g, "-")}`
+                  ),
+                  object
+                );
+              }
+            }
             alert("Inventory Updated Successfully");
             router.push("/erpag/Erpag");
           } catch (error) {
@@ -180,7 +276,6 @@ const Inventory = ({ compType, handEditSalesOrder, selectedOrder }) => {
               <th className="px-2 border-gray-400 border">Quantity</th>
               <th className="px-2 border-gray-400 border">UOM</th>
               <th className="px-2 border-gray-400 border">Stock Price</th>
-              <th className="px-2 border-gray-400 border">Stock Amount</th>
               <th className="px-2 border-gray-400 border">Additional Info</th>
             </tr>
           </thead>
@@ -257,22 +352,8 @@ const Inventory = ({ compType, handEditSalesOrder, selectedOrder }) => {
                 </td>
                 <td className="bg-white border border-gray-400">
                   <input
-                    type="number"
-                    value={item.stockAmount}
-                    required
-                    onChange={(e) => {
-                      const list = [...report];
-                      list[index].stockAmount = e.target.value;
-                      setReport(list);
-                    }}
-                    className="w-full px-2 border-none outline-none"
-                  />
-                </td>
-                <td className="bg-white border border-gray-400">
-                  <input
                     type="text"
                     value={item.addInfo}
-                    required
                     onChange={(e) => {
                       const list = [...report];
                       list[index].addInfo = e.target.value;
