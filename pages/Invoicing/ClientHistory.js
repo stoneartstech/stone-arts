@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useTable } from "react-table";
-import { collection, onSnapshot, deleteDoc, doc } from "firebase/firestore";
+import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { IoPencil } from "react-icons/io5";
 import { AiFillDelete } from "react-icons/ai";
 import { useRouter } from "next/router";
 import { db } from "@/firebase";
+
 export default function ClientHistory({ showroomName }) {
   const showroomDbNames = [
     "clients",
@@ -18,18 +19,20 @@ export default function ClientHistory({ showroomName }) {
   const [originalClientRequests, setOriginalClientRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [isSearch, setIsSearch] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    const allShowroomData = [];
-
-    const unsubscribeFunctions = showroomDbNames.map((showroom) => {
-      return onSnapshot(collection(db, showroom), (snapshot) => {
-        const requests = snapshot.docs.map((doc) => ({
+    const fetchData = async () => {
+      const allShowroomData = [];
+      for (const showroom of showroomDbNames) {
+        const querySnapshot = await getDocs(collection(db, showroom));
+        const requests = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
 
+        // console.log("1", requests);
         requests.forEach((clientRequest) => {
           if (clientRequest.aspects) {
             clientRequest.aspects = clientRequest.aspects.join(",");
@@ -40,63 +43,65 @@ export default function ClientHistory({ showroomName }) {
         // Sorting the requests
         requests.sort((a, b) => b.clientId - a.clientId);
 
-        // Find if the showroom data already exists
-        const index = allShowroomData.findIndex(
-          (item) => item.showroomName === showroom
-        );
-        if (index !== -1) {
-          // Update the existing entry
-          allShowroomData[index].data = requests;
-        } else {
-          // Add new entry
-          if (showroom === "clients") {
-            allShowroomData.push({
-              showroomName: showroom,
-              showroomDB: "Galleria",
-              data: requests,
-            });
-          } else if (showroom === "mirage-clients") {
-            allShowroomData.push({
-              showroomName: showroom,
-              showroomDB: "Mirage",
-              data: requests,
-            });
-          } else if (showroom === "kisumu-clients") {
-            allShowroomData.push({
-              showroomName: showroom,
-              showroomDB: "Kisumu",
-              data: requests,
-            });
-          } else if (showroom === "mombasa-clients") {
-            allShowroomData.push({
-              showroomName: showroom,
-              showroomDB: "Mombasa Road",
-              data: requests,
-            });
-          }
+        // console.log("2", requests);
+        if (showroom === "clients") {
+          allShowroomData.push({
+            showroomName: showroom,
+            showroomDB: "Galleria",
+            data: requests,
+          });
+        } else if (showroom === "mirage-clients") {
+          allShowroomData.push({
+            showroomName: showroom,
+            showroomDB: "Mirage",
+            data: requests,
+          });
+        } else if (showroom === "kisumu-clients") {
+          allShowroomData.push({
+            showroomName: showroom,
+            showroomDB: "Kisumu",
+            data: requests,
+          });
+        } else if (showroom === "mombasa-clients") {
+          allShowroomData.push({
+            showroomName: showroom,
+            showroomDB: "Mombasa Road",
+            data: requests,
+          });
         }
+      }
 
-        // Update state with the combined results
-        setClientRequests([...allShowroomData]);
-        setOriginalClientRequests([...allShowroomData]);
-        setLoading(false);
-        // console.log(allShowroomData);
-      });
-    });
-    setAllRequests(
-      originalClientRequests.flatMap((entry) =>
-        entry.data.map((client) => ({
-          ...client,
-          showroomName: entry.showroomName,
-          showroomDB: entry.showroomDB,
-        }))
-      )
-    );
-
-    return () => {
-      unsubscribeFunctions.forEach((unsubscribe) => unsubscribe());
+      setClientRequests([...allShowroomData]);
+      setOriginalClientRequests([...allShowroomData]);
+      setLoading(false);
+      // console.log([...allShowroomData]);
+      setAllRequests(
+        allShowroomData.flatMap((entry) =>
+          entry.data.map((client) => ({
+            ...client,
+            showroomName: entry.showroomName,
+            showroomDB: entry.showroomDB,
+          }))
+        )
+      );
+      console.log(
+        allShowroomData.flatMap((entry) =>
+          entry.data.map((client) => ({
+            ...client,
+            showroomName: entry.showroomName,
+            showroomDB: entry.showroomDB,
+          }))
+        )
+      );
     };
+
+    fetchData();
   }, []);
+  useEffect(() => {
+    if (search === "" || search === null || search === undefined) {
+      setClientRequests(originalClientRequests);
+    }
+  }, [handleSearch]);
 
   const data = useMemo(() => clientRequests, [clientRequests]);
 
@@ -167,6 +172,7 @@ export default function ClientHistory({ showroomName }) {
     ],
     []
   );
+
   const handleEditClient = (clientId, showroomName) => {
     router.push(
       `/EditClient?clientId=${clientId}&showroomName=${showroomName}`
@@ -183,9 +189,9 @@ export default function ClientHistory({ showroomName }) {
   }
 
   function handleSearch() {
-    // setClientRequests(
+    setIsSearch(false);
     const tempArr = allRequests.filter((clientRequest) => {
-      var searchParam = search?.toLowerCase();
+      const searchParam = search?.toLowerCase();
       return (
         (clientRequest.name &&
           clientRequest.name?.toLowerCase()?.includes(searchParam)) ||
@@ -207,8 +213,7 @@ export default function ClientHistory({ showroomName }) {
           clientRequest.sourceInfo?.toLowerCase()?.includes(searchParam))
       );
     });
-    // console.log(tempArr);
-    // );
+
     function sortAndFormatData(data) {
       const result = [];
 
@@ -229,12 +234,13 @@ export default function ClientHistory({ showroomName }) {
 
     const sortedData = sortAndFormatData(tempArr);
     setClientRequests(sortedData);
-    // console.log(sortedData);
   }
 
   return (
     <>
-      {!loading && (
+      {loading ? (
+        <p className=" w-full  text-center">Loading...</p>
+      ) : (
         <div>
           <div className="w-full pl-8">
             <button
@@ -251,16 +257,8 @@ export default function ClientHistory({ showroomName }) {
             <div className="relative mx-auto">
               <input
                 onChange={(e) => {
-                  if (
-                    search === "" ||
-                    search === null ||
-                    search === undefined
-                  ) {
-                    setClientRequests(originalClientRequests);
-                    setAllRequests([]);
-                  } else {
-                    setSearch(e.target.value);
-                  }
+                  setIsSearch(true);
+                  setSearch(e.target.value);
                 }}
                 className="mx-auto
                 border-2 border-black p-2"
@@ -273,9 +271,10 @@ export default function ClientHistory({ showroomName }) {
               </button>
               <div className="bg-slate-300 absolute w-[200px] z-30">
                 {search &&
+                  isSearch &&
                   allRequests
                     ?.filter((clientRequest) => {
-                      var searchParam = search?.toLowerCase();
+                      const searchParam = search?.toLowerCase();
                       return (
                         clientRequest.name
                           ?.toLowerCase()
@@ -403,7 +402,7 @@ export default function ClientHistory({ showroomName }) {
                                   onClick={() =>
                                     handleEditClient(
                                       row?.clientId,
-                                      item?.showroomDB
+                                      item?.showroomDB || row?.showroomDB
                                     )
                                   }
                                   className=" cursor-pointer hover:text-blue-500 text-[20px]"
@@ -414,7 +413,7 @@ export default function ClientHistory({ showroomName }) {
                                   onClick={() =>
                                     handleDeleteClient(
                                       row?.clientId,
-                                      item?.showroomName
+                                      item?.showroomName || row?.showroomName
                                     )
                                   }
                                   className=" cursor-pointer  hover:text-red-500 text-[20px]"
