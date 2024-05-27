@@ -1,197 +1,351 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { useTable } from 'react-table';
-import { collection, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
-import { db } from '../firebase';
-import { useRouter } from 'next/router';
-import * as XLSX from 'xlsx';
+import React, { useState, useEffect, useMemo } from "react";
+import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { IoPencil } from "react-icons/io5";
+import { AiFillDelete } from "react-icons/ai";
+import { useRouter } from "next/router";
+import { db } from "@/firebase";
 
-export default function ClientHistory({ showroomName, onEditClient }) {
-  const showroomDbNames = {
-    "Galleria": "clients",
-    "Mirage": "mirage-clients",
-    "Kisumu": "kisumu-clients",
-    "Mombasa Road": "mombasa-clients",
-  };
+export default function ClientHistory({ showroomName }) {
+  const showroomDbNames = [
+    "clients",
+    "mirage-clients",
+    "kisumu-clients",
+    "mombasa-clients",
+  ];
 
-  const showroomDbName = showroomDbNames[showroomName];
   const [clientRequests, setClientRequests] = useState([]);
+  const [allRequests, setAllRequests] = useState([]);
   const [originalClientRequests, setOriginalClientRequests] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
+  const [isSearch, setIsSearch] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    const fetch = onSnapshot(collection(db, showroomDbName), (snapshot) => {
-      var requests = snapshot.docs.map((doc) => ({
+  const fetchData = async () => {
+    const allShowroomData = [];
+    for (const showroom of showroomDbNames) {
+      const querySnapshot = await getDocs(collection(db, showroom));
+      const requests = querySnapshot.docs.map((doc) => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       }));
-      requests.forEach((clientRequest) => {
-        if (clientRequest.aspects) clientRequest.aspects = clientRequest.aspects.join(',');
-        clientRequest.date = clientRequest.date;
-      });
-      requests.sort((a, b) => b.clientId - a.clientId);
-      setClientRequests(requests);
-      setOriginalClientRequests(requests);
-      setLoading(false);
-    });
 
-    return fetch;
+      requests.forEach((clientRequest) => {
+        if (clientRequest.aspects) {
+          clientRequest.aspects = clientRequest.aspects.join(",");
+        }
+        clientRequest.date = clientRequest.date; // Ensure date formatting if needed
+      });
+
+      // Sorting the requests
+      requests.sort((a, b) => b.clientId - a.clientId);
+
+      const showroomNames = {
+        clients: "Galleria",
+        "mirage-clients": "Mirage",
+        "kisumu-clients": "Kisumu",
+        "mombasa-clients": "Mombasa Road",
+      };
+
+      allShowroomData.push({
+        showroomName: showroom,
+        showroomDB: showroomNames[showroom],
+        data: requests,
+      });
+    }
+
+    // Find the index of the object with the desired showroomDB
+    let index = allShowroomData.findIndex(
+      (item) => item.showroomDB === showroomName
+    );
+
+    if (index !== -1) {
+      let [desiredObject] = allShowroomData.splice(index, 1);
+      allShowroomData.unshift(desiredObject);
+    }
+
+    setClientRequests([...allShowroomData]);
+    setOriginalClientRequests([...allShowroomData]);
+    setLoading(false);
+    setAllRequests(
+      allShowroomData.flatMap((entry) =>
+        entry.data.map((client) => ({
+          ...client,
+          showroomName: entry.showroomName,
+          showroomDB: entry.showroomDB,
+        }))
+      )
+    );
+  };
+
+  useEffect(() => {
+    fetchData();
   }, []);
 
-  const data = useMemo(() => clientRequests, [clientRequests]);
-
-  const columns = useMemo(
-    () => [
-      { Header: 'Id', accessor: 'clientId', minSize: 50 },
-      { Header: 'Client Code', accessor: 'clientCode', minSize: 50 },
-      { Header: 'First Name', accessor: 'name', minSize: 200 },
-      { Header: 'Last Name', accessor: 'lastname', minSize: 200 },
-      { Header: 'Client Email', accessor: 'email', minSize: 200 },
-      { Header: 'Client Number', accessor: 'number', minSize: 200 },
-      { Header: 'Client Address', accessor: 'address', minSize: 200 },
-      { Header: 'Date of Request', accessor: 'date', minSize: 200 },
-      { Header: 'Sales Person', accessor: 'salesPerson', minSize: 200 },
-      { Header: 'Interested Aspects', accessor: 'aspects', minSize: 200 },
-      { Header: 'Request Category', accessor: 'option', minSize: 200 },
-      { Header: 'Client Source', accessor: 'sourceInfo', minSize: 200 },
-      { Header: '(Other Source)', accessor: 'specificInfo', minSize: 200 },
-      { Header: 'Measurement Cost', accessor: 'measurementData.cost', minSize: 200 },
-      { Header: 'Measurement Date', accessor: 'measurementData.date', minSize: 200 },
-      { Header: 'Measurement Time', accessor: 'measurementData.time', minSize: 200 },
-      { Header: 'Measurement Supply/Fix', accessor: 'measurementData.supplyFix', minSize: 200 },
-      { Header: 'Measurement Contact Person', accessor: 'measurementData.contactPerson', minSize: 200 },
-      {
-        Header: 'Edit', accessor: 'id',
-        Cell: ({ row }) => (
-          <button onClick={() => handleEditClient(row.original.id)} className='hover:underline'>Edit</button>
-        )
-      },
-      {
-        Header: 'Delete', accessor: 'delete',
-        Cell: ({ row }) => (
-          <button onClick={() => handleDeleteClient(row.original.id)} className='hover:underline text-red-500'>Delete</button>
-        )
-      }
-    ],
-    []
-  );
-
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-  } = useTable({ columns, data });
-
-  function handleEditClient(clientId) {
-    onEditClient(clientId);
-  }
-
-  async function handleDeleteClient(clientId) {
-    if (confirm('Are you sure you want to delete this client request?')) {
-      await deleteDoc(doc(db, showroomDbName, clientId));
+  useEffect(() => {
+    if (!search) {
+      setClientRequests(originalClientRequests);
     }
-  }
+  }, [search]);
 
-  function handleSearch() {
-    setClientRequests(originalClientRequests.filter((clientRequest) => {
-      var searchParam = search.toLowerCase();
+  const columns = [
+    "Id",
+    "Client Code",
+    "First Name",
+    "Last Name",
+    "Client Email",
+    "Client Number",
+    "Client Address",
+    "Date of Request",
+    "Sales Person",
+    "Interested Aspects",
+    "Request Category",
+    "Client Source",
+    "(Other Source)",
+    "Measurement Cost",
+    "Measurement Date",
+    "Measurement Time",
+    "Measurement Supply/Fix",
+    "Measurement Contact Person",
+    "Edit",
+    "Delete",
+  ];
+
+  const handleEditClient = (clientId, showroomName) => {
+    router.push(
+      `/EditClient?clientId=${clientId}&showroomName=${showroomName}`
+    );
+  };
+
+  const handleDeleteClient = async (clientId, showroom) => {
+    if (confirm("Are you sure you want to delete this client request?")) {
+      await deleteDoc(doc(db, String(showroom), String(clientId)));
+      fetchData();
+    }
+  };
+
+  const handleSearch = () => {
+    setIsSearch(false);
+    const searchParam = search.toLowerCase();
+    const filteredRequests = allRequests.filter((clientRequest) => {
       return (
-        (clientRequest.name && clientRequest.name.toLowerCase().includes(searchParam)) ||
-        (clientRequest.clientCode && clientRequest.clientCode.toString().includes(searchParam)) ||
-        (clientRequest.clientId && clientRequest.clientId.toString().includes(searchParam)) ||
-        (clientRequest.email && clientRequest.email.toLowerCase().includes(searchParam)) ||
-        (clientRequest.number && clientRequest.number.toString().includes(searchParam)) ||
-        (clientRequest.address && clientRequest.address.toLowerCase().includes(searchParam)) ||
-        (clientRequest.aspects && clientRequest.aspects.toLowerCase().includes(searchParam)) ||
-        (clientRequest.option && clientRequest.option.toLowerCase().includes(searchParam)) ||
-        (clientRequest.sourceInfo && clientRequest.sourceInfo.toLowerCase().includes(searchParam))
+        clientRequest.name?.toLowerCase().includes(searchParam) ||
+        clientRequest.clientCode?.toString().includes(searchParam) ||
+        clientRequest.clientId?.toString().includes(searchParam) ||
+        clientRequest.email?.toLowerCase().includes(searchParam) ||
+        clientRequest.number?.toString().includes(searchParam) ||
+        clientRequest.address?.toLowerCase().includes(searchParam) ||
+        clientRequest.aspects?.toLowerCase().includes(searchParam) ||
+        clientRequest.option?.toLowerCase().includes(searchParam) ||
+        clientRequest.sourceInfo?.toLowerCase().includes(searchParam)
       );
-    }));
-  }
+    });
+
+    const sortedData = sortAndFormatData(filteredRequests);
+    setClientRequests(sortedData);
+  };
+
+  const sortAndFormatData = (data) => {
+    const result = [];
+
+    data.forEach((item) => {
+      const showroom = item.showroomName;
+      let showroomObj = result.find((obj) => obj.showroomName === showroom);
+
+      if (!showroomObj) {
+        showroomObj = { showroomName: showroom, data: [] };
+        result.push(showroomObj);
+      }
+
+      showroomObj.data.push(item);
+    });
+
+    return result;
+  };
 
   return (
     <>
-      {!loading && (
-        <div>
-          <div className='w-full pl-8'>
-            <button className='bg-slate-300 p-2 rounded-lg' onClick={() => router.back()}>
+      {loading ? (
+        <p className="w-full text-center">Loading...</p>
+      ) : (
+        <div className="px-4">
+          <div className="w-full flex justify-start mb-4">
+            <button
+              className="bg-slate-300 p-2 rounded-lg"
+              onClick={() => router.back()}
+            >
               Go Back
             </button>
           </div>
-          <p className='mt-8 text-2xl text-center font-bold mb-4'>Requests from Clients</p>
-          <div className='flex flex-col gap-4 '>
-            <div className='mx-auto'>
+          <p className="mt-8 text-xl md:text-2xl text-center font-bold mb-4">
+            Requests from Clients
+          </p>
+          <div className="flex flex-col gap-4">
+            <div className="relative  flex items-center mx-auto">
               <input
-                onChange={(e) => setSearch(e.target.value)}
-                className='mx-auto
-                border-2 border-black p-2'
+                onChange={(e) => {
+                  setIsSearch(true);
+                  setSearch(e.target.value);
+                }}
+                className="border-2 border-black p-2"
+                placeholder="Search..."
               />
               <button
-                className='bg-slate-300 hover:bg-slate-400 p-3 rounded-lg mx-2'
+                className="bg-slate-300 hover:bg-slate-400 p-3 rounded-lg mx-2"
                 onClick={handleSearch}
               >
                 Search
               </button>
-              <div className='bg-slate-300'>
-                {search && originalClientRequests
-                  .filter((clientRequest) => {
-                    var searchParam = search.toLowerCase();
-                    return (
-                      clientRequest.name.toLowerCase().includes(searchParam) ||
-                      clientRequest.clientCode.toString().includes(searchParam)
-                    );
-                  })
-                  .slice(0, 10)
-                  .map((clientRequest) => (
-                    <p
-                      key={clientRequest.clientId}
-                      onClick={() => {
-                        setSearch(clientRequest.name);
-                        handleSearch();
-                      }}
-                      className='p-2 text-black cursor-pointer'
-                    >
-                      {clientRequest.clientCode} : {clientRequest.name}
-                    </p>
-                  ))}
-              </div>
+              {search && isSearch && (
+                <div className="bg-slate-300 absolute w-[200px] z-30">
+                  {allRequests
+                    ?.filter((clientRequest) => {
+                      const searchParam = search.toLowerCase();
+                      return (
+                        clientRequest.name
+                          ?.toLowerCase()
+                          .includes(searchParam) ||
+                        clientRequest.clientCode
+                          ?.toString()
+                          .includes(searchParam) ||
+                        clientRequest.number
+                          ?.toString()
+                          .includes(searchParam) ||
+                        clientRequest.email?.toString().includes(searchParam)
+                      );
+                    })
+                    .slice(0, 10)
+                    .map((clientRequest) => (
+                      <p
+                        key={clientRequest.clientId}
+                        onClick={() => {
+                          setSearch(clientRequest.name);
+                          handleSearch();
+                        }}
+                        className="p-2 text-black cursor-pointer"
+                      >
+                        {clientRequest.clientCode} : {clientRequest.name}
+                      </p>
+                    ))}
+                </div>
+              )}
             </div>
-            <div className='table-container overflow-x-auto'>
-              <table {...getTableProps()} className='border-collapse'>
-                <thead>
-                  {headerGroups.map((headerGroup) => (
-                    <tr key={headerGroup.id} {...headerGroup.getHeaderGroupProps()}>
-                      {headerGroup.headers.map((column) => (
-                        <th
-                          key={column.id}
-                          {...column.getHeaderProps()}
-                          className='border-black border'
-                          style={{ minWidth: column.minSize }}
-                        >
-                          {column.render('Header')}
-                        </th>
-                      ))}
-                    </tr>
-                  ))}
-                </thead>
-                <tbody {...getTableBodyProps()}>
-                  {rows.map((row) => {
-                    prepareRow(row);
-                    return (
-                      <tr key={row.id} {...row.getRowProps()} className='border'>
-                        {row.cells.map((cell) => (
-                          <td key={cell.id} {...cell.getCellProps()} className='p-6 border-black border'>
-                            {cell.render('Cell')}
-                          </td>
+            <div className="table-container overflow-x-auto">
+              {clientRequests?.map((item, index) => {
+                return (
+                  <div key={index}>
+                    <h4 className="w-full text-center mt-3 mb-1 text-lg font-semibold capitalize">
+                      {item?.showroomDB || item?.showroomName}
+                    </h4>
+                    <table className="border-collapse w-full">
+                      <thead>
+                        <tr>
+                          <th className="border-black border bg-blue-400">
+                            Sl. No.
+                          </th>
+                          {columns.map((column, index) => (
+                            <th
+                              key={index}
+                              className="px-2 border-black border bg-blue-400 min-w-[100px]"
+                            >
+                              {column}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {item?.data?.map((row, rowIndex) => (
+                          <tr key={row.id} className="border">
+                            <td className="p-2.5 border-black border">
+                              {rowIndex + 1}
+                            </td>
+                            <td className="p-2.5 border-black border">
+                              {row?.clientId}
+                            </td>
+                            <td className="p-2.5 border-black border">
+                              {row?.clientCode}
+                            </td>
+                            <td className="p-2.5 border-black border">
+                              {row?.name}
+                            </td>
+                            <td className="p-2.5 border-black border">
+                              {row?.lastname}
+                            </td>
+                            <td className="p-2.5 border-black border">
+                              {row?.email}
+                            </td>
+                            <td className="p-2.5 border-black border">
+                              {row?.number}
+                            </td>
+                            <td className="p-2.5 border-black border">
+                              {row?.address}
+                            </td>
+                            <td className="p-2.5 border-black border">
+                              {row?.date}
+                            </td>
+                            <td className="p-2.5 border-black border">
+                              {row?.salesPerson}
+                            </td>
+                            <td className="p-2.5 border-black border">
+                              {row?.aspects}
+                            </td>
+                            <td className="p-2.5 border-black border">
+                              {row?.option}
+                            </td>
+                            <td className="p-2.5 border-black border">
+                              {row?.sourceInfo}
+                            </td>
+                            <td className="p-2.5 border-black border">
+                              {row?.specificInfo}
+                            </td>
+                            <td className="p-2.5 border-black border">
+                              {row?.measurementData?.cost}
+                            </td>
+                            <td className="p-2.5 border-black border">
+                              {row?.measurementData?.date}
+                            </td>
+                            <td className="p-2.5 border-black border">
+                              {row?.measurementData?.time}
+                            </td>
+                            <td className="p-2.5 border-black border">
+                              {row?.measurementData?.supplyFix}
+                            </td>
+                            <td className="p-2.5 border-black border">
+                              {row?.measurementData?.contactPerson}
+                            </td>
+                            <td className="p-2.5 border-black border">
+                              <div className="flex items-center justify-center">
+                                <IoPencil
+                                  onClick={() =>
+                                    handleEditClient(
+                                      row?.clientId,
+                                      item?.showroomDB || row?.showroomDB
+                                    )
+                                  }
+                                  className="cursor-pointer hover:text-blue-500 text-[20px]"
+                                />
+                              </div>
+                            </td>
+                            <td className="p-2.5 border-black border">
+                              <div className="flex items-center justify-center">
+                                <AiFillDelete
+                                  onClick={() =>
+                                    handleDeleteClient(
+                                      row?.clientId,
+                                      item?.showroomName || row?.showroomName
+                                    )
+                                  }
+                                  className="cursor-pointer hover:text-red-500 text-[20px]"
+                                />
+                              </div>
+                            </td>
+                          </tr>
                         ))}
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                      </tbody>
+                    </table>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -199,4 +353,3 @@ export default function ClientHistory({ showroomName, onEditClient }) {
     </>
   );
 }
-
