@@ -46,6 +46,7 @@ export default function ClientForm() {
     const [aspects, setAspects] = useState([])
     const [sourceInfo, setSourceInfo] = useState('social media')
     const [specificInfo, setSpecificInfo] = useState('')
+    const [specificAspects, setSpecificAspects] = useState('')
     const [salesPerson, setSalesPerson] = useState('')
 
 
@@ -54,7 +55,7 @@ export default function ClientForm() {
 
     const aspectsList = ['Claddings', 'Travertine', 'Marble', 'Sintered Stones', 'Pavings', 'Fireplaces', 'Facade',
         'Water Features', 'Garden Furnitures', 'Planters and Stands', 'Vanity and Sinks', 'Bird Bath/Feeder',
-        'Pebbles and Landscaping', 'Memorials', 'Statues', 'Brass', 'Plant Venture', 'Other Products']
+        'Pebbles and Landscaping', 'Memorials', 'Statues', 'Architectural Elements', 'Plant Venture', 'Other Products(Please Specify)']
 
     const aspectsFinalList = aspectsList.map((aspect) => ({
         value: aspect,
@@ -167,6 +168,7 @@ export default function ClientForm() {
             date: date,
             number: '+' + number,
             aspects: aspects,
+            specificAspects: specificAspects,
             sourceInfo: sourceInfo,
             specificInfo: specificInfo,
             clientCode: clientCode
@@ -264,6 +266,10 @@ export default function ClientForm() {
                         onChange={handleSelectChange}
                         className='w-full'
                     />
+                    {(aspects.includes("Other Products(Please Specify)")) &&
+                        <input type="text" placeholder="Specify" value={specificAspects} onChange={(e) => setSpecificAspects(e.target.value)}
+                            className='mt-2 p-2 w-full ' />}
+
                     <p className='mt-4'>How did you get to know us:</p>
                     <select className='p-2 w-full' onChange={(e) => setSourceInfo(e.target.value)}>
                         <option value="social media">Social Media</option>

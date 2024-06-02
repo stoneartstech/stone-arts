@@ -90,7 +90,7 @@ export default function ClientHistory({ showroomName }) {
   }, [search]);
 
   const columns = [
-    "Id",
+    "Invoice No.",
     "Client Code",
     "First Name",
     "Last Name",
