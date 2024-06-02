@@ -1,5 +1,11 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  deleteDoc,
+  doc,
+  setDoc,
+} from "firebase/firestore";
 import { IoPencil } from "react-icons/io5";
 import { AiFillDelete } from "react-icons/ai";
 import { useRouter } from "next/router";
@@ -18,6 +24,8 @@ export default function ClientHistory({ showroomName }) {
   const [originalClientRequests, setOriginalClientRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [newReview, setNewReview] = useState("");
+  const [reviewRow, setReviewRow] = useState("");
   const [isSearch, setIsSearch] = useState(false);
   const router = useRouter();
 
@@ -29,13 +37,6 @@ export default function ClientHistory({ showroomName }) {
         id: doc.id,
         ...doc.data(),
       }));
-
-      requests.forEach((clientRequest) => {
-        if (clientRequest.aspects) {
-          clientRequest.aspects = clientRequest.aspects.join(",");
-        }
-        clientRequest.date = clientRequest.date; // Ensure date formatting if needed
-      });
 
       // Sorting the requests
       requests.sort((a, b) => b.clientId - a.clientId);
@@ -109,6 +110,7 @@ export default function ClientHistory({ showroomName }) {
     "Measurement Contact Person",
     "Edit",
     "Delete",
+    "Review",
   ];
 
   const handleEditClient = (clientId, showroomName) => {
@@ -168,7 +170,7 @@ export default function ClientHistory({ showroomName }) {
       {loading ? (
         <p className="w-full text-center">Loading...</p>
       ) : (
-        <div className="px-4">
+        <div className="md:px-4">
           <div className="w-full flex justify-start mb-4">
             <button
               className="bg-slate-300 p-2 rounded-lg"
@@ -337,6 +339,111 @@ export default function ClientHistory({ showroomName }) {
                                   }
                                   className="cursor-pointer hover:text-red-500 text-[20px]"
                                 />
+                              </div>
+                            </td>
+                            <td className="p-1 border-black border">
+                              <div className="flex items-center justify-center">
+                                {!row?.review &&
+                                  reviewRow?.clientCode === row?.clientCode && (
+                                    <input
+                                      type="text"
+                                      name="review"
+                                      id="review"
+                                      placeholder="Add Review"
+                                      autoComplete="off"
+                                      className=" p-1.5"
+                                      value={
+                                        row?.review ? row?.review : newReview
+                                      }
+                                      onChange={(e) => {
+                                        setNewReview(e.target.value);
+                                        setReviewRow({
+                                          ...row,
+                                          showroom: item.showroomName,
+                                          review: e.target.value,
+                                        });
+                                      }}
+                                    />
+                                  )}
+                                {row?.review &&
+                                  reviewRow?.clientCode !== row?.clientCode && (
+                                    <input
+                                      type="text"
+                                      name="review"
+                                      id="review"
+                                      autoFocus="on"
+                                      autoComplete="off"
+                                      disabled={
+                                        reviewRow?.clientCode !==
+                                        row?.clientCode
+                                      }
+                                      placeholder="Add Review"
+                                      className=" p-1.5"
+                                      value={row?.review ? row?.review : ""}
+                                      onChange={(e) => {
+                                        setNewReview(e.target.value);
+                                        setReviewRow({
+                                          ...row,
+                                          showroom: item.showroomName,
+                                          review: e.target.value,
+                                        });
+                                      }}
+                                    />
+                                  )}
+                                {row?.review &&
+                                  reviewRow?.clientCode === row?.clientCode && (
+                                    <input
+                                      type="text"
+                                      name="review"
+                                      id="review"
+                                      autoFocus="on"
+                                      autoComplete="off"
+                                      placeholder="Add Review"
+                                      className=" p-1.5"
+                                      value={newReview}
+                                      onChange={(e) => {
+                                        setNewReview(e.target.value);
+                                        setReviewRow({
+                                          ...row,
+                                          showroom: item.showroomName,
+                                          review: e.target.value,
+                                        });
+                                      }}
+                                    />
+                                  )}
+                                <button
+                                  onClick={() => {
+                                    if (!row?.review) {
+                                      setNewReview("");
+                                    }
+                                    if (row?.review) {
+                                      setNewReview(row?.review);
+                                    }
+                                    if (
+                                      reviewRow?.clientCode === row?.clientCode
+                                    ) {
+                                      setDoc(
+                                        doc(
+                                          db,
+                                          `${reviewRow?.showroom}/${reviewRow?.clientCode}`
+                                        ),
+                                        reviewRow
+                                      );
+                                      fetchData();
+                                      alert("Review Updated Successfully");
+                                      setReviewRow("");
+                                    } else {
+                                      setReviewRow({
+                                        ...row,
+                                        showroom: item.showroomName,
+                                        review: newReview,
+                                      });
+                                    }
+                                  }}
+                                  className=" bg-blue-500 text-white font-semibold text-sm px-4 h-full py-2"
+                                >
+                                  {row?.review ? "Edit" : "Add"}
+                                </button>
                               </div>
                             </td>
                           </tr>
