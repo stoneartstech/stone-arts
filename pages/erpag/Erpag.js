@@ -8,6 +8,8 @@ function Erpag() {
     { title: "Sales Order", link: "/erpag/SalesOrder" },
     { title: "Inventory", link: "/erpag/Inventory" },
     { title: "View Inventory", link: "/erpag/ViewInventory" },
+    { title: "Transfer Inventory", link: "/erpag/transfer" },
+    { title: "Purchase", link: "/erpag/Purchase" },
   ];
   const { logout } = useAuth();
   async function logoutHandler() {

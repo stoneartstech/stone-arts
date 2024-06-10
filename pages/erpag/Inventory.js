@@ -4,6 +4,7 @@ import {
   deleteDoc,
   disableNetwork,
   doc,
+  getDoc,
   onSnapshot,
   setDoc,
 } from "firebase/firestore";
@@ -34,13 +35,15 @@ const Inventory = ({ compType, handEditSalesOrder, selectedOrder }) => {
   const [isDialog, setIsDialog] = useState(false);
   const [resolveDialog, setResolveDialog] = useState(null);
   const [dialogData, setDialogData] = useState("");
+  const [newWarehouse, setNewWarehouse] = useState("");
+  const [warehouseArr, setWarehouseArr] = useState([]);
+  const [warehouse, setWarehouse] = useState("");
   const [newQty, setNewQty] = useState([]);
   const [exData, setExData] = useState([]);
   const [data, setData] = useState({
     number: "",
     tag: "",
     dateAndTime: currentDate.toUTCString(),
-    warehouse: "",
     deadline: "",
     price: "",
     priority: "",
@@ -53,6 +56,17 @@ const Inventory = ({ compType, handEditSalesOrder, selectedOrder }) => {
     totalAmount: "",
     billingAddress: "",
   });
+  const fetchWarehouse = async () => {
+    try {
+      const warehouses = await getDoc(doc(db, `erpag`, "AllWarehouses"));
+      console.log(warehouses.data()?.data);
+      if (warehouses.data()?.data) {
+        setWarehouseArr(warehouses.data()?.data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   useEffect(() => {
     if (compType?.toLowerCase() === "edit") {
@@ -68,57 +82,9 @@ const Inventory = ({ compType, handEditSalesOrder, selectedOrder }) => {
         console.log(reports);
       }
     );
+
+    fetchWarehouse();
   }, []);
-  const { number, tag, dateAndTime, warehouse, name } = data;
-  const FormFields = [
-    {
-      name: "Document Header",
-      form: [
-        {
-          field: "input",
-          type: "text",
-          name: "number",
-          placeholder: "SD-00021",
-          value: number,
-          valueTag: "number",
-        },
-        {
-          field: "input",
-          type: "text",
-          name: "tag",
-          value: tag,
-          valueTag: "tag",
-        },
-        {
-          field: "input",
-          type: "text",
-          disabled: true,
-          name: "Date And Time",
-          value: dateAndTime,
-          valueTag: "dateAndTime",
-        },
-        {
-          field: "select",
-          type: "text",
-          name: "Warehouse",
-          value: warehouse,
-          valueTag: "warehouse",
-          options: [
-            { name: "Main Warehouse", value: "main-warehouse" },
-            { name: "Parts Store", value: "parts-store" },
-          ],
-        },
-        {
-          field: "input",
-          type: "text",
-          placeholder: "name",
-          name: "name",
-          value: name,
-          valueTag: "type",
-        },
-      ],
-    },
-  ];
   const [report, setReport] = useState([
     {
       SNo: 1,
@@ -166,6 +132,83 @@ const Inventory = ({ compType, handEditSalesOrder, selectedOrder }) => {
       <h1 className=" font-semibold capitalize text-[27px] text-center text-gray-800 my-2 ">
         Create Inventory
       </h1>
+      {/* warehouse selection and addition ------------------------------------------------ */}
+      <div className=" flex items-end gap-2">
+        <div className=" flex flex-col">
+          <label className=" text-sm font-semibold">Select Warehouse</label>
+          <select
+            type="text"
+            placeholder="Warehouse Name"
+            id="warehouse"
+            name="warehouse"
+            value={warehouse}
+            onChange={(e) => {
+              setWarehouse(e.target.value);
+            }}
+            className=" py-2 px-3  border border-black rounded-md capitalize"
+          >
+            <option value={"mainwarehouse"} className=" capitalize">
+              Select Warehouse
+            </option>
+            {warehouseArr?.map((item, index) => {
+              return (
+                <option key={index} value={item?.value} className=" capitalize">
+                  {item?.name}
+                </option>
+              );
+            })}
+          </select>
+        </div>
+        <div className=" flex items-end gap-2 ml-2">
+          <div className=" flex flex-col">
+            <label className=" text-sm font-semibold">Add New Warehouse</label>
+            <input
+              type="text"
+              placeholder="Add New Warehouse"
+              id="warehouse"
+              value={newWarehouse}
+              onChange={(e) => {
+                setNewWarehouse(e.target.value);
+              }}
+              name="warehouse"
+              className=" py-2 px-3  border border-black rounded-md"
+            />
+          </div>
+          <button
+            onClick={async () => {
+              if (
+                warehouseArr?.find((e) => {
+                  return (
+                    e?.value === newWarehouse.toLowerCase().replace(/\s+/g, "")
+                  );
+                })
+              ) {
+                alert(" Warehouse Already Exist !!");
+                return;
+              } else {
+                const newArr = warehouseArr ? warehouseArr : [];
+                newArr.push({
+                  value: newWarehouse.toLowerCase().replace(/\s+/g, ""),
+                  name: newWarehouse,
+                });
+                await setDoc(
+                  doc(db, `erpag/AllWarehouses`),
+                  {
+                    data: newArr,
+                  },
+                  { merge: true }
+                );
+                alert("New Warehouse Added");
+                setNewWarehouse("");
+                fetchWarehouse();
+              }
+            }}
+            className=" bg-blue-500 py-2 px-4 rounded-md text-white font-semibold"
+          >
+            Add
+          </button>
+        </div>
+      </div>
       {isDialog && (
         <div className="w-full h-full fixed inset-0 flex items-center justify-center bg-black/40 z-50">
           <div className="bg-white flex flex-col items-center justify-center w-[90%] md:w-[45%] h-fit md:max-h-[400px] min-h-[250px]">
@@ -184,7 +227,9 @@ const Inventory = ({ compType, handEditSalesOrder, selectedOrder }) => {
                   setDoc(
                     doc(
                       db,
-                      `erpag/Inventory/mainWarehouse`,
+                      `erpag/Inventory/${
+                        warehouse ? warehouse : "mainwarehouse"
+                      }`,
                       `${dialogData[0]?.name
                         ?.toLowerCase()
                         ?.replace(/\s+/g, "-")}`
@@ -206,7 +251,9 @@ const Inventory = ({ compType, handEditSalesOrder, selectedOrder }) => {
                   setDoc(
                     doc(
                       db,
-                      `erpag/Inventory/mainWarehouse`,
+                      `erpag/Inventory/${
+                        warehouse ? warehouse : "mainwarehouse"
+                      }`,
                       `${dialogData[0]?.name
                         ?.toLowerCase()
                         ?.replace(/\s+/g, "-")}`
@@ -249,7 +296,9 @@ const Inventory = ({ compType, handEditSalesOrder, selectedOrder }) => {
                 await setDoc(
                   doc(
                     db,
-                    `erpag/Inventory/mainWarehouse`,
+                    `erpag/Inventory/${
+                      warehouse ? warehouse : "mainwarehouse"
+                    }`,
                     `${object?.name?.toLowerCase()?.replace(/\s+/g, "-")}`
                   ),
                   object

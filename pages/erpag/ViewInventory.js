@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { db } from "../../firebase";
-import { collection, onSnapshot } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  onSnapshot,
+} from "firebase/firestore";
 import * as XLSX from "xlsx";
 
 export default function ViewInventory() {
@@ -9,24 +15,58 @@ export default function ViewInventory() {
   const [search, setSearch] = useState("");
   const router = useRouter();
   const date = new Date().toLocaleDateString();
-
+  const [warehouseArr, setWarehouseArr] = useState([]);
+  const [warehouseArr2, setWarehouseArr2] = useState([]);
+  const [combinedArr, setCombinedArr] = useState([]);
+  const [combindedArr2, setCombinedArr2] = useState([]);
   const [reports, setReports] = useState([]);
+  const fetchWarehouse = async () => {
+    let allShowroomData = [];
+    try {
+      const warehouses = await getDoc(doc(db, `erpag`, "AllWarehouses"));
+      console.log(warehouses.data()?.data);
+      if (warehouses.data()?.data) {
+        setWarehouseArr(warehouses.data()?.data);
+        const valuesArray = warehouses.data()?.data?.map((obj) => obj.value);
+        setWarehouseArr2(valuesArray);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  const fetchData = async () => {
+    const allShowroomData = [];
+    for (const showroom of warehouseArr2) {
+      const querySnapshot = await getDocs(
+        collection(db, `erpag/Inventory`, showroom)
+      );
+      const requests = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      // console.log(requests);
+      allShowroomData.push({
+        warehouseName: showroom,
+        data: requests,
+      });
+      // console.log(allShowroomData);
+    }
+    setCombinedArr([...allShowroomData]);
+    setLoading(false);
+    setCombinedArr2(
+      allShowroomData.flatMap((entry) =>
+        entry.data.map((client) => ({
+          ...client,
+          showroomName: entry.showroomName,
+        }))
+      )
+    );
+  };
 
   useEffect(() => {
-    setLoading(true);
-    const fetch = onSnapshot(
-      collection(db, "erpag/Inventory/mainWarehouse"),
-      (snapshot) => {
-        var reports = snapshot.docs.map((doc) => ({
-          ...doc.data(),
-        }));
-        setReports(reports);
-        console.log(reports);
-        setLoading(false);
-      }
-    );
-    // console.log(reports);
-    return fetch;
+    fetchWarehouse();
+    fetchData();
   }, []);
 
   function handleExportToExcel(Invoice) {
@@ -107,33 +147,14 @@ export default function ViewInventory() {
           <div className="flex flex-col items-center">
             <p className="text-3xl mb-4">Inventory</p>
           </div>
-          {reports.filter((i) => {
-            if (search === "") {
-              return i;
-            } else {
-              return (
-                i?.name?.toLowerCase().includes(search?.toLowerCase()) ||
-                i?.sku?.toLowerCase().includes(search?.toLowerCase())
-              );
-            }
-          }).length > 0 ? (
-            <table className="table-auto w-full overflow-x-auto">
-              <thead className="bg-blue-500 text-white">
-                <tr>
-                  <th className="px-2 border-gray-400 border">Sl.</th>
-                  <th className="px-2 border-gray-400 border">Name</th>
-                  <th className="px-2 border-gray-400 border">SKU</th>
-                  <th className="px-2 border-gray-400 border">Quantity</th>
-                  <th className="px-2 border-gray-400 border">UOM</th>
-                  <th className="px-2 border-gray-400 border">Stock Price</th>
-                  <th className="px-2 border-gray-400 border">
-                    Additional Info
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="">
-                {reports
-                  .filter((i) => {
+          {combinedArr?.map((item, index) => {
+            return (
+              <div key={index}>
+                <h4 className="w-full text-center mt-3 mb-1 text-lg font-semibold capitalize">
+                  {item?.warehouseName}
+                </h4>
+                <>
+                  {item?.data?.filter((i) => {
                     if (search === "") {
                       return i;
                     } else {
@@ -144,61 +165,101 @@ export default function ViewInventory() {
                         i?.sku?.toLowerCase().includes(search?.toLowerCase())
                       );
                     }
-                  })
-                  .map((item, index) => (
-                    <tr key={index}>
-                      <td className="bg-white border border-gray-400 text-center p-1">
-                        {index + 1}
-                      </td>
-                      <td className="bg-white border border-gray-400">
-                        <input
-                          type="text"
-                          value={item.name}
-                          className="w-full px-2 border-none outline-none"
-                        />
-                      </td>
-                      <td className="bg-white border border-gray-400">
-                        <input
-                          type="text"
-                          value={item.sku}
-                          className="w-full px-2 border-none outline-none"
-                        />
-                      </td>
-                      <td className="bg-white border border-gray-400">
-                        <input
-                          type="text"
-                          value={item.quantity}
-                          className="w-full px-2 border-none outline-none"
-                        />
-                      </td>
-                      <td className="bg-white border border-gray-400">
-                        <input
-                          type="text"
-                          value={item.UOM}
-                          className="w-full px-2 border-none outline-none"
-                        />
-                      </td>
-                      <td className="bg-white border border-gray-400">
-                        <input
-                          type="number"
-                          value={item.stockPrice}
-                          className="w-full px-2 border-none outline-none"
-                        />
-                      </td>
-                      <td className="bg-white border border-gray-400">
-                        <input
-                          type="text"
-                          value={item.addInfo}
-                          className="w-full px-2 border-none outline-none"
-                        />
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          ) : (
-            <div className=" w-full text-center ">No Items Available</div>
-          )}
+                  }).length > 0 ? (
+                    <table className="table-auto w-full overflow-x-auto">
+                      <thead className="bg-blue-500 text-white">
+                        <tr>
+                          <th className="px-2 border-gray-400 border">Sl.</th>
+                          <th className="px-2 border-gray-400 border">Name</th>
+                          <th className="px-2 border-gray-400 border">SKU</th>
+                          <th className="px-2 border-gray-400 border">
+                            Quantity
+                          </th>
+                          <th className="px-2 border-gray-400 border">UOM</th>
+                          <th className="px-2 border-gray-400 border">
+                            Stock Price
+                          </th>
+                          <th className="px-2 border-gray-400 border">
+                            Additional Info
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="">
+                        {item?.data
+                          ?.filter((i) => {
+                            if (search === "") {
+                              return i;
+                            } else {
+                              return (
+                                i?.name
+                                  ?.toLowerCase()
+                                  .includes(search?.toLowerCase()) ||
+                                i?.sku
+                                  ?.toLowerCase()
+                                  .includes(search?.toLowerCase())
+                              );
+                            }
+                          })
+                          .map((item, index) => (
+                            <tr key={index}>
+                              <td className="bg-white border border-gray-400 text-center p-1">
+                                {index + 1}
+                              </td>
+                              <td className="bg-white border border-gray-400">
+                                <input
+                                  type="text"
+                                  value={item.name}
+                                  className="w-full px-2 border-none outline-none"
+                                />
+                              </td>
+                              <td className="bg-white border border-gray-400">
+                                <input
+                                  type="text"
+                                  value={item.sku}
+                                  className="w-full px-2 border-none outline-none"
+                                />
+                              </td>
+                              <td className="bg-white border border-gray-400">
+                                <input
+                                  type="text"
+                                  value={item.quantity}
+                                  className="w-full px-2 border-none outline-none"
+                                />
+                              </td>
+                              <td className="bg-white border border-gray-400">
+                                <input
+                                  type="text"
+                                  value={item.UOM}
+                                  className="w-full px-2 border-none outline-none"
+                                />
+                              </td>
+                              <td className="bg-white border border-gray-400">
+                                <input
+                                  type="number"
+                                  value={item.stockPrice}
+                                  className="w-full px-2 border-none outline-none"
+                                />
+                              </td>
+                              <td className="bg-white border border-gray-400">
+                                <input
+                                  type="text"
+                                  value={item.addInfo}
+                                  className="w-full px-2 border-none outline-none"
+                                />
+                              </td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <div className=" w-full text-center ">
+                      No Items Available
+                    </div>
+                  )}
+                </>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
