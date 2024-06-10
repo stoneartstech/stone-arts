@@ -3,7 +3,7 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 
-const editPurchase = ({ compType, handEditSalesOrder, selectedOrder }) => {
+const EditPurchase = ({ compType, handEditSalesOrder, selectedOrder }) => {
   const today = new Date();
   const date =
     today.getDate() +
@@ -394,4 +394,4 @@ const editPurchase = ({ compType, handEditSalesOrder, selectedOrder }) => {
   );
 };
 
-export default editPurchase;
+export default EditPurchase;
