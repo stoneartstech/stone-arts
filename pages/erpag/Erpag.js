@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
+import router from "next/router";
 
 function Erpag() {
   const options = [
@@ -23,6 +24,14 @@ function Erpag() {
 
   return (
     <div>
+      <div className="w-full mb-8 flex justify-start items-start">
+        <button
+          className="bg-slate-300 p-2 rounded-lg"
+          onClick={() => router.back()}
+        >
+          Go Back
+        </button>
+      </div>
       <div className="flex flex-col sm:flex-row items-center justify-center gap-12">
         <p className="text-2xl text-center">ERPAG Pages</p>
         <button className="bg-red-500 p-3 rounded-lg" onClick={logoutHandler}>
