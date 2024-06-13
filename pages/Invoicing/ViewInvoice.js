@@ -53,8 +53,9 @@ export default function ViewInvoice() {
         (clientRequest) => clientRequest.option === "retail"
       );
       requests.forEach((clientRequest) => {
-        clientRequest.aspects = clientRequest.aspects.join(",");
-        clientRequest.date = clientRequest.date;
+        if (Array.isArray(clientRequest.aspects)) {
+          clientRequest.aspects = clientRequest.aspects.join(",");
+        }
       });
       setOriginalClientRequests(requests);
       requests = requests.filter((clientRequest) => !clientRequest.invoice);

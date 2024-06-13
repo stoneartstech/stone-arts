@@ -3,7 +3,12 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 
-const CreateSalesOrder = ({ compType, handEditSalesOrder, selectedOrder }) => {
+const CreateSalesOrder = ({
+  compType,
+  handEditSalesOrder,
+  clientId,
+  selectedOrder,
+}) => {
   const today = new Date();
   const date =
     today.getDate() +
@@ -296,15 +301,24 @@ const CreateSalesOrder = ({ compType, handEditSalesOrder, selectedOrder }) => {
             });
             // alert(isOkay);
             if (isOkay) {
-              setDoc(
-                doc(db, "erpag/reports/salesOrder", `Order-${date}-${time}`),
-                {
+              if (clientId) {
+                setDoc(doc(db, "erpag/reports/salesOrder", clientId), {
                   details: data,
                   data: report,
                   date,
                   time,
-                }
-              );
+                });
+              } else {
+                setDoc(
+                  doc(db, "erpag/reports/salesOrder", `Order-${date}-${time}`),
+                  {
+                    details: data,
+                    data: report,
+                    date,
+                    time,
+                  }
+                );
+              }
               // console.log(getDoc(db,`erpag/Inventory/mainWarehouse/${report[0].name}`))
               if (compType?.toLowerCase() === "edit") {
                 alert("Invoice Edited Successfully");

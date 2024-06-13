@@ -15,6 +15,7 @@ import CreateSalesOrder from "./createSalesOrder";
 import { useRouter } from "next/router";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "@/firebase";
+import { useParams } from "next/navigation";
 
 const columns = [
   { field: "id", headerName: "ID", width: 70 },
@@ -413,6 +414,23 @@ const Invoice = () => {
   const [selectionModel, setSelectionModel] = React.useState([]);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const {
+    uploadInvoice,
+    address,
+    aspects,
+    clientCode,
+    clientId,
+    email,
+    id,
+    name,
+    number,
+    option,
+    showroom,
+    sourceInfo,
+    specificInfo,
+  } = router.query;
+  // alert(uploadInvoice);
 
   const today = new Date();
   const date =
@@ -434,6 +452,9 @@ const Invoice = () => {
   const time = hours + "-" + minutes + "-" + seconds;
 
   useEffect(() => {
+    if (uploadInvoice === true || uploadInvoice === "true") {
+      setIsCreateSalesOrder(true);
+    }
     const fetch = onSnapshot(
       collection(db, "erpag/reports/salesOrder"),
       (snapshot) => {
@@ -463,7 +484,7 @@ const Invoice = () => {
   const handEditSalesOrder = () => {
     setEditSalesOrder((prev) => (prev === true ? false : true));
   };
-  const router = useRouter();
+
   return (
     <div div className="">
       {loading ? (
@@ -526,6 +547,7 @@ const Invoice = () => {
               ) : (
                 <CreateSalesOrder
                   compType={"create"}
+                  clientId={clientId}
                   handleClose={handleCreateSalesOrder}
                 />
               )}
