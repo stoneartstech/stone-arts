@@ -73,7 +73,7 @@ export default function PendingOrders() {
   const handleRetailOrders = async (clientId) => {
     try {
       const report = pendingRetailOrders.filter((i) => {
-        return i?.clientId === clientId;
+        return i?.clientId === clientId || i?.orderId === clientId;
       });
       // console.log(report);
       await setDoc(doc(db, `workshop-retail-completed/${clientId}`), report[0]);
@@ -149,7 +149,9 @@ export default function PendingOrders() {
                   className=" mt-4 md:w-[70%] grid grid-cols-3 md:grid-cols-5"
                 >
                   <div className=" py-1.5 md:py-0  col-span-3 md:col-span-2 text-sm md:text-base  border-black border flex items-center justify-center font-semibold">
-                    {order?.name} - {order?.clientId}
+                    {order?.name && order?.clientId
+                      ? order?.name + " - " + order?.clientId
+                      : "Order ID - " + String(order?.orderId)}
                   </div>
                   <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border md:border-l-0">
                     Check Orders
@@ -201,7 +203,9 @@ export default function PendingOrders() {
                   className=" mt-4 md:w-[70%] grid grid-cols-3 md:grid-cols-5"
                 >
                   <div className=" py-1.5 md:py-0  col-span-3 md:col-span-2 text-sm md:text-base  border-black border flex items-center justify-center font-semibold">
-                    {order?.name} - {order?.clientId}
+                    {order?.name && order?.clientId
+                      ? order?.name + " - " + order?.clientId
+                      : "Order ID - " + String(order?.orderId)}
                   </div>
                   <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border md:border-l-0">
                     Check Orders
@@ -211,7 +215,7 @@ export default function PendingOrders() {
                   </button>
                   <button
                     onClick={() => {
-                      handleRetailOrders(order.clientId);
+                      handleRetailOrders(order.clientId || order?.orderId);
                     }}
                     className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border border-l-0"
                   >
