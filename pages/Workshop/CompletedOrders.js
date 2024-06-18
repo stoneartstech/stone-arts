@@ -8,6 +8,7 @@ import {
   setDoc,
 } from "firebase/firestore";
 import { db } from "@/firebase";
+import Image from "next/image";
 
 const filterList = [
   {
@@ -49,10 +50,10 @@ export default function CompletedOrders() {
           ...doc.data(),
         }));
         setCompletedRetailOrders(reports);
+        setLoading(false);
       }
     );
 
-    setLoading(false);
     return fetch, fetch2;
   }, []);
 
@@ -93,18 +94,18 @@ export default function CompletedOrders() {
         <p className="text-lg md:text-2xl mx-auto font-semibold underline mb-2">
           Completed Site Orders
         </p>
-        <div className="flex flex-col items-center">
-          {completedSiteOrders?.filter((i) => {
-            if (filter === 0) {
-              return i;
-            } else if (filter === 1) {
-              return i.standard === true;
-            } else {
-              return i.standard !== true;
-            }
-          }).length === 0 && <p className=" mt-3">No Orders Found !!</p>}{" "}
-          {completedSiteOrders
-            ?.filter((i) => {
+        {loading ? (
+          <div className=" w-full flex items-center justify-center">
+            <Image
+              width={50}
+              height={50}
+              src="/loading.svg"
+              alt="Loading ..."
+            />
+          </div>
+        ) : (
+          <div className="flex flex-col items-center">
+            {completedSiteOrders?.filter((i) => {
               if (filter === 0) {
                 return i;
               } else if (filter === 1) {
@@ -112,40 +113,56 @@ export default function CompletedOrders() {
               } else {
                 return i.standard !== true;
               }
-            })
-            ?.map((order, index) => {
-              return (
-                <div key={index} className=" mt-4  md:w-[55%] grid grid-cols-4">
-                  <div className=" col-span-2  border-black border flex items-center justify-center font-semibold">
-                    {order?.name} - {order?.clientId}
+            }).length === 0 && <p className=" mt-3">No Orders Found !!</p>}{" "}
+            {completedSiteOrders
+              ?.filter((i) => {
+                if (filter === 0) {
+                  return i;
+                } else if (filter === 1) {
+                  return i.standard === true;
+                } else {
+                  return i.standard !== true;
+                }
+              })
+              ?.map((order, index) => {
+                return (
+                  <div
+                    key={index}
+                    className=" mt-4  md:w-[55%] grid grid-cols-4"
+                  >
+                    <div className=" col-span-2  border-black border flex items-center justify-center font-semibold">
+                      {order?.name && order?.clientId
+                        ? order?.name + " - " + order?.clientId
+                        : "Order ID - " + String(order?.orderId)}
+                    </div>
+                    <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border border-l-0">
+                      Check Orders
+                    </button>
+                    <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border border-l-0">
+                      Check Quote
+                    </button>
                   </div>
-                  <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border border-l-0">
-                    Check Orders
-                  </button>
-                  <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border border-l-0">
-                    Check Quote
-                  </button>
-                </div>
-              );
-            })}
-        </div>
+                );
+              })}
+          </div>
+        )}
       </div>
       <div className="flex flex-col mt-7">
         <p className=" text-lg md:text-2xl mx-auto font-semibold underline mb-2">
           Completed Retail Orders
         </p>
-        <div className="flex flex-col items-center">
-          {completedRetailOrders?.filter((i) => {
-            if (filter === 0) {
-              return i;
-            } else if (filter === 1) {
-              return i.standard === true;
-            } else {
-              return i.standard !== true;
-            }
-          }).length === 0 && <p className=" mt-3">No Orders Found !!</p>}{" "}
-          {completedRetailOrders
-            ?.filter((i) => {
+        {loading ? (
+          <div className=" w-full flex items-center justify-center">
+            <Image
+              width={50}
+              height={50}
+              src="/loading.svg"
+              alt="Loading ..."
+            />
+          </div>
+        ) : (
+          <div className="flex flex-col items-center">
+            {completedRetailOrders?.filter((i) => {
               if (filter === 0) {
                 return i;
               } else if (filter === 1) {
@@ -153,23 +170,39 @@ export default function CompletedOrders() {
               } else {
                 return i.standard !== true;
               }
-            })
-            ?.map((order, index) => {
-              return (
-                <div key={index} className=" mt-4  md:w-[55%] grid grid-cols-4">
-                  <div className=" col-span-2  border-black border flex items-center justify-center font-semibold">
-                    {order?.name} - {order?.clientId}
+            }).length === 0 && <p className=" mt-3">No Orders Found !!</p>}{" "}
+            {completedRetailOrders
+              ?.filter((i) => {
+                if (filter === 0) {
+                  return i;
+                } else if (filter === 1) {
+                  return i.standard === true;
+                } else {
+                  return i.standard !== true;
+                }
+              })
+              ?.map((order, index) => {
+                return (
+                  <div
+                    key={index}
+                    className=" mt-4  md:w-[55%] grid grid-cols-4"
+                  >
+                    <div className=" col-span-2  border-black border flex items-center justify-center font-semibold">
+                      {order?.name && order?.clientId
+                        ? order?.name + " - " + order?.clientId
+                        : "Order ID - " + String(order?.orderId)}
+                    </div>
+                    <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border border-l-0">
+                      Check Orders
+                    </button>
+                    <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border border-l-0">
+                      Check Quote
+                    </button>
                   </div>
-                  <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border border-l-0">
-                    Check Orders
-                  </button>
-                  <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border border-l-0">
-                    Check Quote
-                  </button>
-                </div>
-              );
-            })}
-        </div>
+                );
+              })}
+          </div>
+        )}
       </div>
     </div>
   );
