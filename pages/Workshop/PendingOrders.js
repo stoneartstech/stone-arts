@@ -8,6 +8,7 @@ import {
   setDoc,
 } from "firebase/firestore";
 import { db } from "@/firebase";
+import ViewOrder from "./ViewOrder";
 
 const filterList = [
   {
@@ -26,6 +27,9 @@ const filterList = [
 export default function PendingOrders() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [viewOrder, setViewOrder] = useState(false);
+  const [activeOrder, setActiveOrder] = useState("");
+  const [activeQuote, setActiveQuote] = useState("");
   const [filter, setFilter] = useState(0);
   const [pendingSiteOrders, setPendingSiteOrders] = useState([]);
   const [pendingRetailOrders, setPendingRetailOrders] = useState([]);
@@ -86,146 +90,280 @@ export default function PendingOrders() {
   };
 
   return (
-    <div>
-      <div className="w-full relative md:px-8 flex flex-col md:flex-row justify-between">
-        <button
-          className="bg-slate-300 p-2 md:absolute left-10 rounded-lg w-fit"
-          onClick={() => router.back()}
-        >
-          Go Back
-        </button>
-        <p className="text-xl md:text-2xl  text-center w-full font-bold mb-2">
-          Workshop Home Page
-        </p>
-        <div></div>
-      </div>
-      <div className=" flex items-center justify-center">
-        <div className=" mt-6 md:w-[40%] grid grid-cols-3 border-l border-black">
-          {filterList.map((item, index) => {
-            return (
-              <button
-                key={index}
-                onClick={() => {
-                  setFilter(item.id);
-                }}
-                className={` ${
-                  item.id === filter ? "bg-gray-400" : "hover:bg-gray-300"
-                } text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border border-l-0 `}
-              >
-                {item.name}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-      <div className="flex flex-col mt-7">
-        <p className=" text-lg md:text-2xl mx-auto font-semibold underline mb-2">
-          Pending Site Orders
-        </p>
-        <div className="flex flex-col items-center">
-          {pendingSiteOrders?.filter((i) => {
-            if (filter === 0) {
-              return i;
-            } else if (filter === 1) {
-              return i.standard === true;
-            } else {
-              return i.standard !== true;
-            }
-          }).length === 0 && <p className=" mt-3">No Orders Found !!</p>}{" "}
-          {pendingSiteOrders
-            ?.filter((i) => {
-              if (filter === 0) {
-                return i;
-              } else if (filter === 1) {
-                return i.standard === true;
-              } else {
-                return i.standard !== true;
-              }
-            })
-            ?.map((order, index) => {
-              return (
-                <div
-                  key={index}
-                  className=" mt-4 md:w-[70%] grid grid-cols-3 md:grid-cols-5"
-                >
-                  <div className=" py-1.5 md:py-0  col-span-3 md:col-span-2 text-sm md:text-base  border-black border flex items-center justify-center font-semibold">
-                    {order?.name && order?.clientId
-                      ? order?.name + " - " + order?.clientId
-                      : "Order ID - " + String(order?.orderId)}
-                  </div>
-                  <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border md:border-l-0">
-                    Check Orders
-                  </button>
-                  <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border border-l-0">
-                    Check Quote
-                  </button>
+    <>
+      {viewOrder ? (
+        <ViewOrder order={activeOrder} setViewOrder={setViewOrder} />
+      ) : (
+        <div>
+          <div className="w-full relative md:px-8 flex flex-col md:flex-row justify-between">
+            <button
+              className="bg-slate-300 p-2 md:absolute left-10 rounded-lg w-fit"
+              onClick={() => router.back()}
+            >
+              Go Back
+            </button>
+            <p className="text-xl md:text-2xl  text-center w-full font-bold mb-2">
+              Workshop Home Page
+            </p>
+            <div></div>
+          </div>
+          <div className=" flex items-center justify-center">
+            <div className=" mt-6 md:w-[40%] grid grid-cols-3 border-l border-black">
+              {filterList.map((item, index) => {
+                return (
                   <button
+                    key={index}
                     onClick={() => {
-                      handleSiteOrders(order.clientId);
+                      setFilter(item.id);
                     }}
-                    className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border border-l-0"
+                    className={` ${
+                      item.id === filter ? "bg-gray-400" : "hover:bg-gray-300"
+                    } text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border border-l-0 `}
                   >
-                    Complete Order
+                    {item.name}
                   </button>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
+          </div>
+          <div className="flex flex-col mt-7">
+            <p className=" text-lg md:text-2xl mx-auto font-semibold underline mb-2">
+              Pending Site Orders
+            </p>
+            <div className="flex flex-col items-center">
+              {pendingSiteOrders?.filter((i) => {
+                if (filter === 0) {
+                  return i;
+                } else if (filter === 1) {
+                  return i.standard === true;
+                } else {
+                  return i.standard !== true;
+                }
+              }).length === 0 && (
+                <p className=" mt-3">No Orders Found !!</p>
+              )}{" "}
+              {pendingSiteOrders
+                ?.filter((i) => {
+                  if (filter === 0) {
+                    return i;
+                  } else if (filter === 1) {
+                    return i.standard === true;
+                  } else {
+                    return i.standard !== true;
+                  }
+                })
+                ?.map((order, index) => {
+                  return (
+                    <div
+                      key={index}
+                      className=" mt-4 md:w-[70%] grid grid-cols-3 md:grid-cols-5"
+                    >
+                      <div className=" py-1.5 md:py-0  col-span-3 md:col-span-2 text-sm md:text-base  border-black border flex items-center justify-center font-semibold">
+                        {order?.name && order?.clientId
+                          ? order?.name + " - " + order?.clientId
+                          : "Order ID - " + String(order?.orderId)}
+                      </div>
+                      <button
+                        onClick={() => {
+                          setActiveOrder(true);
+                          setViewOrder(order);
+                          console.log(order);
+                        }}
+                        className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border md:border-l-0"
+                      >
+                        Check Orders
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (activeQuote === order?.clientCode) {
+                            setActiveQuote("");
+                          } else {
+                            setActiveQuote(order?.clientCode);
+                          }
+                        }}
+                        className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border border-l-0"
+                      >
+                        Check Quote
+                      </button>
+                      <button
+                        onClick={() => {
+                          handleSiteOrders(order.clientId);
+                        }}
+                        className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border border-l-0"
+                      >
+                        Complete Order
+                      </button>
+                      {activeQuote === order?.clientCode && (
+                        <div className=" overflow-x-auto text-sm md:text-base p-2 col-span-3  md:col-span-5 bg-gray-100 w-full">
+                          <table className="  w-full mt-2 table-auto">
+                            <thead className="bg-blue-500 text-white">
+                              <tr>
+                                <th className="px-2 border-gray-400 border">
+                                  Sl. No.
+                                </th>
+                                <th className="px-2 border-gray-400 border">
+                                  Product Name
+                                </th>
+                                <th className="px-2 border-gray-400 border">
+                                  Product Description
+                                </th>
+                                <th className="px-2 border-gray-400 border">
+                                  Size
+                                </th>
+                                <th className="px-2 border-gray-400 border">
+                                  Quantity
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {order?.order?.map((item, index) => (
+                                <tr key={index}>
+                                  <td className="bg-white border border-gray-400 text-center">
+                                    {index + 1}
+                                  </td>
+                                  <td className="bg-white border border-gray-400">
+                                    {item?.prodName}
+                                  </td>
+                                  <td className="bg-white border border-gray-400">
+                                    {item?.prodDesc}
+                                  </td>
+                                  <td className="bg-white border border-gray-400">
+                                    {item?.Size}
+                                  </td>
+                                  <td className="bg-white border border-gray-400">
+                                    {item?.Qty}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+            </div>
+          </div>
+          <div className="flex flex-col mt-7">
+            <p className="text-2xl mx-auto font-semibold underline mb-2">
+              Pending Retail Orders
+            </p>
+            <div className="flex flex-col items-center">
+              {pendingRetailOrders?.filter((i) => {
+                if (filter === 0) {
+                  return i;
+                } else if (filter === 1) {
+                  return i.standard === true;
+                } else {
+                  return i.standard !== true;
+                }
+              }).length === 0 && (
+                <p className=" mt-3">No Orders Found !!</p>
+              )}{" "}
+              {pendingRetailOrders
+                ?.filter((i) => {
+                  if (filter === 0) {
+                    return i;
+                  } else if (filter === 1) {
+                    return i.standard === true;
+                  } else {
+                    return i.standard !== true;
+                  }
+                })
+                ?.map((order, index) => {
+                  return (
+                    <div
+                      key={index}
+                      className=" mt-4 md:w-[70%] grid grid-cols-3 md:grid-cols-5"
+                    >
+                      <div className=" py-1.5 md:py-0  col-span-3 md:col-span-2 text-sm md:text-base  border-black border flex items-center justify-center font-semibold">
+                        {order?.name && order?.clientId
+                          ? order?.name + " - " + order?.clientId
+                          : "Order ID - " + String(order?.orderId)}
+                      </div>
+                      <button
+                        onClick={() => {
+                          setActiveOrder(order);
+                          setViewOrder(true);
+                          console.log(order);
+                        }}
+                        className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border md:border-l-0"
+                      >
+                        Check Orders
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (activeQuote === order?.clientCode) {
+                            setActiveQuote("");
+                          } else {
+                            setActiveQuote(order?.clientCode);
+                          }
+                        }}
+                        className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border border-l-0"
+                      >
+                        Check Quote
+                      </button>
+                      <button
+                        onClick={() => {
+                          handleRetailOrders(order.clientId || order?.orderId);
+                        }}
+                        className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border border-l-0"
+                      >
+                        Complete Order
+                      </button>
+                      {activeQuote === order?.clientCode && (
+                        <div className=" overflow-x-auto text-sm md:text-base p-2 col-span-3  md:col-span-5 bg-gray-100 w-full">
+                          <table className="  w-full mt-2 table-auto">
+                            <thead className="bg-blue-500 text-white">
+                              <tr>
+                                <th className="px-2 border-gray-400 border">
+                                  Sl. No.
+                                </th>
+                                <th className="px-2 border-gray-400 border">
+                                  Product Name
+                                </th>
+                                <th className="px-2 border-gray-400 border">
+                                  Product Description
+                                </th>
+                                <th className="px-2 border-gray-400 border">
+                                  Size
+                                </th>
+                                <th className="px-2 border-gray-400 border">
+                                  Quantity
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {order?.order?.map((item, index) => (
+                                <tr key={index}>
+                                  <td className="bg-white border border-gray-400 text-center">
+                                    {index + 1}
+                                  </td>
+                                  <td className="bg-white border border-gray-400">
+                                    {item?.prodName}
+                                  </td>
+                                  <td className="bg-white border border-gray-400">
+                                    {item?.prodDesc}
+                                  </td>
+                                  <td className="bg-white border border-gray-400">
+                                    {item?.Size}
+                                  </td>
+                                  <td className="bg-white border border-gray-400">
+                                    {item?.Qty}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+            </div>
+          </div>
         </div>
-      </div>
-      <div className="flex flex-col mt-7">
-        <p className="text-2xl mx-auto font-semibold underline mb-2">
-          Pending Retail Orders
-        </p>
-        <div className="flex flex-col items-center">
-          {pendingRetailOrders?.filter((i) => {
-            if (filter === 0) {
-              return i;
-            } else if (filter === 1) {
-              return i.standard === true;
-            } else {
-              return i.standard !== true;
-            }
-          }).length === 0 && <p className=" mt-3">No Orders Found !!</p>}{" "}
-          {pendingRetailOrders
-            ?.filter((i) => {
-              if (filter === 0) {
-                return i;
-              } else if (filter === 1) {
-                return i.standard === true;
-              } else {
-                return i.standard !== true;
-              }
-            })
-            ?.map((order, index) => {
-              return (
-                <div
-                  key={index}
-                  className=" mt-4 md:w-[70%] grid grid-cols-3 md:grid-cols-5"
-                >
-                  <div className=" py-1.5 md:py-0  col-span-3 md:col-span-2 text-sm md:text-base  border-black border flex items-center justify-center font-semibold">
-                    {order?.name && order?.clientId
-                      ? order?.name + " - " + order?.clientId
-                      : "Order ID - " + String(order?.orderId)}
-                  </div>
-                  <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border md:border-l-0">
-                    Check Orders
-                  </button>
-                  <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border border-l-0">
-                    Check Quote
-                  </button>
-                  <button
-                    onClick={() => {
-                      handleRetailOrders(order.clientId || order?.orderId);
-                    }}
-                    className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border border-l-0"
-                  >
-                    Complete Order
-                  </button>
-                </div>
-              );
-            })}
-        </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 }
