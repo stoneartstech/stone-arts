@@ -362,7 +362,7 @@ const Inventory = ({ compType, handEditSalesOrder, selectedOrder }) => {
                 </td>
                 <td className="bg-white border border-gray-400">
                   <input
-                    type="text"
+                    type="number"
                     value={item.quantity}
                     required
                     onChange={(e) => {

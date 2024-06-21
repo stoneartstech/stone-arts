@@ -9,6 +9,7 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import * as XLSX from "xlsx";
+import Image from "next/image";
 
 export default function ViewInventory() {
   const [loading, setLoading] = useState(true);
@@ -16,27 +17,13 @@ export default function ViewInventory() {
   const router = useRouter();
   const date = new Date().toLocaleDateString();
   const [warehouseArr, setWarehouseArr] = useState([]);
-  const [warehouseArr2, setWarehouseArr2] = useState([]);
   const [combinedArr, setCombinedArr] = useState([]);
   const [combindedArr2, setCombinedArr2] = useState([]);
   const [reports, setReports] = useState([]);
-  const fetchWarehouse = async () => {
-    let allShowroomData = [];
-    try {
-      const warehouses = await getDoc(doc(db, `erpag`, "AllWarehouses"));
-      console.log(warehouses.data()?.data);
-      if (warehouses.data()?.data) {
-        setWarehouseArr(warehouses.data()?.data);
-        const valuesArray = warehouses.data()?.data?.map((obj) => obj.value);
-        setWarehouseArr2(valuesArray);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-  const fetchData = async () => {
+  const fetchData = async (warehouseList) => {
+    setLoading(true);
     const allShowroomData = [];
-    for (const showroom of warehouseArr2) {
+    for (const showroom of warehouseList) {
       const querySnapshot = await getDocs(
         collection(db, `erpag/Inventory`, showroom)
       );
@@ -44,16 +31,16 @@ export default function ViewInventory() {
         id: doc.id,
         ...doc.data(),
       }));
-
-      // console.log(requests);
       allShowroomData.push({
         warehouseName: showroom,
+        warehouseTitle: warehouseArr.find(
+          (i) => String(i?.value) === String(showroom)
+        )?.name,
         data: requests,
       });
-      // console.log(allShowroomData);
     }
+    console.log([...allShowroomData]);
     setCombinedArr([...allShowroomData]);
-    setLoading(false);
     setCombinedArr2(
       allShowroomData.flatMap((entry) =>
         entry.data.map((client) => ({
@@ -62,11 +49,24 @@ export default function ViewInventory() {
         }))
       )
     );
+    setLoading(false);
+  };
+
+  const fetchWarehouse = async () => {
+    try {
+      const warehouses = await getDoc(doc(db, `erpag`, "AllWarehouses"));
+      if (warehouses.data()?.data) {
+        setWarehouseArr(warehouses.data()?.data);
+        const valuesArray = warehouses.data()?.data?.map((obj) => obj.value);
+        fetchData(valuesArray.sort());
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   useEffect(() => {
     fetchWarehouse();
-    fetchData();
   }, []);
 
   function handleExportToExcel(Invoice) {
@@ -118,7 +118,9 @@ export default function ViewInventory() {
   return (
     <div div className=" w-full overflow-x-auto">
       {loading ? (
-        <div className=" w-full text-center ">Loading...</div>
+        <div className=" w-full flex items-center justify-center">
+          <Image width={50} height={50} src="/loading.svg" alt="Loading ..." />
+        </div>
       ) : (
         <div>
           <div className="w-full pl-6 flex items-center justify-between overflow-x-auto">

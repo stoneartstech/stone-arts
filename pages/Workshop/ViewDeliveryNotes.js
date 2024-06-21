@@ -24,6 +24,7 @@ export default function ViewDeliveryNote({
   const date = new Date().toLocaleString();
   const [quoteOrder, setQuoteOrder] = useState([
     {
+      prodName: "",
       prodDesc: "",
       Qty: "",
       Size: "",
@@ -33,42 +34,12 @@ export default function ViewDeliveryNote({
   ]);
   const [consumanleOrder, setConsumableOrder] = useState([
     {
+      prodName: "",
       prodDesc: "",
       Qty: "",
     },
   ]);
 
-  const handleAdQuotedRow = () => {
-    const row = {
-      prodDesc: "",
-      Qty: "",
-      Size: "",
-      Unit: "",
-      Weight: "",
-    };
-    setQuoteOrder([...quoteOrder, row]);
-  };
-  const handleAdConsumeabledRow = () => {
-    const row = {
-      prodDesc: "",
-      Qty: "",
-    };
-    setConsumableOrder([...consumanleOrder, row]);
-  };
-  const handleRemoveQuoteRow = (index) => {
-    const list = [...quoteOrder];
-    if (quoteOrder?.length > 1) {
-      list.splice(-1);
-      setQuoteOrder(list);
-    }
-  };
-  const handleRemoveConsumableRow = (index) => {
-    const list = [...consumanleOrder];
-    if (consumanleOrder?.length > 1) {
-      list.splice(-1);
-      setConsumableOrder(list);
-    }
-  };
   const Invoice = () => {
     const styles = StyleSheet.create({
       page: {
@@ -187,6 +158,9 @@ export default function ViewDeliveryNote({
               <Text>{index + 1}</Text>
             </View>
             <View style={styles.tbody}>
+              <Text>{receipt.prodName}</Text>
+            </View>
+            <View style={styles.tbody}>
               <Text>{receipt.prodDesc}</Text>
             </View>
             <View style={styles.tbody}>
@@ -211,6 +185,9 @@ export default function ViewDeliveryNote({
           <View style={{ width: "100%", flexDirection: "row" }}>
             <View style={styles.tbody}>
               <Text>{index + 1}</Text>
+            </View>
+            <View style={styles.tbody}>
+              <Text>{receipt.prodName}</Text>
             </View>
             <View style={styles.tbody}>
               <Text>{receipt.prodDesc}</Text>
@@ -424,6 +401,7 @@ export default function ViewDeliveryNote({
                       <thead className=" bg-blue-400 text-white">
                         <tr>
                           <th>Sl. No. </th>
+                          <th>Product Name</th>
                           <th>Product Description</th>
                           <th>Quantity</th>
                           <th>Size</th>
@@ -438,6 +416,18 @@ export default function ViewDeliveryNote({
                               <p className=" bg-white w-full p-2">
                                 {index + 1}
                               </p>
+                            </td>
+                            <td>
+                              <input
+                                type="text"
+                                value={item.prodName}
+                                onChange={(e) => {
+                                  const list = [...quoteOrder];
+                                  list[index].prodName = e.target.value;
+                                  setQuoteOrder(list);
+                                }}
+                                className="p-2 w-full"
+                              />
                             </td>
                             <td>
                               <input
@@ -631,6 +621,7 @@ export default function ViewDeliveryNote({
                       <thead className=" bg-blue-400 text-white">
                         <tr>
                           <th>Sl. No. </th>
+                          <th>Product Name</th>
                           <th>Product Description</th>
                           <th>Quantity</th>
                         </tr>
@@ -642,6 +633,18 @@ export default function ViewDeliveryNote({
                               <p className=" bg-white w-full p-2">
                                 {index + 1}
                               </p>
+                            </td>
+                            <td>
+                              <input
+                                type="text"
+                                value={item.prodName}
+                                onChange={(e) => {
+                                  const list = [...consumanleOrder];
+                                  list[index].prodName = e.target.value;
+                                  setConsumableOrder(list);
+                                }}
+                                className="p-2 w-full"
+                              />
                             </td>
                             <td>
                               <input

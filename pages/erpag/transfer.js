@@ -10,6 +10,7 @@ import {
   setDoc,
 } from "firebase/firestore";
 import { IoChevronDown } from "react-icons/io5";
+import Image from "next/image";
 
 export default function ViewInventory() {
   const [loading, setLoading] = useState(true);
@@ -76,7 +77,9 @@ export default function ViewInventory() {
   return (
     <div className="w-full overflow-x-auto">
       {loading ? (
-        <div className="w-full text-center">Loading...</div>
+        <div className=" w-full flex items-center justify-center">
+          <Image width={50} height={50} src="/loading.svg" alt="Loading ..." />
+        </div>
       ) : (
         <div>
           <div className="w-full pl-6 flex items-center justify-between overflow-x-auto">
