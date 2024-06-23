@@ -1,9 +1,11 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import DeliveryNote from "./DeliveryNotes";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "@/firebase";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { db, storage } from "@/firebase";
 import ViewDeliveryNote from "./ViewDeliveryNotes";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { enqueueSnackbar, SnackbarProvider } from "notistack";
 
 export default function ViewOrder({ order, setViewOrder }) {
   const router = useRouter();
@@ -11,7 +13,40 @@ export default function ViewOrder({ order, setViewOrder }) {
   const [addDeliveryNote, setAddDeliverynote] = useState(false);
   const [quoteOrderData, setQuoteOrderData] = useState(false);
   const [consumableData, setConsumableData] = useState(false);
+  const [orderImg, setOrderImg] = useState("");
+  const [imgURL, setImgURL] = useState(order?.imageUrl ? order?.imageUrl : "");
+  const [downloadURL, setDownloadURL] = useState("");
+  const [waiting, setWaiting] = useState(false);
 
+  const handleUploadDesign = async () => {
+    const file = orderImg;
+    const orderId = order?.id;
+    try {
+      // Upload the file to Firebase Storage at workshop - Standard Pending Order (NSPO)
+      const storageRef = ref(storage, `workshop-SPO/${orderId}`);
+      await uploadBytes(storageRef, file);
+      // Get the download URL for the uploaded file
+      const downloadURL = await getDownloadURL(storageRef);
+      setDownloadURL(downloadURL);
+      const quoteOrderData = await setDoc(
+        doc(db, "workshop-retail-pending", `${order?.id}`),
+        {
+          ...order,
+          imageUrl: downloadURL,
+        }
+      );
+      enqueueSnackbar("Image Uploaded Successfully", {
+        variant: "success",
+      });
+      setWaiting(false);
+      setImgURL(downloadURL);
+    } catch (error) {
+      console.log(error);
+      enqueueSnackbar(`File for client could not be uploaded`, {
+        variant: "error",
+      });
+    }
+  };
   useEffect(() => {
     const fetch = async () => {
       const quoteOrderData = await getDoc(
@@ -47,6 +82,12 @@ export default function ViewOrder({ order, setViewOrder }) {
         </>
       ) : (
         <div className=" overscroll-x-hidden">
+          <SnackbarProvider
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+          />
           <div className="w-full md:pl-6 pr-12 flex justify-between ">
             <button
               className="bg-slate-300 p-2 rounded-lg"
@@ -107,6 +148,41 @@ export default function ViewOrder({ order, setViewOrder }) {
               >
                 Add Delivery Note
               </button>
+              {order?.orderType?.toLowerCase() === "standard" && (
+                <>
+                  {imgURL !== "" ? (
+                    <>
+                      <a
+                        target="_blank"
+                        href={imgURL}
+                        className=" cursor-pointer text-center  bg-green-500 disabled:bg-gray-400 disabled:text-gray-700 py-1.5 px-4 text-white font-semibold"
+                      >
+                        View Image
+                      </a>
+                    </>
+                  ) : (
+                    <>
+                      <input
+                        className=" "
+                        type="file"
+                        onChange={(e) => setOrderImg(e.target.files[0])}
+                        id="orderImg"
+                        name="orderImg"
+                      />
+                      <button
+                        disabled={waiting || orderImg === ""}
+                        onClick={(e) => {
+                          setWaiting(true);
+                          handleUploadDesign();
+                        }}
+                        className=" cursor-pointer  bg-green-500 disabled:bg-gray-400 disabled:text-gray-700 py-1.5 px-4 text-white font-semibold"
+                      >
+                        {waiting ? "uploading" : "Add Image"}
+                      </button>
+                    </>
+                  )}
+                </>
+              )}
             </div>
             <div className=" overflow-x-auto w-full">
               <table className="  text-base md:text-base  w-full mt-2 table-auto">
