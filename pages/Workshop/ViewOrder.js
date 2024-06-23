@@ -22,8 +22,8 @@ export default function ViewOrder({ order, setViewOrder }) {
     const file = orderImg;
     const orderId = order?.id;
     try {
-      // Upload the file to Firebase Storage at workshop - Standard Pending Order (NSPO)
-      const storageRef = ref(storage, `workshop-SPO/${orderId}`);
+      // Upload the file to Firebase Storage at workshop - Non Standard - Pending Order (NSPO)
+      const storageRef = ref(storage, `workshop-NS-PO/${orderId}`);
       await uploadBytes(storageRef, file);
       // Get the download URL for the uploaded file
       const downloadURL = await getDownloadURL(storageRef);
@@ -148,7 +148,7 @@ export default function ViewOrder({ order, setViewOrder }) {
               >
                 Add Delivery Note
               </button>
-              {order?.orderType?.toLowerCase() === "standard" && (
+              {order?.orderType?.toLowerCase() !== "standard" && (
                 <>
                   {imgURL !== "" ? (
                     <>
