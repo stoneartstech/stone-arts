@@ -135,9 +135,9 @@ export default function PendingOrders() {
                 if (filter === 0) {
                   return i;
                 } else if (filter === 1) {
-                  return i.standard === true;
+                  return i?.orderType?.toLowerCase() === "standard";
                 } else {
-                  return i.standard !== true;
+                  return i?.orderType?.toLowerCase() !== "standard";
                 }
               }).length === 0 && (
                 <p className=" mt-3">No Orders Found !!</p>
@@ -147,9 +147,9 @@ export default function PendingOrders() {
                   if (filter === 0) {
                     return i;
                   } else if (filter === 1) {
-                    return i.standard === true;
+                    return i?.orderType?.toLowerCase() === "standard";
                   } else {
-                    return i.standard !== true;
+                    return i?.orderType?.toLowerCase() !== "standard";
                   }
                 })
                 ?.map((order, index) => {
@@ -253,9 +253,9 @@ export default function PendingOrders() {
                 if (filter === 0) {
                   return i;
                 } else if (filter === 1) {
-                  return i.standard === true;
+                  return i?.orderType?.toLowerCase() === "standard";
                 } else {
-                  return i.standard !== true;
+                  return i?.orderType?.toLowerCase() !== "standard";
                 }
               }).length === 0 && (
                 <p className=" mt-3">No Orders Found !!</p>
@@ -265,9 +265,9 @@ export default function PendingOrders() {
                   if (filter === 0) {
                     return i;
                   } else if (filter === 1) {
-                    return i.standard === true;
+                    return i?.orderType?.toLowerCase() === "standard";
                   } else {
-                    return i.standard !== true;
+                    return i?.orderType?.toLowerCase() !== "standard";
                   }
                 })
                 ?.map((order, index) => {
