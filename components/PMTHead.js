@@ -79,7 +79,7 @@ export default function PMTHead() {
             href={{
               pathname: "/Workshop/UploadOrder",
             }}
-            className="bg-slate-300 p-2 rounded-lg text-center sm:w-1/3"
+            className="bg-slate-300 p-2 rounded-lg text-center sm:w-1/3 font-bold my-6"
           >
             Upload Order
           </Link>
@@ -87,9 +87,9 @@ export default function PMTHead() {
             href={{
               pathname: "/PMTHead/Reports",
             }}
-            className="bg-slate-300 p-2 rounded-lg text-center sm:w-1/3 font-bold my-6"
+            className="bg-slate-300 p-2 rounded-lg text-center sm:w-1/3 font-bold "
           >
-            REPORTS
+            Reports
           </Link>
         </div>
       </div>
