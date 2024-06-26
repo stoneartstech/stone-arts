@@ -6,15 +6,18 @@ import { Text, View, Page, Document, StyleSheet } from "@react-pdf/renderer";
 import { Fragment } from "react";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "@/firebase";
+import { enqueueSnackbar, SnackbarProvider } from "notistack";
 
 export default function ViewDeliveryNote({
+  orderType,
   orderID,
   setViewDeliverynote,
   quoteOrderData,
   consumableData,
 }) {
   const router = useRouter();
-
+  console.log("q", quoteOrderData);
+  console.log("c", consumableData);
   const [viewMenu, setViewMenu] = useState(true);
   const [viewQuoteOrder, setViewQuoteOrder] = useState(true);
 
@@ -259,6 +262,12 @@ export default function ViewDeliveryNote({
   };
   return (
     <>
+      <SnackbarProvider
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+      />
       <div>
         <div className="w-full md:pl-6 pr-12 flex justify-between">
           <button
@@ -283,7 +292,8 @@ export default function ViewDeliveryNote({
                   setViewMenu(false);
                   setViewQuoteOrder(true);
                 }}
-                className=" bg-blue-500 hover:bg-blue-600 py-2 px-8 text-white font-semibold"
+                disabled={!quoteOrderData}
+                className=" bg-blue-500 disabled:bg-gray-400 disabled:text-gray-600 hover:bg-blue-600 py-2 px-8 text-white font-semibold"
               >
                 Quote Order
               </button>
@@ -292,7 +302,8 @@ export default function ViewDeliveryNote({
                   setViewMenu(false);
                   setViewQuoteOrder(false);
                 }}
-                className=" bg-blue-500 hover:bg-blue-600 py-2 px-8 text-white font-semibold"
+                disabled={!consumableData}
+                className=" bg-blue-500 disabled:bg-gray-400 disabled:text-gray-600 hover:bg-blue-600 py-2 px-8 text-white font-semibold"
               >
                 Consumables
               </button>
@@ -308,11 +319,13 @@ export default function ViewDeliveryNote({
                         setViewMenu(false);
                         setViewQuoteOrder(true);
                       }}
-                      className={`${
-                        viewQuoteOrder
-                          ? "bg-blue-500 text-white"
-                          : "bg-gray-300 text-gray-700"
-                      } hover:bg-blue-400 hover:text-white py-2 px-6 md:px-8  font-semibold`}
+                      disabled={!quoteOrderData}
+                      className={`
+                        disabled:bg-gray-400 disabled:text-gray-600 ${
+                          viewQuoteOrder
+                            ? "bg-blue-500 text-white"
+                            : "bg-gray-300 text-gray-700"
+                        } hover:bg-blue-400 hover:text-white py-2 px-6 md:px-8  font-semibold`}
                     >
                       Quote Order
                     </button>
@@ -321,7 +334,8 @@ export default function ViewDeliveryNote({
                         setViewMenu(false);
                         setViewQuoteOrder(false);
                       }}
-                      className={`${
+                      disabled={!consumableData}
+                      className={`disabled:bg-gray-400 disabled:text-gray-600 ${
                         !viewQuoteOrder
                           ? "bg-blue-500 text-white"
                           : "bg-gray-300 text-gray-700"
@@ -497,17 +511,34 @@ export default function ViewDeliveryNote({
                       <button
                         className="bg-green-400 disabled:bg-gray-400 hover:bg-green-600 font-semibold p-2 px-6 rounded-lg mt-4"
                         onClick={() => {
-                          const orderData = {
-                            ...quoteOrderData,
-                            confirmed: true,
-                          };
-                          // console.log(orderData);
-                          setDoc(
-                            doc(db, "DN-quote-orders", `${orderID}`),
-                            orderData
-                          );
-                          alert("QuoteOrder Confirmed");
-                          router.back();
+                          try {
+                            const orderData = {
+                              ...quoteOrderData,
+                              confirmed: true,
+                            };
+                            // console.log(orderData);
+                            if (Number(orderType) === 0) {
+                              setDoc(
+                                doc(db, "DN-quote-orders", `site-${orderID}`),
+                                orderData
+                              );
+                            } else {
+                              setDoc(
+                                doc(db, "DN-quote-orders", `retail-${orderID}`),
+                                orderData
+                              );
+                            }
+                            enqueueSnackbar("QuoteOrder Confirmed", {
+                              variant: "success",
+                            });
+                            setTimeout(() => {
+                              router.back();
+                            }, 3500);
+                          } catch (error) {
+                            enqueueSnackbar("Some error occured", {
+                              variant: "error",
+                            });
+                          }
                         }}
                       >
                         Confirm
@@ -524,7 +555,8 @@ export default function ViewDeliveryNote({
                         setViewMenu(false);
                         setViewQuoteOrder(true);
                       }}
-                      className={`${
+                      disabled={!quoteOrderData}
+                      className={` disabled:bg-gray-400 disabled:text-gray-600 ${
                         viewQuoteOrder
                           ? "bg-blue-500 text-white"
                           : "bg-gray-300 text-gray-700"
@@ -537,7 +569,8 @@ export default function ViewDeliveryNote({
                         setViewMenu(false);
                         setViewQuoteOrder(false);
                       }}
-                      className={`${
+                      disabled={!consumableData}
+                      className={` disabled:bg-gray-400 disabled:text-gray-600 ${
                         !viewQuoteOrder
                           ? "bg-blue-500 text-white"
                           : "bg-gray-300 text-gray-700"
@@ -678,17 +711,34 @@ export default function ViewDeliveryNote({
                       <button
                         className="bg-green-400 disabled:bg-gray-400 hover:bg-green-600 font-semibold p-2 px-6 rounded-lg mt-4"
                         onClick={() => {
-                          const orderData = {
-                            ...consumableData,
-                            confirmed: true,
-                          };
-                          // console.log(orderData);
-                          setDoc(
-                            doc(db, "DN-consumables", `${orderID}`),
-                            orderData
-                          );
-                          alert("ConsumableOrder Confirmed");
-                          router.back();
+                          try {
+                            const orderData = {
+                              ...consumableData,
+                              confirmed: true,
+                            };
+                            // console.log(orderData);
+                            if (Number(orderType) === 0) {
+                              setDoc(
+                                doc(db, "DN-consumables", `site-${orderID}`),
+                                orderData
+                              );
+                            } else {
+                              setDoc(
+                                doc(db, "DN-consumables", `retail-${orderID}`),
+                                orderData
+                              );
+                            }
+                            enqueueSnackbar("ConsumableOrder Confirmed", {
+                              variant: "success",
+                            });
+                            setTimeout(() => {
+                              router.back();
+                            }, 3500);
+                          } catch (error) {
+                            enqueueSnackbar("Some error occured", {
+                              variant: "error",
+                            });
+                          }
                         }}
                       >
                         Confirm

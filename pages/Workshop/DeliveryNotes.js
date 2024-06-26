@@ -9,36 +9,21 @@ import { db } from "@/firebase";
 import Image from "next/image";
 import { enqueueSnackbar, SnackbarProvider } from "notistack";
 
-export default function DeliveryNote({ orderID, setAddDeliverynote }) {
+export default function DeliveryNote({
+  orderType,
+  orderID,
+  setAddDeliverynote,
+}) {
   const router = useRouter();
 
   const [viewMenu, setViewMenu] = useState(true);
   const [viewQuoteOrder, setViewQuoteOrder] = useState(true);
   const [loading, setLoading] = useState(true);
   const [DNNo, setDNNo] = useState(orderID);
-  const [toLocation1, setToLocation1] = useState("");
-  const [fromLocation1, setFromLocation1] = useState("");
   const [allProducts, setAllProducts] = useState([]);
   const [productsArr, setProductsArr] = useState([]);
   const [warehouseArr, setWarehouseArr] = useState([]);
   const date = new Date().toLocaleString();
-  const [quoteOrder, setQuoteOrder] = useState([
-    {
-      prodName: "",
-      prodDesc: "",
-      Qty: "",
-      Size: "",
-      Unit: "",
-      Weight: "",
-    },
-  ]);
-  const [consumanleOrder, setConsumableOrder] = useState([
-    {
-      prodName: "",
-      prodDesc: "",
-      Qty: "",
-    },
-  ]);
 
   const fetchData = async (warehouseList) => {
     setLoading(true);
@@ -92,245 +77,220 @@ export default function DeliveryNote({ orderID, setAddDeliverynote }) {
   useEffect(() => {
     fetchWarehouse();
   }, []);
-
-  const handleAdQuotedRow = () => {
-    const row = {
-      prodName: "",
-      prodDesc: "",
-      Qty: "",
-      Size: "",
-      Unit: "",
-      Weight: "",
-    };
-    setQuoteOrder([...quoteOrder, row]);
-  };
-  const handleAdConsumeabledRow = () => {
-    const row = {
-      prodName: "",
-      prodDesc: "",
-      Qty: "",
-    };
-    setConsumableOrder([...consumanleOrder, row]);
-  };
-  const handleRemoveQuoteRow = (index) => {
-    const list = [...quoteOrder];
-    if (quoteOrder?.length > 1) {
-      list.splice(-1);
-      setQuoteOrder(list);
-    }
-  };
-  const handleRemoveConsumableRow = (index) => {
-    const list = [...consumanleOrder];
-    if (consumanleOrder?.length > 1) {
-      list.splice(-1);
-      setConsumableOrder(list);
-    }
-  };
-  // invoice component to be used for printing pdf file ------------------
-  const Invoice = () => {
-    const styles = StyleSheet.create({
-      page: {
-        fontSize: 11,
-        paddingTop: 20,
-        paddingLeft: 40,
-        paddingRight: 40,
-        lineHeight: 1.5,
-        flexDirection: "column",
-      },
-
-      spaceBetween: {
-        flex: 1,
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        color: "#3E3E3E",
-      },
-
-      titleContainer: { flexDirection: "row", marginTop: 24 },
-
-      logo: { width: 90 },
-
-      reportTitle: { fontSize: 16, textAlign: "center" },
-
-      addressTitle: { fontSize: 11, fontStyle: "bold" },
-
-      invoice: { fontWeight: "bold", fontSize: 20 },
-
-      invoiceNumber: { fontSize: 11, fontWeight: "bold" },
-
-      address: { fontWeight: 400, fontSize: 10 },
-
-      theader: {
-        marginTop: 20,
-        fontSize: 10,
-        fontStyle: "bold",
-        paddingTop: 4,
-        paddingLeft: 7,
-        flex: 1,
-        height: 20,
-        backgroundColor: "#3b82f6",
-        borderColor: "whitesmoke",
-        borderRightWidth: 1,
-        borderBottomWidth: 1,
-      },
-
-      theader2: { flex: 2, borderRightWidth: 0, borderBottomWidth: 1 },
-
-      tbody: {
-        fontSize: 9,
-        paddingTop: 4,
-        paddingLeft: 7,
-        flex: 1,
-        borderColor: "whitesmoke",
-        borderRightWidth: 1,
-        borderBottomWidth: 1,
-      },
-
-      total: {
-        fontSize: 9,
-        paddingTop: 4,
-        paddingLeft: 7,
-        flex: 1.5,
-        borderColor: "#ffedd5",
-        borderBottomWidth: 1,
-      },
-
-      tbody2: { flex: 2, borderRightWidth: 1 },
-    });
-
-    const InvoiceTitle = () => {
-      return (
-        <View style={styles.titleContainer}>
-          <View style={styles.spaceBetween}>
-            <Text style={styles.reportTitle}>Stone Arts</Text>
-          </View>
-        </View>
-      );
-    };
-
-    const TableHead = () => {
-      return (
-        <View style={{ width: "100%", flexDirection: "row", marginTop: 10 }}>
-          <View style={[styles.theader, styles.theader2]}>
-            <Text>Sl. No.</Text>
-          </View>
-          <View style={[styles.theader, styles.theader2]}>
-            <Text>Prod. Name</Text>
-          </View>
-          <View style={[styles.theader, styles.theader2]}>
-            <Text>Prod. Desc.</Text>
-          </View>
-          <View style={[styles.theader, styles.theader2]}>
-            <Text>Qty.</Text>
-          </View>
-          {viewQuoteOrder && (
-            <>
-              <View style={[styles.theader, styles.theader2]}>
-                <Text>Size</Text>
-              </View>
-              <View style={[styles.theader, styles.theader2]}>
-                <Text>Units</Text>
-              </View>
-              <View style={[styles.theader, styles.theader2]}>
-                <Text>Weight(Tonnes)</Text>
-              </View>
-            </>
-          )}
-        </View>
-      );
-    };
-
-    const TableBody = () => {
-      return quoteOrder.map((receipt, index) => (
-        <Fragment key={receipt.id}>
-          <View style={{ width: "100%", flexDirection: "row" }}>
-            <View style={styles.tbody}>
-              <Text>{index + 1}</Text>
-            </View>
-            <View style={styles.tbody}>
-              <Text>{receipt.prodName}</Text>
-            </View>
-            <View style={styles.tbody}>
-              <Text>{receipt.prodDesc}</Text>
-            </View>
-            <View style={styles.tbody}>
-              <Text>{receipt.Qty}</Text>
-            </View>
-            <View style={styles.tbody}>
-              <Text>{receipt.Size}</Text>
-            </View>
-            <View style={styles.tbody}>
-              <Text>{receipt.Unit}</Text>
-            </View>
-            <View style={styles.tbody}>
-              <Text>{receipt.Weight}</Text>
-            </View>
-          </View>
-        </Fragment>
-      ));
-    };
-    const TableBody2 = () => {
-      return consumanleOrder.map((receipt, index) => (
-        <Fragment key={receipt.id}>
-          <View style={{ width: "100%", flexDirection: "row" }}>
-            <View style={styles.tbody}>
-              <Text>{index + 1}</Text>
-            </View>
-            <View style={styles.tbody}>
-              <Text>{receipt.prodName}</Text>
-            </View>
-            <View style={styles.tbody}>
-              <Text>{receipt.prodDesc}</Text>
-            </View>
-            <View style={styles.tbody}>
-              <Text>{receipt.Qty}</Text>
-            </View>
-          </View>
-        </Fragment>
-      ));
-    };
-
-    const Address = () => {
-      return (
-        <View style={styles.titleContainer}>
-          <View style={styles.spaceBetween}>
-            <View>
-              <Text style={styles.invoiceNumber}>Date & Time - {date}</Text>
-              <Text style={styles.invoiceNumber}>DN No. - {DNNo}</Text>
-              <Text style={styles.invoiceNumber}>
-                From Location- {fromLocation1}
-              </Text>
-              <Text style={styles.invoiceNumber}>
-                To Location- {toLocation1}
-              </Text>
-            </View>
-          </View>
-        </View>
-      );
-    };
-
-    return (
-      <Document>
-        <Page size="A4" style={styles.page}>
-          <InvoiceTitle />
-          {viewQuoteOrder ? (
-            <View>
-              <Text>Quote Order (order ID:{orderID})</Text>
-            </View>
-          ) : (
-            <View>
-              <Text>Consumable Order (order ID:{orderID})</Text>
-            </View>
-          )}
-          <Address />
-          <TableHead />
-          {viewQuoteOrder ? <TableBody /> : <TableBody2 />}
-        </Page>
-      </Document>
-    );
-  };
   // Quote Order Section --------------------------------------------------
   const QuoteOrderSection = () => {
+    const [toLocation1, setToLocation1] = useState("");
+    const [fromLocation1, setFromLocation1] = useState("");
+    const [quoteOrder, setQuoteOrder] = useState([
+      {
+        prodName: "",
+        prodDesc: "",
+        Qty: "",
+        Size: "",
+        Unit: "",
+        Weight: "",
+      },
+    ]);
+    const handleAdQuotedRow = () => {
+      const row = {
+        prodName: "",
+        prodDesc: "",
+        Qty: "",
+        Size: "",
+        Unit: "",
+        Weight: "",
+      };
+      setQuoteOrder([...quoteOrder, row]);
+    };
+    const handleRemoveQuoteRow = (index) => {
+      const list = [...quoteOrder];
+      if (quoteOrder?.length > 1) {
+        list.splice(-1);
+        setQuoteOrder(list);
+      }
+    };
+    // invoice component to be used for printing pdf file ------------------
+    const Invoice = () => {
+      const styles = StyleSheet.create({
+        page: {
+          fontSize: 11,
+          paddingTop: 20,
+          paddingLeft: 40,
+          paddingRight: 40,
+          lineHeight: 1.5,
+          flexDirection: "column",
+        },
+
+        spaceBetween: {
+          flex: 1,
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          color: "#3E3E3E",
+        },
+
+        titleContainer: { flexDirection: "row", marginTop: 24 },
+
+        logo: { width: 90 },
+
+        reportTitle: { fontSize: 16, textAlign: "center" },
+
+        addressTitle: { fontSize: 11, fontStyle: "bold" },
+
+        invoice: { fontWeight: "bold", fontSize: 20 },
+
+        invoiceNumber: { fontSize: 11, fontWeight: "bold" },
+
+        address: { fontWeight: 400, fontSize: 10 },
+
+        theader: {
+          marginTop: 20,
+          fontSize: 10,
+          fontStyle: "bold",
+          paddingTop: 4,
+          paddingLeft: 7,
+          flex: 1,
+          height: 20,
+          backgroundColor: "#3b82f6",
+          borderColor: "whitesmoke",
+          borderRightWidth: 1,
+          borderBottomWidth: 1,
+        },
+
+        theader2: { flex: 2, borderRightWidth: 0, borderBottomWidth: 1 },
+
+        tbody: {
+          fontSize: 9,
+          paddingTop: 4,
+          paddingLeft: 7,
+          flex: 1,
+          borderColor: "whitesmoke",
+          borderRightWidth: 1,
+          borderBottomWidth: 1,
+        },
+
+        total: {
+          fontSize: 9,
+          paddingTop: 4,
+          paddingLeft: 7,
+          flex: 1.5,
+          borderColor: "#ffedd5",
+          borderBottomWidth: 1,
+        },
+
+        tbody2: { flex: 2, borderRightWidth: 1 },
+      });
+
+      const InvoiceTitle = () => {
+        return (
+          <View style={styles.titleContainer}>
+            <View style={styles.spaceBetween}>
+              <Text style={styles.reportTitle}>Stone Arts</Text>
+            </View>
+          </View>
+        );
+      };
+
+      const TableHead = () => {
+        return (
+          <View style={{ width: "100%", flexDirection: "row", marginTop: 10 }}>
+            <View style={[styles.theader, styles.theader2]}>
+              <Text>Sl. No.</Text>
+            </View>
+            <View style={[styles.theader, styles.theader2]}>
+              <Text>Prod. Name</Text>
+            </View>
+            <View style={[styles.theader, styles.theader2]}>
+              <Text>Prod. Desc.</Text>
+            </View>
+            <View style={[styles.theader, styles.theader2]}>
+              <Text>Qty.</Text>
+            </View>
+            {viewQuoteOrder && (
+              <>
+                <View style={[styles.theader, styles.theader2]}>
+                  <Text>Size</Text>
+                </View>
+                <View style={[styles.theader, styles.theader2]}>
+                  <Text>Units</Text>
+                </View>
+                <View style={[styles.theader, styles.theader2]}>
+                  <Text>Weight(Tonnes)</Text>
+                </View>
+              </>
+            )}
+          </View>
+        );
+      };
+
+      const TableBody = () => {
+        return quoteOrder.map((receipt, index) => (
+          <Fragment key={receipt.id}>
+            <View style={{ width: "100%", flexDirection: "row" }}>
+              <View style={styles.tbody}>
+                <Text>{index + 1}</Text>
+              </View>
+              <View style={styles.tbody}>
+                <Text>{receipt.prodName}</Text>
+              </View>
+              <View style={styles.tbody}>
+                <Text>{receipt.prodDesc}</Text>
+              </View>
+              <View style={styles.tbody}>
+                <Text>{receipt.Qty}</Text>
+              </View>
+              <View style={styles.tbody}>
+                <Text>{receipt.Size}</Text>
+              </View>
+              <View style={styles.tbody}>
+                <Text>{receipt.Unit}</Text>
+              </View>
+              <View style={styles.tbody}>
+                <Text>{receipt.Weight}</Text>
+              </View>
+            </View>
+          </Fragment>
+        ));
+      };
+      const Address = () => {
+        return (
+          <View style={styles.titleContainer}>
+            <View style={styles.spaceBetween}>
+              <View>
+                <Text style={styles.invoiceNumber}>Date & Time - {date}</Text>
+                <Text style={styles.invoiceNumber}>DN No. - {DNNo}</Text>
+                <Text style={styles.invoiceNumber}>
+                  From Location- {fromLocation1}
+                </Text>
+                <Text style={styles.invoiceNumber}>
+                  To Location- {toLocation1}
+                </Text>
+              </View>
+            </View>
+          </View>
+        );
+      };
+
+      return (
+        <Document>
+          <Page size="A4" style={styles.page}>
+            <InvoiceTitle />
+            {viewQuoteOrder ? (
+              <View>
+                <Text>Quote Order (order ID:{orderID})</Text>
+              </View>
+            ) : (
+              <View>
+                <Text>Consumable Order (order ID:{orderID})</Text>
+              </View>
+            )}
+            <Address />
+            <TableHead />
+            <TableBody />
+          </Page>
+        </Document>
+      );
+    };
     return (
       <div className=" w-full mt-4 text-sm md:text-base">
         <div className=" flex items-center justify-center">
@@ -372,7 +332,65 @@ export default function DeliveryNote({ orderID, setAddDeliverynote }) {
             />
           </PDFDownloadLink>
         </div>
-        <div className="flex flex-col items-center overflow-x-auto">
+        <form
+          onSubmit={async (e) => {
+            e.preventDefault();
+            try {
+              const orderData = {
+                date,
+                DNNo,
+                toLocation1,
+                fromLocation1,
+                quoteOrder,
+                confirmed: false,
+              };
+              const updateStock = async () => {
+                const combinedData = [];
+                for (const order of quoteOrder) {
+                  const matchingProduct = allProducts.filter(
+                    (item) => item?.id === order?.prodName
+                  )[0];
+                  const { showroomName, id, quantity, ...rest } =
+                    matchingProduct;
+                  await setDoc(
+                    doc(
+                      db,
+                      `erpag/Inventory/${showroomName}`,
+                      `${order?.prodName}`
+                    ),
+                    {
+                      ...rest,
+                      quantity: Number(quantity) - Number(order?.Qty),
+                    }
+                  );
+                }
+              };
+              updateStock();
+              if (Number(orderType) === 0) {
+                setDoc(
+                  doc(db, "DN-quote-orders", `site-${orderID}`),
+                  orderData
+                );
+              } else {
+                setDoc(
+                  doc(db, "DN-quote-orders", `retail-${orderID}`),
+                  orderData
+                );
+              }
+              enqueueSnackbar("QuoteOrder Sent to admin for confirmation", {
+                variant: "success",
+              });
+              setTimeout(() => {
+                setAddDeliverynote(false);
+              }, 3500);
+            } catch (error) {
+              enqueueSnackbar("Some error occured", {
+                variant: "error",
+              });
+            }
+          }}
+          className="flex flex-col items-center overflow-x-auto"
+        >
           <div className="flex flex-col sm:flex-row pb-7 gap-16 w-full">
             <div className="flex flex-col w-full">
               <div className=" grid grid-cols-2 gap-4 ">
@@ -401,6 +419,7 @@ export default function DeliveryNote({ orderID, setAddDeliverynote }) {
               <p className=" mt-3">From (dropdown for the site locations)</p>
               <select
                 className="p-2 w-max md:w-full "
+                value={fromLocation1}
                 onChange={(e) => setFromLocation1(e.target.value)}
               >
                 <option value="">select from site locations</option>
@@ -410,6 +429,7 @@ export default function DeliveryNote({ orderID, setAddDeliverynote }) {
               <p className=" mt-3">To (dropdown for the site locations)</p>
               <select
                 className="p-2 w-max md:w-full "
+                value={toLocation1}
                 onChange={(e) => setToLocation1(e.target.value)}
               >
                 <option value="">select To site locations</option>
@@ -418,55 +438,7 @@ export default function DeliveryNote({ orderID, setAddDeliverynote }) {
               </select>
             </div>
           </div>
-          <form
-            onSubmit={async (e) => {
-              e.preventDefault();
-              try {
-                const orderData = {
-                  date,
-                  DNNo,
-                  toLocation1,
-                  fromLocation1,
-                  quoteOrder,
-                  confirmed: false,
-                };
-                const updateStock = async () => {
-                  const combinedData = [];
-                  for (const order of quoteOrder) {
-                    const matchingProduct = allProducts.filter(
-                      (item) => item?.id === order?.prodName
-                    )[0];
-                    const { showroomName, id, quantity, ...rest } =
-                      matchingProduct;
-                    await setDoc(
-                      doc(
-                        db,
-                        `erpag/Inventory/${showroomName}`,
-                        `${order?.prodName}`
-                      ),
-                      {
-                        ...rest,
-                        quantity: Number(quantity) - Number(order?.Qty),
-                      }
-                    );
-                  }
-                };
-                updateStock();
-                setDoc(doc(db, "DN-quote-orders", `${orderID}`), orderData);
-                enqueueSnackbar("QuoteOrder Sent to admin for confirmation", {
-                  variant: "success",
-                });
-                setTimeout(() => {
-                  setAddDeliverynote(false);
-                }, 3500);
-              } catch (error) {
-                enqueueSnackbar("Some error occured", {
-                  variant: "error",
-                });
-              }
-            }}
-            className=" w-full"
-          >
+          <div className=" w-full">
             <table className="w-full table-auto ">
               <thead className=" bg-blue-400 text-white">
                 <tr>
@@ -626,20 +598,219 @@ export default function DeliveryNote({ orderID, setAddDeliverynote }) {
             </div>
             <div className="  w-full flex items-center justify-center">
               <button
-                disabled={!DNNo || fromLocation1 === "" || toLocation1 === ""}
+                disabled={fromLocation1 === "" || toLocation1 === ""}
                 type="submit"
                 className="bg-green-400 disabled:bg-gray-400 hover:bg-green-600 font-semibold p-2 px-6 rounded-lg mt-4"
               >
                 Send to Admin for Confirmation
               </button>
             </div>
-          </form>
-        </div>
+          </div>
+        </form>
       </div>
     );
   };
   // Consumable Section --------------------------------------------------
   const ConsumableSection = ({}) => {
+    const [toLocation1, setToLocation1] = useState("");
+    const [fromLocation1, setFromLocation1] = useState("");
+    const [consumanleOrder, setConsumableOrder] = useState([
+      {
+        prodName: "",
+        prodDesc: "",
+        Qty: "",
+      },
+    ]);
+
+    const handleAdConsumeabledRow = () => {
+      const row = {
+        prodName: "",
+        prodDesc: "",
+        Qty: "",
+      };
+      setConsumableOrder([...consumanleOrder, row]);
+    };
+    const handleRemoveConsumableRow = (index) => {
+      const list = [...consumanleOrder];
+      if (consumanleOrder?.length > 1) {
+        list.splice(-1);
+        setConsumableOrder(list);
+      }
+    };
+    // invoice component to be used for printing pdf file ------------------
+    const Invoice = () => {
+      const styles = StyleSheet.create({
+        page: {
+          fontSize: 11,
+          paddingTop: 20,
+          paddingLeft: 40,
+          paddingRight: 40,
+          lineHeight: 1.5,
+          flexDirection: "column",
+        },
+
+        spaceBetween: {
+          flex: 1,
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          color: "#3E3E3E",
+        },
+
+        titleContainer: { flexDirection: "row", marginTop: 24 },
+
+        logo: { width: 90 },
+
+        reportTitle: { fontSize: 16, textAlign: "center" },
+
+        addressTitle: { fontSize: 11, fontStyle: "bold" },
+
+        invoice: { fontWeight: "bold", fontSize: 20 },
+
+        invoiceNumber: { fontSize: 11, fontWeight: "bold" },
+
+        address: { fontWeight: 400, fontSize: 10 },
+
+        theader: {
+          marginTop: 20,
+          fontSize: 10,
+          fontStyle: "bold",
+          paddingTop: 4,
+          paddingLeft: 7,
+          flex: 1,
+          height: 20,
+          backgroundColor: "#3b82f6",
+          borderColor: "whitesmoke",
+          borderRightWidth: 1,
+          borderBottomWidth: 1,
+        },
+
+        theader2: { flex: 2, borderRightWidth: 0, borderBottomWidth: 1 },
+
+        tbody: {
+          fontSize: 9,
+          paddingTop: 4,
+          paddingLeft: 7,
+          flex: 1,
+          borderColor: "whitesmoke",
+          borderRightWidth: 1,
+          borderBottomWidth: 1,
+        },
+
+        total: {
+          fontSize: 9,
+          paddingTop: 4,
+          paddingLeft: 7,
+          flex: 1.5,
+          borderColor: "#ffedd5",
+          borderBottomWidth: 1,
+        },
+
+        tbody2: { flex: 2, borderRightWidth: 1 },
+      });
+
+      const InvoiceTitle = () => {
+        return (
+          <View style={styles.titleContainer}>
+            <View style={styles.spaceBetween}>
+              <Text style={styles.reportTitle}>Stone Arts</Text>
+            </View>
+          </View>
+        );
+      };
+
+      const TableHead = () => {
+        return (
+          <View style={{ width: "100%", flexDirection: "row", marginTop: 10 }}>
+            <View style={[styles.theader, styles.theader2]}>
+              <Text>Sl. No.</Text>
+            </View>
+            <View style={[styles.theader, styles.theader2]}>
+              <Text>Prod. Name</Text>
+            </View>
+            <View style={[styles.theader, styles.theader2]}>
+              <Text>Prod. Desc.</Text>
+            </View>
+            <View style={[styles.theader, styles.theader2]}>
+              <Text>Qty.</Text>
+            </View>
+            {viewQuoteOrder && (
+              <>
+                <View style={[styles.theader, styles.theader2]}>
+                  <Text>Size</Text>
+                </View>
+                <View style={[styles.theader, styles.theader2]}>
+                  <Text>Units</Text>
+                </View>
+                <View style={[styles.theader, styles.theader2]}>
+                  <Text>Weight(Tonnes)</Text>
+                </View>
+              </>
+            )}
+          </View>
+        );
+      };
+
+      const TableBody2 = () => {
+        return consumanleOrder.map((receipt, index) => (
+          <Fragment key={receipt.id}>
+            <View style={{ width: "100%", flexDirection: "row" }}>
+              <View style={styles.tbody}>
+                <Text>{index + 1}</Text>
+              </View>
+              <View style={styles.tbody}>
+                <Text>{receipt.prodName}</Text>
+              </View>
+              <View style={styles.tbody}>
+                <Text>{receipt.prodDesc}</Text>
+              </View>
+              <View style={styles.tbody}>
+                <Text>{receipt.Qty}</Text>
+              </View>
+            </View>
+          </Fragment>
+        ));
+      };
+
+      const Address = () => {
+        return (
+          <View style={styles.titleContainer}>
+            <View style={styles.spaceBetween}>
+              <View>
+                <Text style={styles.invoiceNumber}>Date & Time - {date}</Text>
+                <Text style={styles.invoiceNumber}>DN No. - {DNNo}</Text>
+                <Text style={styles.invoiceNumber}>
+                  From Location- {fromLocation1}
+                </Text>
+                <Text style={styles.invoiceNumber}>
+                  To Location- {toLocation1}
+                </Text>
+              </View>
+            </View>
+          </View>
+        );
+      };
+
+      return (
+        <Document>
+          <Page size="A4" style={styles.page}>
+            <InvoiceTitle />
+            {viewQuoteOrder ? (
+              <View>
+                <Text>Quote Order (order ID:{orderID})</Text>
+              </View>
+            ) : (
+              <View>
+                <Text>Consumable Order (order ID:{orderID})</Text>
+              </View>
+            )}
+            <Address />
+            <TableHead />
+            <TableBody2 />
+          </Page>
+        </Document>
+      );
+    };
     return (
       <div className=" w-full mt-4 text-sm md:text-base">
         <div className=" flex items-center justify-center">
@@ -710,6 +881,7 @@ export default function DeliveryNote({ orderID, setAddDeliverynote }) {
               <p className=" mt-3">From (dropdown for the site locations)</p>
               <select
                 className="p-2 w-max md:w-full "
+                value={fromLocation1}
                 onChange={(e) => setFromLocation1(e.target.value)}
               >
                 <option value="">select from site locations</option>
@@ -719,6 +891,7 @@ export default function DeliveryNote({ orderID, setAddDeliverynote }) {
               <p className=" mt-3">To (dropdown for the site locations)</p>
               <select
                 className="p-2 w-max md:w-full "
+                value={toLocation1}
                 onChange={(e) => setToLocation1(e.target.value)}
               >
                 <option value="">select To site locations</option>
@@ -762,7 +935,18 @@ export default function DeliveryNote({ orderID, setAddDeliverynote }) {
                   }
                 };
                 updateStock();
-                setDoc(doc(db, "DN-consumables", `${orderID}`), orderData);
+                if (Number(orderType) === 0) {
+                  setDoc(
+                    doc(db, "DN-consumables", `site-${orderID}`),
+                    orderData
+                  );
+                } else {
+                  setDoc(
+                    doc(db, "DN-consumables", `retail-${orderID}`),
+                    orderData
+                  );
+                }
+                // setDoc(doc(db, "DN-consumables", `${orderID}`), orderData);
                 enqueueSnackbar("DN Sent to admin for confirmation", {
                   variant: "success",
                 });
@@ -888,7 +1072,7 @@ export default function DeliveryNote({ orderID, setAddDeliverynote }) {
             </div>
             <div className="  flex items-center justify-center">
               <button
-                disabled={!DNNo || fromLocation1 === "" || toLocation1 === ""}
+                disabled={fromLocation1 === "" || toLocation1 === ""}
                 type="submit"
                 className="bg-green-400 disabled:bg-gray-400 hover:bg-green-600 font-semibold p-2 px-6 rounded-lg mt-4"
               >
