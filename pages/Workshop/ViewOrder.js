@@ -7,7 +7,7 @@ import ViewDeliveryNote from "./ViewDeliveryNotes";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { enqueueSnackbar, SnackbarProvider } from "notistack";
 
-export default function ViewOrder({ order, setViewOrder }) {
+export default function ViewOrder({ orderType, order, setViewOrder }) {
   const router = useRouter();
   const [viewDeliveryNote, setViewDeliverynote] = useState(false);
   const [addDeliveryNote, setAddDeliverynote] = useState(false);
@@ -49,15 +49,27 @@ export default function ViewOrder({ order, setViewOrder }) {
   };
   useEffect(() => {
     const fetch = async () => {
-      const quoteOrderData = await getDoc(
-        doc(db, "DN-quote-orders", `${order?.orderId}`)
-      );
-      const consumableData = await getDoc(
-        doc(db, "DN-consumables", `${order?.orderId}`)
-      );
-      setQuoteOrderData(quoteOrderData?.data());
-      setConsumableData(consumableData?.data());
-      console.log(quoteOrderData?.data(), consumableData?.data());
+      if (Number(orderType) === 0) {
+        const quoteOrderData = await getDoc(
+          doc(db, "DN-quote-orders", `site-${order?.orderId}`)
+        );
+        const consumableData = await getDoc(
+          doc(db, "DN-consumables", `site-${order?.orderId}`)
+        );
+        setQuoteOrderData(quoteOrderData?.data());
+        setConsumableData(consumableData?.data());
+        console.log(quoteOrderData?.data(), consumableData?.data());
+      } else {
+        const quoteOrderData = await getDoc(
+          doc(db, "DN-quote-orders", `retail-${order?.orderId}`)
+        );
+        const consumableData = await getDoc(
+          doc(db, "DN-consumables", `retail-${order?.orderId}`)
+        );
+        setQuoteOrderData(quoteOrderData?.data());
+        setConsumableData(consumableData?.data());
+        console.log(quoteOrderData?.data(), consumableData?.data());
+      }
     };
     fetch();
   }, []);
@@ -68,11 +80,13 @@ export default function ViewOrder({ order, setViewOrder }) {
         <>
           {addDeliveryNote ? (
             <DeliveryNote
+              orderType={orderType}
               orderID={order?.orderId}
               setAddDeliverynote={setAddDeliverynote}
             />
           ) : (
             <ViewDeliveryNote
+              orderType={orderType}
               orderID={order?.orderId}
               quoteOrderData={quoteOrderData}
               consumableData={consumableData}
