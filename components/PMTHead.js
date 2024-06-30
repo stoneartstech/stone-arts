@@ -69,7 +69,7 @@ export default function PMTHead() {
           </Link>
           <Link
             href={{
-              pathname: "/Workshop/OngoingSites",
+              pathname: "/PMTHead/OngoingSites",
             }}
             className="bg-slate-300 p-2 rounded-lg text-center sm:w-1/3"
           >
