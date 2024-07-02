@@ -133,58 +133,78 @@ export default function OngoingSites() {
               </div>
             ) : (
               <div className=" flex flex-col items-center justify-center ">
-                <div className=" mt-4 flex flex-col gap-3 ">
-                  <Link href={selectedClient?.quotePdf} target="_blank">
+                <div className=" mt-4 grid grid-cols-2 flex-col gap-3 ">
+                  <Link
+                    href={`/PMTHead/actions/CheckImages?qsName=${selectedClient?.qsName}&clientId=${selectedClient?.clientId}&clientName=${selectedClient?.name}&type=view`}
+                  >
                     <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border  w-[300px]">
                       Check Images
                     </button>
                   </Link>
-                  {/* <Link */}
-                  {/* // href= */}
-                  {/* {`/PMTHead/actions/MaterialPlanUpload?qsName=${selectedClient?.qsName}&clientName=${selectedClient?.name}+${selectedClient?.lastname}`} */}
-                  {/* > */}
                   <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border  w-[300px]">
                     Check Progress
                   </button>
-                  {/* </Link> */}
-                  {/* <Link */}
-                  {/* href={`/PMTHead/actions/SitePlanUpload?qsName=${selectedClient?.qsName}&clientName=${selectedClient?.name}+${selectedClient?.lastname}`} */}
-                  {/* > */}
-                  <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border  w-[300px]">
-                    Check Schedule
-                  </button>
-                  {/* </Link> */}
-                  <button
-                    onClick={() => {
-                      const okay = confirm(
-                        `Mark ${selectedClient?.name} - ${selectedClient?.clientId} as Completed`
-                      );
-                      try {
-                        if (okay) {
-                          enqueueSnackbar(
-                            ` ${selectedClient?.name} - ${selectedClient?.clientId} Completed`,
-                            {
-                              variant: "success",
-                            }
-                          );
-                        }
-                      } catch (error) {
-                        enqueueSnackbar("Some error occured", {
-                          variant: "error",
-                        });
-                        console.error(error);
-                      }
-                    }}
-                    className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border  w-[300px]"
+                  <Link href={selectedClient?.quotePdf} target="_blank">
+                    <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border  w-[300px]">
+                      Check Quote
+                    </button>
+                  </Link>
+                  <Link
+                    href={`/PMTHead/actions/MaterialPlanUpload?qsName=${selectedClient?.qsName}&clientId=${selectedClient?.clientId}&clientName=${selectedClient?.name}&type=view`}
                   >
-                    Complete Project
-                  </button>
-                  <p className=" text-center mt-0.5 -mb-2.5 text-sm">
-                    (Site Supervisor)
-                  </p>
-                  <p className=" bg-white capitalize text-center text-xs md:text-base font-semibold py-1.5 md:py-2.5 px-4 border-black border  w-[300px]">
-                    {selectedClient?.supervisor}
-                  </p>
+                    <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border  w-[300px]">
+                      Check Material Plan
+                    </button>
+                  </Link>
+                  <Link
+                    href={`/PMTHead/actions/SitePlanUpload?qsName=${selectedClient?.qsName}&clientId=${selectedClient?.clientId}&clientName=${selectedClient?.name}&type=view`}
+                  >
+                    <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border  w-[300px]">
+                      Check Site Plan
+                    </button>
+                  </Link>
+                  <Link
+                    href={`/PMTHead/actions/JobCards?qsName=${selectedClient?.qsName}&clientId=${selectedClient?.clientId}&clientName=${selectedClient?.name}&type=view`}
+                  >
+                    <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border  w-[300px]">
+                      Check Job Card
+                    </button>
+                  </Link>
+                  <div className=" flex  flex-col col-span-2 w-full mt-4">
+                    <p className=" text-center text-sm mb-0.5">
+                      (Site Supervisor)
+                    </p>
+                    <p className=" bg-white capitalize text-center w-full text-xs md:text-base font-semibold py-1.5 md:py-2.5 px-4 border-black border ">
+                      {selectedClient?.supervisor}
+                    </p>
+                  </div>
+                  <div className=" flex  flex-col col-span-2">
+                    <button
+                      onClick={() => {
+                        const okay = confirm(
+                          `Mark ${selectedClient?.name} - ${selectedClient?.clientId} as Completed`
+                        );
+                        try {
+                          if (okay) {
+                            enqueueSnackbar(
+                              ` ${selectedClient?.name} - ${selectedClient?.clientId} Completed`,
+                              {
+                                variant: "success",
+                              }
+                            );
+                          }
+                        } catch (error) {
+                          enqueueSnackbar("Some error occured", {
+                            variant: "error",
+                          });
+                          console.error(error);
+                        }
+                      }}
+                      className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-3 px-4 border-black border  w-full"
+                    >
+                      Complete Project
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
