@@ -1,8 +1,8 @@
 import { useSearchParams } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 // import { db, storage } from "../../firebase";
-import { setDoc, doc, deleteDoc } from "firebase/firestore";
+import { setDoc, doc, deleteDoc, getDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "@/firebase";
 import { IoAddCircle, IoAddCircleOutline } from "react-icons/io5";
@@ -14,11 +14,12 @@ import {
 import { Fragment } from "react";
 import { BlobProvider, PDFDownloadLink } from "@react-pdf/renderer";
 import { Text, View, Page, Document, StyleSheet } from "@react-pdf/renderer";
+import { enqueueSnackbar, SnackbarProvider } from "notistack";
 
 export default function JobCard() {
   const router = useRouter();
   const { query } = router;
-  const { qsName, clientName } = query;
+  const { qsName, clientId, clientName, type } = query;
   const today = new Date();
   const date =
     today.getDate() +
@@ -58,7 +59,7 @@ export default function JobCard() {
   const [QuoteNo, setQuoteNo] = useState("");
   const [QuoteDate, setQuoteDate] = useState("");
   const [SiteLocation, setSiteLocation] = useState("");
-  const [Qs, setQs] = useState("");
+  const [Qs, setQs] = useState(qsName);
   const [QuoteApprovedDate, setQuoteApprovedDate] = useState("");
   const [SiteSchedule, setSiteSchedule] = useState("");
   const [SiteStart, setSiteStart] = useState("");
@@ -149,6 +150,33 @@ export default function JobCard() {
       setReport2(list);
     }
   };
+  const fetchData = async () => {
+    const result = await getDoc(
+      doc(db, `PMTReports/PendingSiteReport/JobCards/${clientId}`)
+    );
+    const data = result.data();
+    if (data) {
+      setSiteCode(data?.siteCode);
+      setSiteName(data?.siteName);
+      setJobCardNo(data?.JobCardNo);
+      setQuoteNo(data?.QuoteNo);
+      setQuoteDate(data?.QuoteDate);
+      setSiteLocation(data?.SiteLocation);
+      setQuoteApprovedDate(data?.QuoteApprovedDate);
+      setSiteSchedule(data?.SiteSchedule);
+      setSiteStart(data?.SiteStart);
+      setSiteCompletion(data?.SiteCompletion);
+      setSiteSupervisor(data?.SiteSupervisor);
+      setFundiData(data?.FundiData);
+      setReport1(data?.StandardData);
+      setReport2(data?.NonStandardData);
+    }
+  };
+  useEffect(() => {
+    if (type?.toLowerCase() === "view") {
+      fetchData();
+    }
+  }, []);
   const Invoice = () => {
     const styles = StyleSheet.create({
       page: {
@@ -399,6 +427,13 @@ export default function JobCard() {
 
   return (
     <div>
+      {" "}
+      <SnackbarProvider
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+      />
       <div className="w-full md:pl-8">
         <button
           className="bg-slate-300 p-2 rounded-lg"
@@ -407,17 +442,60 @@ export default function JobCard() {
           Go Back
         </button>
       </div>
-      <p className="mt-2 text-2xl text-center font-bold mb-6">Job Card</p>
-      <div className="max-w-full py-4 border border-black px-2 overflow-auto">
+      <p className="mt-2 text-2xl text-center font-bold mb-6">
+        {" "}
+        {type?.toLowerCase() !== "view" ? "Upload" : "View"}Job Card
+      </p>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          try {
+            setDoc(
+              doc(db, `PMTReports/PendingSiteReport/JobCards/${clientId}`),
+              {
+                siteCode: siteCode,
+                siteName: siteName,
+                JobCardNo: JobCardNo,
+                QuoteNo: QuoteNo,
+                QuoteDate: QuoteDate,
+                SiteLocation: SiteLocation,
+                Qs: Qs,
+                QuoteApprovedDate: QuoteApprovedDate,
+                SiteSchedule: SiteSchedule,
+                SiteStart: SiteStart,
+                SiteCompletion: SiteCompletion,
+                SiteSupervisor: SiteSupervisor,
+                FundiData: fundiData,
+                StandardData: report1,
+                NonStandardData: report2,
+                date: date,
+              }
+            );
+            enqueueSnackbar(`Job Card Uploaded Successfully`, {
+              variant: "success",
+            });
+            setTimeout(() => {
+              router.back();
+            }, 1500);
+          } catch (error) {
+            enqueueSnackbar("Some error occured", {
+              variant: "error",
+            });
+            console.error(error);
+          }
+        }}
+        className="max-w-full py-4 border border-black px-2 overflow-auto"
+      >
         <div>
           <div className=" flex items-center  w-full">
             <div className="  w-full  ">
               {/* {data?.map((item, index) => { */}
               {/* return ( */}
-              <div className=" grid grid-cols-4  w-full  ">
+              <div className=" grid grid-cols-1 md:grid-cols-4  w-full  ">
                 <div className=" flex flex-col  font-semibold p-0.5 ">
                   <label className=" font-medium capitalize">SiteCode</label>
                   <input
+                    required
                     type="text"
                     className=" border border-black w-[200px] p-1.5"
                     value={siteCode}
@@ -430,6 +508,7 @@ export default function JobCard() {
                 <div className=" flex flex-col  font-semibold p-0.5 ">
                   <label className=" font-medium capitalize">Site Name</label>
                   <input
+                    required
                     type="text"
                     className=" border border-black w-[200px] p-1.5"
                     value={siteName}
@@ -442,6 +521,7 @@ export default function JobCard() {
                 <div className=" flex flex-col  font-semibold p-0.5 ">
                   <label className=" font-medium capitalize">Job Card No</label>
                   <input
+                    required
                     type="text"
                     className=" border border-black w-[200px] p-1.5"
                     value={JobCardNo}
@@ -454,6 +534,7 @@ export default function JobCard() {
                 <div className=" flex flex-col  font-semibold p-0.5 ">
                   <label className=" font-medium capitalize">Quote No</label>
                   <input
+                    required
                     type="text"
                     className=" border border-black w-[200px] p-1.5"
                     value={QuoteNo}
@@ -466,6 +547,7 @@ export default function JobCard() {
                 <div className=" flex flex-col  font-semibold p-0.5 ">
                   <label className=" font-medium capitalize">Quote Date</label>
                   <input
+                    required
                     type="date"
                     className=" border border-black w-[200px] p-1.5"
                     value={QuoteDate}
@@ -480,6 +562,7 @@ export default function JobCard() {
                     Site Location
                   </label>
                   <input
+                    required
                     type="text"
                     className=" border border-black w-[200px] p-1.5"
                     value={SiteLocation}
@@ -492,9 +575,11 @@ export default function JobCard() {
                 <div className=" flex flex-col  font-semibold p-0.5 ">
                   <label className=" font-medium capitalize">Qs</label>
                   <input
+                    required
                     type="text"
                     className=" border border-black w-[200px] p-1.5"
                     value={Qs}
+                    disabled
                     placeholder={"Qs"}
                     onChange={(e) => {
                       setQs(e.target.value);
@@ -506,6 +591,7 @@ export default function JobCard() {
                     Quote Approved Date
                   </label>
                   <input
+                    required
                     type="date"
                     className=" border border-black w-[200px] p-1.5"
                     value={QuoteApprovedDate}
@@ -532,6 +618,7 @@ export default function JobCard() {
                 <div className=" flex flex-col  font-semibold p-0.5 ">
                   <label className=" font-medium capitalize">Site Start</label>
                   <input
+                    required
                     type="date"
                     className=" border border-black w-[200px] p-1.5"
                     value={SiteStart}
@@ -546,6 +633,7 @@ export default function JobCard() {
                     Site Completion
                   </label>
                   <input
+                    required
                     type="date"
                     className=" border border-black w-[200px] p-1.5"
                     value={SiteCompletion}
@@ -563,6 +651,7 @@ export default function JobCard() {
                     Site Supervisor
                   </label>
                   <input
+                    required
                     type="text"
                     className=" border border-black w-full mb-1 p-1.5"
                     value={SiteSupervisor}
@@ -582,6 +671,7 @@ export default function JobCard() {
                         </label>
 
                         <input
+                          required
                           type="text"
                           className=" border border-black w-[200px] p-1.5"
                           value={item.name}
@@ -641,6 +731,7 @@ export default function JobCard() {
                   </td>
                   <td className="bg-white border border-gray-400">
                     <input
+                      required
                       type="text"
                       value={item.Area}
                       onChange={(e) => {
@@ -653,6 +744,7 @@ export default function JobCard() {
                   </td>
                   <td className="bg-white border border-gray-400">
                     <input
+                      required
                       type="text"
                       value={item.DescriptionOfWork}
                       onChange={(e) => {
@@ -665,6 +757,7 @@ export default function JobCard() {
                   </td>
                   <td className="bg-white border border-gray-400">
                     <input
+                      required
                       type="text"
                       value={item.Size}
                       onChange={(e) => {
@@ -677,7 +770,8 @@ export default function JobCard() {
                   </td>
                   <td className="bg-white border border-gray-400">
                     <input
-                      type="text"
+                      required
+                      type="number"
                       value={item.Qty}
                       onChange={(e) => {
                         const list = [...report1];
@@ -689,6 +783,7 @@ export default function JobCard() {
                   </td>
                   <td className="bg-white border border-gray-400">
                     <input
+                      required
                       type="text"
                       value={item.Units}
                       onChange={(e) => {
@@ -701,6 +796,7 @@ export default function JobCard() {
                   </td>
                   <td className="bg-white border border-gray-400">
                     <input
+                      required
                       type="text"
                       value={item.DelNo}
                       onChange={(e) => {
@@ -713,6 +809,7 @@ export default function JobCard() {
                   </td>
                   <td className="bg-white border border-gray-400">
                     <input
+                      required
                       type="date"
                       value={item.DateOfDel}
                       onChange={(e) => {
@@ -725,6 +822,7 @@ export default function JobCard() {
                   </td>
                   <td className="bg-white border border-gray-400">
                     <input
+                      required
                       type="text"
                       value={item.QualityByWSM}
                       onChange={(e) => {
@@ -739,18 +837,24 @@ export default function JobCard() {
               ))}
             </tbody>
           </table>
-          <button
-            className="bg-slate-400 mt-2 font-semibold text-sm hover:bg-green-500 p-2.5 rounded-lg"
-            onClick={handleAddRow1}
-          >
-            + Add Row
-          </button>
-          <button
-            className="bg-slate-400 mt-2 ml-2 font-semibold text-sm hover:bg-red-500 p-2.5 rounded-lg"
-            onClick={handleRemoveRow1}
-          >
-            Remove Row
-          </button>
+          {type?.toLowerCase() !== "view" && (
+            <>
+              <button
+                type="button"
+                className="bg-slate-400 mt-2 font-semibold text-sm hover:bg-green-500 p-2.5 rounded-lg"
+                onClick={handleAddRow1}
+              >
+                + Add Row
+              </button>
+              <button
+                type="button"
+                className="bg-slate-400 mt-2 ml-2 font-semibold text-sm hover:bg-red-500 p-2.5 rounded-lg"
+                onClick={handleRemoveRow1}
+              >
+                Remove Row
+              </button>
+            </>
+          )}
         </div>
         {/* table 2---------------------------------------------------------------- */}
         <div className=" relative mt-1 pb-4">
@@ -781,6 +885,7 @@ export default function JobCard() {
                   </td>
                   <td className="bg-white border border-gray-400">
                     <input
+                      required
                       type="text"
                       value={item.Area}
                       onChange={(e) => {
@@ -793,6 +898,7 @@ export default function JobCard() {
                   </td>
                   <td className="bg-white border border-gray-400">
                     <input
+                      required
                       type="text"
                       value={item.DescriptionOfWork}
                       onChange={(e) => {
@@ -805,6 +911,7 @@ export default function JobCard() {
                   </td>
                   <td className="bg-white border border-gray-400">
                     <input
+                      required
                       type="text"
                       value={item.Size}
                       onChange={(e) => {
@@ -817,7 +924,8 @@ export default function JobCard() {
                   </td>
                   <td className="bg-white border border-gray-400">
                     <input
-                      type="text"
+                      required
+                      type="number"
                       value={item.Qty}
                       onChange={(e) => {
                         const list = [...report2];
@@ -829,6 +937,7 @@ export default function JobCard() {
                   </td>
                   <td className="bg-white border border-gray-400">
                     <input
+                      required
                       type="text"
                       value={item.Units}
                       onChange={(e) => {
@@ -841,6 +950,7 @@ export default function JobCard() {
                   </td>
                   <td className="bg-white border border-gray-400">
                     <input
+                      required
                       type="text"
                       value={item.DelNo}
                       onChange={(e) => {
@@ -853,6 +963,7 @@ export default function JobCard() {
                   </td>
                   <td className="bg-white border border-gray-400">
                     <input
+                      required
                       type="date"
                       value={item.DateOfDel}
                       onChange={(e) => {
@@ -865,6 +976,7 @@ export default function JobCard() {
                   </td>
                   <td className="bg-white border border-gray-400">
                     <input
+                      required
                       type="text"
                       value={item.QualityByWSM}
                       onChange={(e) => {
@@ -879,83 +991,49 @@ export default function JobCard() {
               ))}
             </tbody>
           </table>
-          <button
-            className="bg-slate-400 mt-2 font-semibold text-sm hover:bg-green-500 p-2.5 rounded-lg"
-            onClick={handleAddRow2}
-          >
-            + Add Row
-          </button>
-          <button
-            className="bg-slate-400 mt-2 ml-2 font-semibold text-sm hover:bg-red-500 p-2.5 rounded-lg"
-            onClick={handleRemoveRow2}
-          >
-            Remove Row
-          </button>
+          {type?.toLowerCase() !== "view" && (
+            <>
+              <button
+                type="button"
+                className="bg-slate-400 mt-2 font-semibold text-sm hover:bg-green-500 p-2.5 rounded-lg"
+                onClick={handleAddRow2}
+              >
+                + Add Row
+              </button>
+              <button
+                type="button"
+                className="bg-slate-400 mt-2 ml-2 font-semibold text-sm hover:bg-red-500 p-2.5 rounded-lg"
+                onClick={handleRemoveRow2}
+              >
+                Remove Row
+              </button>
+            </>
+          )}
         </div>
         <div className=" flex items-end justify-end">
-          <button
-            disabled={
-              report1[0]?.Area === "" ||
-              report2[0]?.Area === "" ||
-              (siteCode ||
-                siteName ||
-                JobCardNo ||
-                QuoteNo ||
-                QuoteDate ||
-                SiteLocation ||
-                Qs ||
-                QuoteApprovedDate ||
-                SiteStart ||
-                SiteCompletion ||
-                SiteSupervisor) === ""
-            }
-            className="bg-green-400 hover:bg-green-600 disabled:bg-gray-400 disabled:text-gray-700 disabled:border-gray-300 border border-black py-2 px-16 font-semibold"
-            onClick={() => {
-              setDoc(
-                doc(db, `PMTReports/PendingSiteReport/JobCards/${siteCode}`),
-                {
-                  siteCode: siteCode,
-                  siteName: siteName,
-                  JobCardNo: JobCardNo,
-                  QuoteNo: QuoteNo,
-                  QuoteDate: QuoteDate,
-                  SiteLocation: SiteLocation,
-                  Qs: Qs,
-                  QuoteApprovedDate: QuoteApprovedDate,
-                  SiteSchedule: SiteSchedule,
-                  SiteStart: SiteStart,
-                  SiteCompletion: SiteCompletion,
-                  SiteSupervisor: SiteSupervisor,
-                  FundiData: fundiData,
-                  StandardData: report1,
-                  NonStandardData: report2,
-                  date: date,
-                }
-              );
-              //   console.log({
-              //     siteCode: siteCode,
-              //     siteName: siteName,
-              //     JobCardNo: JobCardNo,
-              //     QuoteNo: QuoteNo,
-              //     QuoteDate: QuoteDate,
-              //     SiteLocation: SiteLocation,
-              //     Qs: Qs,
-              //     QuoteApprovedDate: QuoteApprovedDate,
-              //     SiteSchedule: SiteSchedule,
-              //     SiteStart: SiteStart,
-              //     SiteCompletion: SiteCompletion,
-              //     SiteSupervisor: SiteSupervisor,
-              //     FundiData: fundiData,
-              //     Standard: report1,
-              //     NonStandard: report2,
-              //   });
-
-              alert("Job Card Uploaded Successfully");
-              router.push("/PMTHead/PendingSites");
-            }}
-          >
-            Submit
-          </button>
+          {type?.toLowerCase() !== "view" && (
+            <button
+              disabled={
+                report1[0]?.Area === "" ||
+                report2[0]?.Area === "" ||
+                (siteCode ||
+                  siteName ||
+                  JobCardNo ||
+                  QuoteNo ||
+                  QuoteDate ||
+                  SiteLocation ||
+                  Qs ||
+                  QuoteApprovedDate ||
+                  SiteStart ||
+                  SiteCompletion ||
+                  SiteSupervisor) === ""
+              }
+              type="submit"
+              className="bg-green-400 hover:bg-green-600 disabled:bg-gray-400 disabled:text-gray-700 disabled:border-gray-300 border border-black py-2 px-16 font-semibold"
+            >
+              Submit
+            </button>
+          )}
           {report1[0]?.Area !== "" &&
             report2[0]?.Area !== "" &&
             (siteCode &&
@@ -977,7 +1055,7 @@ export default function JobCard() {
               </PDFDownloadLink>
             )}
         </div>
-      </div>
+      </form>
     </div>
   );
 }

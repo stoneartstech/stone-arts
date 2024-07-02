@@ -421,14 +421,14 @@ export default function PendingSites() {
                         </button>
                       </Link>
                       <Link
-                        href={`/PMTHead/actions/MaterialPlanUpload?qsName=${selectedClient?.qsName}&clientName=${selectedClient?.name}+${selectedClient?.lastname}`}
+                        href={`/PMTHead/actions/MaterialPlanUpload?qsName=${selectedClient?.qsName}&clientId=${selectedClient?.clientId}&clientName=${selectedClient?.name}`}
                       >
                         <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border  w-[300px]">
                           Upload Material Plan
                         </button>
                       </Link>
                       <Link
-                        href={`/PMTHead/actions/SitePlanUpload?qsName=${selectedClient?.qsName}&clientName=${selectedClient?.name}+${selectedClient?.lastname}`}
+                        href={`/PMTHead/actions/SitePlanUpload?qsName=${selectedClient?.qsName}&clientId=${selectedClient?.clientId}&clientName=${selectedClient?.name}`}
                       >
                         <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border  w-[300px]">
                           Upload Site Plan
@@ -447,7 +447,7 @@ export default function PendingSites() {
                         Assign People
                       </button>
                       <Link
-                        href={`/PMTHead/actions/JobCards?qsName=${selectedClient?.qsName}&clientName=${selectedClient?.name}+${selectedClient?.lastname}`}
+                        href={`/PMTHead/actions/JobCards?qsName=${selectedClient?.qsName}&clientId=${selectedClient?.clientId}&clientName=${selectedClient?.name}`}
                       >
                         <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border  w-[300px]">
                           Create Job Card

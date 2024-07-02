@@ -1,18 +1,19 @@
 import { useSearchParams } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 // import { db, storage } from "../../firebase";
-import { setDoc, doc, deleteDoc } from "firebase/firestore";
+import { setDoc, doc, deleteDoc, getDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "@/firebase";
 import GanttChart from "./GanttChart";
 import { AiOutlineDotChart } from "react-icons/ai";
 import { IoBarChart } from "react-icons/io5";
+import { enqueueSnackbar, SnackbarProvider } from "notistack";
 
 export default function MaterialPlanUpload() {
   const router = useRouter();
   const { query } = router;
-  const { qsName, clientName } = query;
+  const { qsName, clientId, clientName, type } = query;
   const [siteName, setSiteName] = useState("");
   const [isChart, setIsChart] = useState(false);
   const [siteCode, setSiteCode] = useState("");
@@ -21,13 +22,14 @@ export default function MaterialPlanUpload() {
   const [fileLink, setFileLink] = useState("");
   const [fileArr, setFileArr] = useState("");
   const today = new Date();
-  const date =
+  const date1 =
     today.getDate() +
     "-" +
     ("0" + (today.getMonth() + 1)).slice(-2) +
     "-" +
     today.getFullYear();
   // Extract date components
+  const [date, setDate] = useState(date1);
   const currentDate = new Date();
   const year = currentDate.getFullYear();
   const month = ("0" + (currentDate.getMonth() + 1)).slice(-2); // Add leading zero if necessary
@@ -60,7 +62,26 @@ export default function MaterialPlanUpload() {
       Qty: "",
     },
   ]);
-
+  const fetchData = async () => {
+    const result = await getDoc(
+      doc(db, `PMTReports/PendingSiteReport/SitePlan/${clientId}`)
+    );
+    const data = result.data();
+    if (data) {
+      setSiteName(data?.siteName);
+      setSiteCode(data?.siteCode);
+      setDesignereName(data?.designerName);
+      setSiteSupervisorName(data?.siteSupervisorName);
+      setFileLink(data?.fileLink);
+      setDate(data?.date);
+      setReport(data?.data);
+    }
+  };
+  useEffect(() => {
+    if (type?.toLowerCase() === "view") {
+      fetchData();
+    }
+  }, []);
   const handleAddRow = () => {
     const row = {
       No: report.length + 1,
@@ -83,6 +104,12 @@ export default function MaterialPlanUpload() {
 
   return (
     <>
+      <SnackbarProvider
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+      />
       <div>
         <div className="w-full md:pl-8">
           <button
@@ -103,9 +130,45 @@ export default function MaterialPlanUpload() {
         ) : (
           <>
             <p className="mt-2 text-2xl text-center font-bold mb-6">
-              Upload Site Plan
+              {type?.toLowerCase() !== "view" ? "Upload" : "View"} Site Plan
             </p>
-            <form className="max-w-full py-4 border border-black px-2 overflow-auto">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                try {
+                  setDoc(
+                    doc(
+                      db,
+                      `PMTReports/PendingSiteReport/SitePlan/${clientId}`
+                    ),
+                    {
+                      siteName: siteName,
+                      siteCode: siteCode,
+                      clientName: clientName,
+                      designerName: designerName,
+                      qsName: qsName,
+                      siteSupervisorName: siteSupervisorName,
+                      data: report,
+                      fileLink: fileLink,
+                      date: date,
+                    }
+                  );
+                  // console.log(report);
+                  enqueueSnackbar(` Plan Uploaded Successfully`, {
+                    variant: "success",
+                  });
+                  setTimeout(() => {
+                    router.back();
+                  }, 1500);
+                } catch (error) {
+                  enqueueSnackbar("Some error occured", {
+                    variant: "error",
+                  });
+                  console.error(error);
+                }
+              }}
+              className="max-w-full py-4 border border-black px-2 overflow-auto"
+            >
               <div>
                 <div className=" flex items-center justify-between">
                   <div className="  grid md:grid-cols-3 md:gap-2  w-full  ">
@@ -296,77 +359,53 @@ export default function MaterialPlanUpload() {
                 </table>
               </div>
               <div className=" flex flex-col md:flex-row gap-5 items-end justify-between">
-                <div className=" flex justify-between items-center">
-                  {" "}
-                  <button
-                    className="bg-slate-400 md:mt-2 font-semibold  text-xs md:text-sm hover:bg-green-500 p-2.5 rounded-lg"
-                    onClick={handleAddRow}
-                  >
-                    + Add Row
-                  </button>
-                  <button
-                    className="bg-slate-400 md:mt-2 ml-2 font-semibold  text-xs md:text-sm hover:bg-red-500 p-2.5 rounded-lg"
-                    onClick={handleRemoveRow}
-                  >
-                    Remove Row
-                  </button>
-                </div>
+                {type?.toLowerCase() !== "view" && (
+                  <div className=" flex justify-between items-center">
+                    {" "}
+                    <button
+                      type="button"
+                      className="bg-slate-400 md:mt-2 font-semibold  text-xs md:text-sm hover:bg-green-500 p-2.5 rounded-lg"
+                      onClick={handleAddRow}
+                    >
+                      + Add Row
+                    </button>
+                    <button
+                      type="button"
+                      className="bg-slate-400 md:mt-2 ml-2 font-semibold  text-xs md:text-sm hover:bg-red-500 p-2.5 rounded-lg"
+                      onClick={handleRemoveRow}
+                    >
+                      Remove Row
+                    </button>
+                  </div>
+                )}
                 <div className=" flex items-center justify-between gap-6">
                   <button
+                    type="button"
                     disabled={report[0]?.MaterialName === ""}
                     title="Gantt Chart"
                     className=" hover:bg-green-400 disabled:bg-gray-300 disabled:border-gray-300 "
                     onClick={() => {
                       setIsChart(true);
-                      // console.log(report);
+                      console.log(report);
                     }}
                   >
                     <IoBarChart className=" text-[26px] md:text-[34px]" />
                   </button>
-                  <button
-                    type="submit"
-                    disabled={
-                      report[0]?.MaterialName === "" ||
-                      siteCode === "" ||
-                      siteName === "" ||
-                      clientName === "" ||
-                      siteSupervisorName === ""
-                    }
-                    className="bg-green-500 hover:bg-green-600 disabled:bg-gray-300 disabled:border-gray-300 border border-black text-xs md:text-sm py-2 px-16 font-semibold"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      //convert report to object
-                      // const reportData = {};
-                      // report.forEach((item, index) => {
-                      // reportData[index] = item;
-                      // });
-                      // console.log(reportData);
-                      // set doc in showroomDbName database with key as date and value as reportData
-                      setDoc(
-                        doc(
-                          db,
-                          `PMTReports/PendingSiteReport/SitePlan/${siteCode}`
-                        ),
-                        {
-                          siteName: siteName,
-                          siteCode: siteCode,
-                          clientName: clientName,
-                          designerName: designerName,
-                          qsName: qsName,
-                          siteSupervisorName: siteSupervisorName,
-                          data: report,
-                          fileLink: fileLink,
-                          date: date,
-                        }
-                      );
-                      // console.log(report);
-                      alert("Plan Uploaded Successfully");
-                      // console.log(report);
-                      router.push("/PMTHead/PendingSites");
-                    }}
-                  >
-                    Submit
-                  </button>
+                  {type?.toLowerCase() !== "view" && (
+                    <button
+                      type="submit"
+                      disabled={
+                        report[0]?.MaterialName === "" ||
+                        siteCode === "" ||
+                        siteName === "" ||
+                        clientName === "" ||
+                        siteSupervisorName === ""
+                      }
+                      className="bg-green-500 hover:bg-green-600 disabled:bg-gray-300 disabled:border-gray-300 border border-black text-xs md:text-sm py-2 px-16 font-semibold"
+                    >
+                      Submit
+                    </button>
+                  )}
                 </div>
               </div>
             </form>
