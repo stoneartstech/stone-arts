@@ -20,6 +20,7 @@ export default function OngoingSites() {
   const [loading, setLoading] = useState(true);
   const [actionsTab, setActionsTab] = useState(false);
   const [selectedClient, setSelectedClient] = useState("");
+  const [tempAddress, setTempAddress] = useState("");
   const [originalRequests, setOriginalRequests] = useState([]);
   const [requests, setRequests] = useState([]);
   const [qs, setQs] = useState(1);
@@ -92,6 +93,11 @@ export default function OngoingSites() {
               ? `${selectedClient?.name} - ${selectedClient?.clientId} Actions`
               : "Sites In Progress"}
           </p>
+          {selectedClient && (
+            <p className=" w-full text-center text-sm mt-0.5 ">
+              Start Date - ( {selectedClient?.date}, {selectedClient?.time} )
+            </p>
+          )}
         </div>
         {loading ? (
           <div className=" w-full flex items-center justify-center">
@@ -134,6 +140,59 @@ export default function OngoingSites() {
             ) : (
               <div className=" flex flex-col items-center justify-center ">
                 <div className=" mt-4 grid grid-cols-2 flex-col gap-3 ">
+                  <div className=" flex  flex-col col-span-2 w-full">
+                    {selectedClient?.address ? (
+                      <p className=" bg-white capitalize text-center w-full text-xs md:text-base font-semibold py-1.5 md:py-2.5 px-4 border-black border ">
+                        Address - {selectedClient?.address}
+                      </p>
+                    ) : (
+                      <div className=" flex items-center gap-2">
+                        <input
+                          className=" bg-white w-full text-xs md:text-sm py-1.5 md:py-2.5 px-4 border-black border "
+                          type="text"
+                          value={tempAddress}
+                          onChange={(e) => {
+                            setTempAddress(e.target.value);
+                          }}
+                          placeholder="Add Address"
+                        />
+                        <button
+                          onClick={async () => {
+                            try {
+                              setDoc(
+                                doc(
+                                  db,
+                                  "PMT-sites-in-progress",
+                                  `${selectedClient?.clientId}`
+                                ),
+                                { ...selectedClient, address: tempAddress }
+                              );
+                              setLoading(true);
+                              fetchCompletedQuotes()
+                                .then((combinedArray) => {
+                                  setLoading(false);
+                                  console.log(combinedArray);
+                                })
+                                .catch((error) => {
+                                  console.error("Error fetching data:", error);
+                                });
+                              enqueueSnackbar(`Address Added Successfully`, {
+                                variant: "success",
+                              });
+                            } catch (error) {
+                              enqueueSnackbar("Some error occured", {
+                                variant: "error",
+                              });
+                              console.error(error);
+                            }
+                          }}
+                          className="py-1.5 md:py-2.5 px-4 border-black border bg-[#94e63d] hover:bg-[#83cb37] font-semibold text-sm"
+                        >
+                          Add
+                        </button>
+                      </div>
+                    )}
+                  </div>
                   <Link
                     href={`/PMTHead/actions/CheckImages?qsName=${selectedClient?.qsName}&clientId=${selectedClient?.clientId}&clientName=${selectedClient?.name}&type=view`}
                   >
@@ -141,9 +200,13 @@ export default function OngoingSites() {
                       Check Images
                     </button>
                   </Link>
-                  <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border  w-[300px]">
-                    Check Progress
-                  </button>
+                  <Link
+                    href={`/PMTHead/actions/CheckProgress?qsName=${selectedClient?.qsName}&clientId=${selectedClient?.clientId}&clientName=${selectedClient?.name}`}
+                  >
+                    <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border  w-[300px]">
+                      Check Progress
+                    </button>
+                  </Link>
                   <Link href={selectedClient?.quotePdf} target="_blank">
                     <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border  w-[300px]">
                       Check Quote
