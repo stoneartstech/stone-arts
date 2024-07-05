@@ -461,6 +461,9 @@ export default function PendingSites() {
                             `Start Project ${selectedClient?.name} - ${selectedClient?.clientId} `
                           );
                           try {
+                            const date1 = new Date();
+                            const date = date1.toDateString();
+                            const time = date1.toTimeString();
                             if (okay) {
                               setDoc(
                                 doc(
@@ -468,7 +471,7 @@ export default function PendingSites() {
                                   "PMT-sites-in-progress",
                                   `${selectedClient?.clientId}`
                                 ),
-                                selectedClient
+                                { ...selectedClient, date, time }
                               );
                               deleteDoc(
                                 doc(
