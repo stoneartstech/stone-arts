@@ -11,6 +11,7 @@ import BOQHead from '@/components/BOQHead'
 import QSDashboard from '@/components/QSDashboard'
 import WorkshopDashboard from '@/components/WorkshopDashboard'
 import PMTHead from '@/components/PMTHead'
+import LogiHead from '@/components/LogiHead'
 
 export default function Home() {
   const { currentUser } = useAuth()
@@ -61,6 +62,9 @@ export default function Home() {
 
       {/* Workshop */}
       {currentUser && currentUser.email === 'workshop@stonearts.com' && <WorkshopDashboard />}
+
+      {/* Logistics */}
+      {currentUser && currentUser.email === 'logisticshead@stonearts.com' && <LogiHead />}
 
     </>
   )
