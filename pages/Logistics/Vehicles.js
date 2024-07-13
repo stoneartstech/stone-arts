@@ -108,6 +108,26 @@ const LogIDashboard = () => {
                       <div className=" flex flex-col p-2 ">
                         <p>Name: {activeTab?.name}</p>
                         <p>Description: {activeTab?.description}</p>
+                        <div className=" flex flex-col ">
+                          <div>
+                            <p className=" font-semibold underline">
+                              Assigned Deliveries:
+                            </p>
+                            {activeTab?.ordersAssigned?.length > 0 ? (
+                              <>
+                                {activeTab?.ordersAssigned?.map(
+                                  (item, index) => {
+                                    return (
+                                      <p key={index}>Name: Order-{item?.id}</p>
+                                    );
+                                  }
+                                )}
+                              </>
+                            ) : (
+                              <p>No orders Assigned</p>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     )}
                   </div>

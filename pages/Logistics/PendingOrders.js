@@ -12,6 +12,7 @@ import { db } from "@/firebase";
 import Image from "next/image";
 import ViewDeliveryNote from "./ViewDeliveryNotes";
 import ViewOrder from "./ViewOrder";
+import { enqueueSnackbar, SnackbarProvider } from "notistack";
 
 export default function CompletedOrders() {
   const router = useRouter();
@@ -24,6 +25,9 @@ export default function CompletedOrders() {
   const [orders, setOrders] = useState([]);
   const [vehiclesList, setVehiclesList] = useState([]);
   const [activeTab, setActiveTab] = useState(false);
+  const [activeTab1, setActiveTab1] = useState(false);
+  const [checkDeliveries, setCheckDeliveries] = useState(false);
+  const [checkDeliveries1, setCheckDeliveries1] = useState(false);
 
   const fetchVehicleData = async () => {
     try {
@@ -34,13 +38,13 @@ export default function CompletedOrders() {
       }));
       setVehiclesList(vehiclesList);
       console.log(vehiclesList);
-      setLoading(false);
     } catch (error) {
       console.error("Error fetching vehicles: ", error);
     }
   };
 
   useEffect(() => {
+    fetchVehicleData();
     const fetch = onSnapshot(
       collection(db, "logistics-pending"),
       (snapshot) => {
@@ -52,9 +56,44 @@ export default function CompletedOrders() {
         setLoading(false);
       }
     );
-    fetchVehicleData();
     return fetch;
   }, []);
+
+  const handleAssignOrder = async (vehicle) => {
+    const isOKay = confirm(`Confirm Assigning Vehicle `);
+    if (isOKay) {
+      try {
+        // adding new order to orderAssigned Array------------------------------
+        const tempArr = vehicle?.ordersAssigned ? vehicle?.ordersAssigned : [];
+        tempArr.push({ id: activeOrder?.id, name: activeOrder?.name });
+        const tempData = {
+          ...vehicle,
+          isAssigned: true,
+          ordersAssigned: tempArr,
+        };
+        // adding new vehicle to assignedVehicle Array-------------------------
+        const tempArr2 = activeOrder?.assignedVehicle
+          ? activeOrder?.assignedVehicle
+          : [];
+        tempArr2.push({ ...tempData });
+        await setDoc(doc(db, "logistics-pending", `${activeOrder?.id}`), {
+          ...activeOrder,
+          assignedVehicle: tempArr2,
+        });
+        setActiveOrder({ ...activeOrder, assignedVehicle: tempArr2 });
+        await setDoc(doc(db, "Vehicles", `${vehicle?.name}`), tempData);
+        await fetchVehicleData();
+        enqueueSnackbar("Vehicle Assigned Successfully", {
+          variant: "success",
+        });
+      } catch (error) {
+        console.error(error);
+        enqueueSnackbar("Something Went Wrong", {
+          variant: "error",
+        });
+      }
+    }
+  };
 
   return (
     <>
@@ -72,6 +111,12 @@ export default function CompletedOrders() {
         />
       ) : (
         <div>
+          <SnackbarProvider
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+          />
           <div className="w-full relative md:px-8 flex flex-col md:flex-row justify-between">
             <button
               className="bg-slate-300 p-2 md:absolute left-10 rounded-lg w-fit text-sm md:text-base "
@@ -179,54 +224,213 @@ export default function CompletedOrders() {
                       />
                     </div>
                   ) : (
-                    <div className="flex flex-col items-center">
-                      {vehiclesList?.length === 0 && (
-                        <p className=" mt-2">No Vehicles Found !!</p>
-                      )}{" "}
-                      {vehiclesList?.map((order, index) => {
-                        return (
-                          <div key={index}>
-                            <div className=" mt-2.5 md:w-[90%] grid grid-cols-3 md:grid-cols-5">
-                              <div className=" py-1.5 md:py-0  col-span-3 md:col-span-2 text-sm md:text-base  border-black border flex items-center justify-center font-semibold">
-                                {order?.name}
-                              </div>
-                              <button
-                                onClick={() => {}}
-                                className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 px-4 border-black border md:border-l-0"
-                              >
-                                Assign Delivery
-                              </button>
-                              <button
-                                onClick={() => {
-                                  if (activeTab?.name === order?.name) {
-                                    setActiveTab(false);
-                                  } else {
-                                    setActiveTab(order);
-                                  }
-                                }}
-                                className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 px-4 border-black border border-l-0"
-                              >
-                                Check Vehicle
-                              </button>
-                              <button
-                                onClick={() => {
-                                  // handleSiteOrders(order.clientId);
-                                }}
-                                className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 px-4 border-black border border-l-0"
-                              >
-                                Check Assigned Deliveries
-                              </button>
-                            </div>
-                            {activeTab && activeTab?.name === order?.name && (
-                              <div className=" flex flex-col p-2 ">
-                                <p>Name: {activeTab?.name}</p>
-                                <p>Description: {activeTab?.description}</p>
-                              </div>
+                    <>
+                      <div className="flex flex-col items-center">
+                        <p className=" font-semibold underline">
+                          Assigned Vehicles
+                        </p>
+                        {activeOrder?.assignedVehicle?.length > 0 ? (
+                          <>
+                            {activeOrder?.assignedVehicle?.map(
+                              (vehicle, index) => {
+                                return (
+                                  <div key={index}>
+                                    <div className=" mt-2.5 grid grid-cols-3 md:grid-cols-4">
+                                      <div className=" py-1.5 md:py-0  col-span-3 md:col-span-2 text-sm md:text-base  border-black border flex items-center justify-center font-semibold">
+                                        {vehicle?.name}
+                                      </div>
+                                      <button
+                                        onClick={() => {
+                                          if (checkDeliveries) {
+                                            if (
+                                              activeTab?.name === vehicle?.name
+                                            ) {
+                                              setActiveTab(vehicle);
+                                              setCheckDeliveries(false);
+                                            } else {
+                                              setActiveTab(vehicle);
+                                              setCheckDeliveries(false);
+                                            }
+                                          } else {
+                                            if (
+                                              activeTab?.name === vehicle?.name
+                                            ) {
+                                              setActiveTab(false);
+                                            } else {
+                                              setActiveTab(vehicle);
+                                            }
+                                          }
+                                        }}
+                                        className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-3 px-4 border-black border "
+                                      >
+                                        Check Vehicle
+                                      </button>
+                                      <button
+                                        onClick={() => {
+                                          if (checkDeliveries) {
+                                            if (
+                                              activeTab?.name === vehicle?.name
+                                            ) {
+                                              setActiveTab(false);
+                                              setCheckDeliveries(false);
+                                            } else {
+                                              setActiveTab(vehicle);
+                                              setCheckDeliveries(true);
+                                            }
+                                          } else {
+                                            setActiveTab(vehicle);
+                                            setCheckDeliveries(true);
+                                          }
+                                        }}
+                                        className=" bg-[#94e63d] hover:bg-[#83cb37] col-span-2 md:col-span-1 text-xs md:text-sm font-semibold py-3 px-4 border-black border border-l-0"
+                                      >
+                                        Check Assigned Deliveries
+                                      </button>
+                                    </div>
+                                    {activeTab &&
+                                      activeTab?.name === vehicle?.name && (
+                                        <div className=" flex flex-col p-2 ">
+                                          {checkDeliveries ? (
+                                            <div>
+                                              <p className=" font-semibold underline">
+                                                Assigned Deliveries:
+                                              </p>
+                                              {activeTab?.ordersAssigned?.map(
+                                                (item, index) => {
+                                                  return (
+                                                    <p key={index}>
+                                                      Name: Order-{item?.id}
+                                                    </p>
+                                                  );
+                                                }
+                                              )}
+                                            </div>
+                                          ) : (
+                                            <>
+                                              <p>Name: {activeTab?.name}</p>
+                                              <p>
+                                                Description:{" "}
+                                                {activeTab?.description}
+                                              </p>
+                                            </>
+                                          )}
+                                        </div>
+                                      )}
+                                  </div>
+                                );
+                              }
                             )}
-                          </div>
-                        );
-                      })}
-                    </div>
+                          </>
+                        ) : (
+                          <p>No Vehicles Assigned</p>
+                        )}
+                      </div>
+
+                      <div className="flex flex-col items-center mt-4">
+                        <p className=" font-semibold underline">
+                          Assign New Vehicles
+                        </p>
+                        {vehiclesList?.length === 0 && (
+                          <p className=" mt-2">No Vehicles Found !!</p>
+                        )}{" "}
+                        {vehiclesList?.map((vehicle, index) => {
+                          return (
+                            <div key={index}>
+                              <div className=" mt-2.5 grid grid-cols-3 md:grid-cols-5">
+                                <div className=" py-1.5 md:py-0  col-span-3 md:col-span-2 text-sm md:text-base  border-black border flex items-center justify-center font-semibold">
+                                  {vehicle?.name}
+                                </div>
+                                <button
+                                  disabled={vehicle?.isAssigned}
+                                  onClick={() => {
+                                    handleAssignOrder(vehicle);
+                                  }}
+                                  className=" bg-[#94e63d] disabled:bg-gray-400 disabled:text-gray-600 hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-3 px-4 border-black border md:border-l-0"
+                                >
+                                  Assign Delivery
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    if (checkDeliveries1) {
+                                      if (activeTab1?.name === vehicle?.name) {
+                                        setActiveTab1(vehicle);
+                                        setCheckDeliveries1(false);
+                                      } else {
+                                        setActiveTab1(vehicle);
+                                        setCheckDeliveries1(false);
+                                      }
+                                    } else {
+                                      if (activeTab1?.name === vehicle?.name) {
+                                        setActiveTab1(false);
+                                      } else {
+                                        setActiveTab1(vehicle);
+                                      }
+                                    }
+                                  }}
+                                  className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-3 px-4 border-black border border-l-0"
+                                >
+                                  Check Vehicle
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    if (checkDeliveries1) {
+                                      if (activeTab1?.name === vehicle?.name) {
+                                        setActiveTab1(false);
+                                        setCheckDeliveries1(false);
+                                      } else {
+                                        setActiveTab1(vehicle);
+                                        setCheckDeliveries1(true);
+                                      }
+                                    } else {
+                                      setActiveTab1(vehicle);
+                                      setCheckDeliveries1(true);
+                                    }
+                                  }}
+                                  className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-3 px-4 border-black border border-l-0"
+                                >
+                                  Check Assigned Deliveries
+                                </button>
+                              </div>
+                              {activeTab1 &&
+                                activeTab1?.name === vehicle?.name && (
+                                  <div className=" flex flex-col p-2 ">
+                                    {checkDeliveries1 ? (
+                                      <div>
+                                        <p className=" font-semibold underline">
+                                          Assigned Deliveries:
+                                        </p>
+                                        {activeTab1?.ordersAssigned?.length >
+                                        0 ? (
+                                          <>
+                                            {activeTab1?.ordersAssigned?.map(
+                                              (item, index) => {
+                                                return (
+                                                  <p key={index}>
+                                                    Name: Order-{item?.id}
+                                                  </p>
+                                                );
+                                              }
+                                            )}
+                                          </>
+                                        ) : (
+                                          <p>No orders Assigned</p>
+                                        )}
+                                      </div>
+                                    ) : (
+                                      <>
+                                        <p>Name: {activeTab1?.name}</p>
+                                        <p>
+                                          Description: {activeTab1?.description}
+                                        </p>
+                                      </>
+                                    )}
+                                  </div>
+                                )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </>
                   )}
                 </div>
               </div>

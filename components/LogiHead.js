@@ -78,7 +78,7 @@ export default function LogiHead() {
         </Link>
         <Link
           href="/Logistics/PendingOrders"
-          className=" bg-gray-400 hover:bg-gray-500 rounded-md py-3 px-4 font-semibold w-full text-center max-w-[300px] mt-5"
+          className=" bg-gray-400 hover:bg-green-500 rounded-md py-3 px-4 font-semibold w-full text-center max-w-[300px] mt-5"
         >
           <p>Assign Order</p>
         </Link>
