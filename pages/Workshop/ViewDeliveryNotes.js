@@ -14,6 +14,7 @@ export default function ViewDeliveryNote({
   setViewDeliverynote,
   quoteOrderData,
   consumableData,
+  action,
 }) {
   const router = useRouter();
   console.log("q", quoteOrderData);
@@ -507,43 +508,48 @@ export default function ViewDeliveryNote({
                         ))}
                       </tbody>
                     </table>
-                    {!quoteOrderData?.confirmed && (
-                      <button
-                        className="bg-green-400 disabled:bg-gray-400 hover:bg-green-600 font-semibold p-2 px-6 rounded-lg mt-4"
-                        onClick={() => {
-                          try {
-                            const orderData = {
-                              ...quoteOrderData,
-                              confirmed: true,
-                            };
-                            // console.log(orderData);
-                            if (Number(orderType) === 0) {
-                              setDoc(
-                                doc(db, "DN-quote-orders", `site-${orderID}`),
-                                orderData
-                              );
-                            } else {
-                              setDoc(
-                                doc(db, "DN-quote-orders", `retail-${orderID}`),
-                                orderData
-                              );
+                    {!quoteOrderData?.confirmed &&
+                      action?.toLowerCase() !== "view" && (
+                        <button
+                          className="bg-green-400 disabled:bg-gray-400 hover:bg-green-600 font-semibold p-2 px-6 rounded-lg mt-4"
+                          onClick={() => {
+                            try {
+                              const orderData = {
+                                ...quoteOrderData,
+                                confirmed: true,
+                              };
+                              // console.log(orderData);
+                              if (Number(orderType) === 0) {
+                                setDoc(
+                                  doc(db, "DN-quote-orders", `site-${orderID}`),
+                                  orderData
+                                );
+                              } else {
+                                setDoc(
+                                  doc(
+                                    db,
+                                    "DN-quote-orders",
+                                    `retail-${orderID}`
+                                  ),
+                                  orderData
+                                );
+                              }
+                              enqueueSnackbar("QuoteOrder Confirmed", {
+                                variant: "success",
+                              });
+                              setTimeout(() => {
+                                router.back();
+                              }, 3500);
+                            } catch (error) {
+                              enqueueSnackbar("Some error occured", {
+                                variant: "error",
+                              });
                             }
-                            enqueueSnackbar("QuoteOrder Confirmed", {
-                              variant: "success",
-                            });
-                            setTimeout(() => {
-                              router.back();
-                            }, 3500);
-                          } catch (error) {
-                            enqueueSnackbar("Some error occured", {
-                              variant: "error",
-                            });
-                          }
-                        }}
-                      >
-                        Confirm
-                      </button>
-                    )}
+                          }}
+                        >
+                          Confirm
+                        </button>
+                      )}
                   </div>
                 </div>
               ) : (
@@ -707,43 +713,48 @@ export default function ViewDeliveryNote({
                         ))}
                       </tbody>
                     </table>
-                    {!consumableData?.confirmed && (
-                      <button
-                        className="bg-green-400 disabled:bg-gray-400 hover:bg-green-600 font-semibold p-2 px-6 rounded-lg mt-4"
-                        onClick={() => {
-                          try {
-                            const orderData = {
-                              ...consumableData,
-                              confirmed: true,
-                            };
-                            // console.log(orderData);
-                            if (Number(orderType) === 0) {
-                              setDoc(
-                                doc(db, "DN-consumables", `site-${orderID}`),
-                                orderData
-                              );
-                            } else {
-                              setDoc(
-                                doc(db, "DN-consumables", `retail-${orderID}`),
-                                orderData
-                              );
+                    {!consumableData?.confirmed &&
+                      action?.toLowerCase() !== "view" && (
+                        <button
+                          className="bg-green-400 disabled:bg-gray-400 hover:bg-green-600 font-semibold p-2 px-6 rounded-lg mt-4"
+                          onClick={() => {
+                            try {
+                              const orderData = {
+                                ...consumableData,
+                                confirmed: true,
+                              };
+                              // console.log(orderData);
+                              if (Number(orderType) === 0) {
+                                setDoc(
+                                  doc(db, "DN-consumables", `site-${orderID}`),
+                                  orderData
+                                );
+                              } else {
+                                setDoc(
+                                  doc(
+                                    db,
+                                    "DN-consumables",
+                                    `retail-${orderID}`
+                                  ),
+                                  orderData
+                                );
+                              }
+                              enqueueSnackbar("ConsumableOrder Confirmed", {
+                                variant: "success",
+                              });
+                              setTimeout(() => {
+                                router.back();
+                              }, 3500);
+                            } catch (error) {
+                              enqueueSnackbar("Some error occured", {
+                                variant: "error",
+                              });
                             }
-                            enqueueSnackbar("ConsumableOrder Confirmed", {
-                              variant: "success",
-                            });
-                            setTimeout(() => {
-                              router.back();
-                            }, 3500);
-                          } catch (error) {
-                            enqueueSnackbar("Some error occured", {
-                              variant: "error",
-                            });
-                          }
-                        }}
-                      >
-                        Confirm
-                      </button>
-                    )}
+                          }}
+                        >
+                          Confirm
+                        </button>
+                      )}
                   </div>
                 </div>
               )}

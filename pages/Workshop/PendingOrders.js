@@ -9,6 +9,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/firebase";
 import ViewOrder from "./ViewOrder";
+import { enqueueSnackbar, SnackbarProvider } from "notistack";
 
 const filterList = [
   {
@@ -63,40 +64,63 @@ export default function PendingOrders() {
   }, []);
 
   const handleSiteOrders = async (clientId) => {
-    try {
-      const report = pendingSiteOrders.filter((i) => {
-        return i?.clientId === clientId;
-      });
-      let newData = { ...report[0], type: "site" };
-      // console.log(report);
-      await setDoc(doc(db, `logistics-pending/${clientId}`), newData);
-      await setDoc(doc(db, `workshop-site-completed/${clientId}`), report[0]);
-      await deleteDoc(doc(db, `workshop-site-pending/${clientId}`));
-      alert("Uploaded");
-    } catch (error) {
-      console.log(error);
-      alert("Try again Later !! ");
+    const isOkay = confirm("Confirm Complete Order");
+    if (isOkay) {
+      try {
+        const report = pendingSiteOrders.filter((i) => {
+          return i?.clientId === clientId;
+        });
+        let newData = { ...report[0], type: "site" };
+        // console.log(report);
+        await setDoc(doc(db, `logistics-pending/${clientId}`), newData);
+        await setDoc(doc(db, `workshop-site-completed/${clientId}`), report[0]);
+        await deleteDoc(doc(db, `workshop-site-pending/${clientId}`));
+        enqueueSnackbar("Order Completed", {
+          variant: "success",
+        });
+      } catch (error) {
+        console.log(error);
+        enqueueSnackbar("Some error occured", {
+          variant: "error",
+        });
+      }
     }
   };
   const handleRetailOrders = async (clientId) => {
-    try {
-      const report = pendingRetailOrders.filter((i) => {
-        return i?.clientId === clientId || i?.orderId === clientId;
-      });
-      let newData = { ...report[0], type: "retail" };
-      // console.log(report);
-      await setDoc(doc(db, `logistics-pending/${clientId}`), newData);
-      await setDoc(doc(db, `workshop-retail-completed/${clientId}`), report[0]);
-      await deleteDoc(doc(db, `workshop-retail-pending/${clientId}`));
-      alert("Uploaded");
-    } catch (error) {
-      console.log(error);
-      alert("Try again Later !! ");
+    const isOkay = confirm("Confirm Complete Order");
+    if (isOkay) {
+      try {
+        const report = pendingRetailOrders.filter((i) => {
+          return i?.clientId === clientId || i?.orderId === clientId;
+        });
+        let newData = { ...report[0], type: "retail" };
+        // console.log(report);
+        await setDoc(doc(db, `logistics-pending/${clientId}`), newData);
+        await setDoc(
+          doc(db, `workshop-retail-completed/${clientId}`),
+          report[0]
+        );
+        await deleteDoc(doc(db, `workshop-retail-pending/${clientId}`));
+        enqueueSnackbar("Order Completed", {
+          variant: "success",
+        });
+      } catch (error) {
+        console.log(error);
+        enqueueSnackbar("Some error occured", {
+          variant: "error",
+        });
+      }
     }
   };
 
   return (
     <>
+      <SnackbarProvider
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+      />
       {viewOrder ? (
         <ViewOrder
           orderType={orderType}
