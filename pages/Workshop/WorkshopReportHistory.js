@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { db } from "../../firebase";
 import { collection, onSnapshot } from "firebase/firestore";
 import * as XLSX from "xlsx";
+import Image from "next/image";
 
 export default function WorkshopReportHistory() {
   //   const searchParams = useSearchParams();
@@ -27,8 +28,8 @@ export default function WorkshopReportHistory() {
         ...doc.data(),
       }));
       setReports(reports);
+      setLoading(false);
     });
-    setLoading(false);
     // console.log(reports);
     return fetch;
   }, []);
@@ -125,32 +126,35 @@ export default function WorkshopReportHistory() {
 
   return (
     <>
-      {!loading && (
+      {loading ? (
+        <div className=" w-full flex items-center justify-center">
+          <Image width={50} height={50} src="/loading.svg" alt="Loading ..." />
+        </div>
+      ) : (
         <div>
-          <div className="w-full pl-6">
-            <button
-              className="bg-slate-300 p-2 rounded-lg"
-              onClick={() => router.back()}
-            >
+          <div className="w-full md:pl-6">
+            <button className=" go-back-btn" onClick={() => router.back()}>
               Go Back
             </button>
           </div>
           <div className="flex flex-col items-center">
-            <p className="text-3xl mb-4">Workshop Reports History</p>
+            <p className=" page-heading">Workshop Reports History</p>
           </div>
-          <p className="text-2xl text-center font-bold">Search in date range</p>
+          <p className=" text-lg md:text-2xl text-center font-bold">
+            Search in date range
+          </p>
           <div className="my-4 mx-auto flex gap-4">
             <input
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="border-2 border-black p-2"
+              className=" border md:border-2 border-black p-1 md:p-2"
             />
             <input
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="border-2 border-black p-2"
+              className=" border md:border-2 border-black p-1 md:p-2"
             />
             <button
               className="bg-slate-300 hover:bg-slate-400 p-3 rounded-lg mx-2"
@@ -175,11 +179,17 @@ export default function WorkshopReportHistory() {
                   handleClick(report[0].Date, report[0]?.time);
                 }}
               >
-                <div className="flex flex-row justify-between items-center">
-                  <p>Report Date : {report[0].Date + "-" + report[0]?.time}</p>
+                <div className="flex flex-row justify-between items-center text-sm md:text-base">
+                  <p>
+                    Report Date :{" "}
+                    <span className=" block md:inline">
+                      {report[0].Date + "-" + report[0]?.time}
+                    </span>
+                  </p>
                   <button
                     className="bg-slate-400 p-2"
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
                       handleExportToExcel(report[0].InvoiceNo);
                     }}
                   >
@@ -188,68 +198,56 @@ export default function WorkshopReportHistory() {
                 </div>
                 {selectedReportDate ===
                   report[0].Date + "-" + report[0]?.time && (
-                  <table className="mt-2 table-auto">
-                    <thead className="bg-blue-500 text-white">
+                  <table className=" custom-table">
+                    <thead className=" custom-table-head">
                       <tr>
-                        <th className="px-2 border-gray-400 border">Sl. No.</th>
-                        <th className="px-2 border-gray-400 border">
-                          Received Date
-                        </th>
-                        <th className="px-2 border-gray-400 border">
-                          Order No.
-                        </th>
-                        <th className="px-2 border-gray-400 border">
-                          Order Detail
-                        </th>
-                        <th className="px-2 border-gray-400 border">
-                          Site Name
-                        </th>
-                        <th className="px-2 border-gray-400 border">
-                          Delivery Date
-                        </th>
-                        <th className="px-2 border-gray-400 border">Sc</th>
-                        <th className="px-2 border-gray-400 border">Qty.</th>
-                        <th className="px-2 border-gray-400 border">Units</th>
-                        <th className="px-2 border-gray-400 border">Remarks</th>
-                        <th className="px-2 border-gray-400 border">
-                          Expected DOC
-                        </th>
+                        <th className="custom-table-row">Sl. No.</th>
+                        <th className="custom-table-row">Received Date</th>
+                        <th className="custom-table-row">Order No.</th>
+                        <th className="custom-table-row">Order Detail</th>
+                        <th className="custom-table-row">Site Name</th>
+                        <th className="custom-table-row">Delivery Date</th>
+                        <th className="custom-table-row">Sc</th>
+                        <th className="custom-table-row">Qty.</th>
+                        <th className="custom-table-row">Units</th>
+                        <th className="custom-table-row">Remarks</th>
+                        <th className="custom-table-row">Expected DOC</th>
                       </tr>
                     </thead>
                     <tbody>
                       {Object.keys(report).map((key, index) => (
                         <tr key={index}>
-                          <td className="bg-white border border-gray-400 text-center">
+                          <td className=" custom-table-data text-center">
                             {index + 1}
                           </td>
-                          <td className="bg-white border border-gray-400">
+                          <td className=" custom-table-data">
                             {report[key].ReceivedDate}
                           </td>
-                          <td className="bg-white border border-gray-400">
+                          <td className=" custom-table-data">
                             {report[key].OrderNo}
                           </td>
-                          <td className="bg-white border border-gray-400">
+                          <td className=" custom-table-data">
                             {report[key].OrderDetail}
                           </td>
-                          <td className="bg-white border border-gray-400">
+                          <td className=" custom-table-data">
                             {report[key].SiteName}
                           </td>
-                          <td className="bg-white border border-gray-400">
+                          <td className=" custom-table-data">
                             {report[key].DeliveryDate}
                           </td>
-                          <td className="bg-white border border-gray-400">
+                          <td className=" custom-table-data">
                             {report[key].Sc}
                           </td>
-                          <td className="bg-white border border-gray-400">
+                          <td className=" custom-table-data">
                             {report[key].Qty}
                           </td>
-                          <td className="bg-white border border-gray-400">
+                          <td className=" custom-table-data">
                             {report[key].Unit}
                           </td>
-                          <td className="bg-white border border-gray-400">
+                          <td className=" custom-table-data">
                             {report[key].Remarks}
                           </td>
-                          <td className="bg-white border border-gray-400">
+                          <td className=" custom-table-data">
                             {report[key].ExpectedDOC}
                           </td>
                         </tr>

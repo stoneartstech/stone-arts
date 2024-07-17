@@ -116,52 +116,52 @@ export default function ViewOrder({ orderType, order, setViewOrder, action }) {
               />
               <div className="w-full md:pl-6 pr-12 flex justify-between ">
                 <button
-                  className="bg-slate-300 p-2 rounded-lg"
+                  className=" go-back-btn"
                   onClick={() => setViewOrder(false)}
                 >
                   Go Back
                 </button>
               </div>
               <div className="flex flex-col items-center">
-                <p className="text-3xl">Check Order</p>
+                <p className=" page-heading">Check Order</p>
                 <div className="flex flex-col sm:flex-row md:p-8 gap-3 md:gap-16 w-full">
-                  <div className=" grid grid-cols-2 md:grid-cols-5  gap-3 items-center  w-full">
-                    <p className="mt-2 p-2 bg-white px-2 md:px-4">
+                  <div className=" grid grid-cols-2 md:grid-cols-5  gap-3 items-center  w-full text-sm md:text-base">
+                    <p className="mt-2 p-2 bg-white px-2 md:px-4 h-full">
                       Date : {order?.date}
                     </p>
-                    <p className="mt-2 p-2 bg-white px-2 md:px-4">
+                    <p className="mt-2 p-2 bg-white px-2 md:px-4 h-full">
                       Order ID : {order?.orderId}
                     </p>
-                    <p className="mt-2 p-2 bg-white px-2 md:px-4">
+                    <p className="mt-2 p-2 bg-white px-2 md:px-4 h-full">
                       Client Code : {order?.clientCode}
                     </p>
-                    <p className="mt-2 p-2 bg-white px-2 md:px-4">
+                    <p className="mt-2 p-2 bg-white px-2 md:px-4 h-full">
                       Invoice Number : {order?.invoiceNumber}
                     </p>
-                    <p className="mt-2 p-2 bg-white px-2 md:px-4">
+                    <p className="mt-2 p-2 bg-white px-2 md:px-4 h-full">
                       Workshop : {order?.workshop}
                     </p>
-                    <p className="mt-2 p-2 bg-white px-2 md:px-4">
+                    <p className="mt-2 p-2 bg-white px-2 md:px-4 h-full">
                       Location : {order?.location}
                     </p>
-                    <p className="mt-2 p-2 bg-white px-2 md:px-4">
+                    <p className="mt-2 p-2 bg-white px-2 md:px-4 h-full">
                       Order Designation : {order?.orderDesignation}
                     </p>
-                    <p className="mt-2 p-2 bg-white px-2 md:px-4">
+                    <p className="mt-2 p-2 bg-white px-2 md:px-4 h-full">
                       Order Type : {order?.orderType}
                     </p>
-                    <p className="mt-2 p-2 bg-white px-2 md:px-4">
+                    <p className="mt-2 p-2 bg-white px-2 md:px-4 h-full">
                       Client Name : {order?.name}
                     </p>
                   </div>
                 </div>
-                <div className=" flex flex-col md:flex-row gap-3 mt-2">
+                <div className=" flex flex-col md:flex-row gap-1 md:gap-3 mt-3 md:mt-2">
                   <button
                     onClick={() => {
                       setViewDeliverynote(true);
                     }}
                     disabled={!quoteOrderData && !consumableData}
-                    className=" bg-green-500 disabled:bg-gray-400 disabled:text-gray-700 py-1.5 px-4 text-white font-semibold"
+                    className=" upload-form-btn"
                   >
                     Check Delivery Note
                   </button>
@@ -171,7 +171,7 @@ export default function ViewOrder({ orderType, order, setViewOrder, action }) {
                         setAddDeliverynote(true);
                       }}
                       disabled={quoteOrderData && consumableData}
-                      className=" bg-green-500 disabled:bg-gray-400 disabled:text-gray-700 py-1.5 px-4 text-white font-semibold"
+                      className=" upload-form-btn"
                     >
                       Add Delivery Note
                     </button>
@@ -183,7 +183,7 @@ export default function ViewOrder({ orderType, order, setViewOrder, action }) {
                           <a
                             target="_blank"
                             href={imgURL}
-                            className=" cursor-pointer text-center  bg-green-500 disabled:bg-gray-400 disabled:text-gray-700 py-1.5 px-4 text-white font-semibold"
+                            className=" cursor-pointer text-center  upload-form-btn"
                           >
                             View Image
                           </a>
@@ -205,7 +205,7 @@ export default function ViewOrder({ orderType, order, setViewOrder, action }) {
                                   setWaiting(true);
                                   handleUploadDesign();
                                 }}
-                                className=" cursor-pointer  bg-green-500 disabled:bg-gray-400 disabled:text-gray-700 py-1.5 px-4 text-white font-semibold"
+                                className=" cursor-pointer  upload-form-btn"
                               >
                                 {waiting ? "uploading" : "Add Image"}
                               </button>
@@ -217,40 +217,32 @@ export default function ViewOrder({ orderType, order, setViewOrder, action }) {
                   )}
                 </div>
                 <div className=" overflow-x-auto w-full">
-                  <table className="  text-base md:text-base  w-full mt-2 table-auto">
-                    <thead className="bg-blue-500 text-white">
+                  <table className="  custom-table">
+                    <thead className="custom-table-head">
                       <tr>
-                        <th className="px-2 border-gray-400 border">Sl. No.</th>
-                        <th className="px-2 border-gray-400 border">
-                          Product Name
-                        </th>
-                        <th className="px-2 border-gray-400 border">
+                        <th className="custom-table-row">Sl. No.</th>
+                        <th className="custom-table-row">Product Name</th>
+                        <th className="custom-table-row">
                           Product Description
                         </th>
-                        <th className="px-2 border-gray-400 border">Size</th>
-                        <th className="px-2 border-gray-400 border">
-                          Quantity
-                        </th>
+                        <th className="custom-table-row">Size</th>
+                        <th className="custom-table-row">Quantity</th>
                       </tr>
                     </thead>
                     <tbody>
                       {order?.order?.map((item, index) => (
                         <tr key={index}>
-                          <td className="bg-white border border-gray-400 text-center">
+                          <td className="custom-table-data text-center">
                             {index + 1}
                           </td>
-                          <td className="bg-white border border-gray-400">
+                          <td className="custom-table-data">
                             {item?.prodName}
                           </td>
-                          <td className="bg-white border border-gray-400">
+                          <td className="custom-table-data">
                             {item?.prodDesc}
                           </td>
-                          <td className="bg-white border border-gray-400">
-                            {item?.Size}
-                          </td>
-                          <td className="bg-white border border-gray-400">
-                            {item?.Qty}
-                          </td>
+                          <td className="custom-table-data">{item?.Size}</td>
+                          <td className="custom-table-data">{item?.Qty}</td>
                         </tr>
                       ))}
                     </tbody>

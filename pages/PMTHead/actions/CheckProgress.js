@@ -124,8 +124,8 @@ export default function CheckProgress() {
             />
           </div>
         ) : (
-          <div className=" grid grid-cols-3  gap-2 md:gap-0 flex-col mt-3 ">
-            <div className=" col-span-1 flex flex-col ml-4">
+          <div className=" grid grid-cols-1 md:grid-cols-3  gap-2 md:gap-0 flex-col mt-3 ">
+            <div className=" col-span-1 flex flex-col md:ml-4">
               <label className=" font-medium  mb-1">Add New Progress</label>
               <div className=" flex items-end gap-2 ">
                 <textarea
@@ -164,7 +164,7 @@ export default function CheckProgress() {
                           key={index}
                           className=" group relative cursor-pointer bg-white p-4 pt-2 pb-4"
                         >
-                          <div className=" flex items-center gap-2 mb-1">
+                          <div className=" flex flex-col md:flex-row md:items-center md:gap-2 mb-1">
                             <p className=" font-semibold text-[13.4px] ">
                               Date: {item?.date}
                             </p>

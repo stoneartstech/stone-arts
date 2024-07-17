@@ -393,7 +393,7 @@ export default function DeliveryNote({
         >
           <div className="flex flex-col sm:flex-row pb-7 gap-16 w-full">
             <div className="flex flex-col w-full">
-              <div className=" grid grid-cols-2 gap-4 ">
+              <div className=" flex flex-col md:grid grid-cols-2 md:gap-4 ">
                 <div>
                   <p className="mt-2">Date :</p>
                   <input
@@ -411,14 +411,14 @@ export default function DeliveryNote({
                     value={DNNo}
                     disabled
                     onChange={(e) => setDNNo(e.target.value)}
-                    className=" p-2 w-max md:w-full  disabled:bg-white "
+                    className=" p-2 disabled:bg-white w-full "
                   />
                 </div>
               </div>
 
               <p className=" mt-3">From (dropdown for the site locations)</p>
               <select
-                className="p-2 w-max md:w-full "
+                className=" p-2 w-full "
                 value={fromLocation1}
                 onChange={(e) => setFromLocation1(e.target.value)}
               >
@@ -428,7 +428,7 @@ export default function DeliveryNote({
               </select>
               <p className=" mt-3">To (dropdown for the site locations)</p>
               <select
-                className="p-2 w-max md:w-full "
+                className=" p-2 w-full"
                 value={toLocation1}
                 onChange={(e) => setToLocation1(e.target.value)}
               >
@@ -439,23 +439,23 @@ export default function DeliveryNote({
             </div>
           </div>
           <div className=" w-full">
-            <table className="w-full table-auto ">
-              <thead className=" bg-blue-400 text-white">
+            <table className=" custom-table ">
+              <thead className=" custom-table-head">
                 <tr>
-                  <th>Sl. No. </th>
-                  <th>Product Name</th>
-                  <th>Product Description</th>
-                  <th>Qty. Avl.</th>
-                  <th>Quantity</th>
-                  <th>Size</th>
-                  <th>Unit</th>
-                  <th>Weight (Tonnes)</th>
+                  <th className=" custom-table-row">Sl. No. </th>
+                  <th className=" custom-table-row">Product Name</th>
+                  <th className=" custom-table-row">Product Description</th>
+                  <th className=" custom-table-row">Qty. Avl.</th>
+                  <th className=" custom-table-row">Quantity</th>
+                  <th className=" custom-table-row">Size</th>
+                  <th className=" custom-table-row">Unit</th>
+                  <th className=" custom-table-row">Weight (Tonnes)</th>
                 </tr>
               </thead>
               <tbody>
                 {quoteOrder.map((item, index) => (
                   <tr key={index}>
-                    <td className="text-center ">
+                    <td className=" custom-table-data text-center ">
                       <p className=" bg-white w-full p-2">{index + 1}</p>
                     </td>
                     <td>
@@ -470,7 +470,7 @@ export default function DeliveryNote({
                           })[0]?.UOM;
                           setQuoteOrder(list);
                         }}
-                        className="p-2 w-max md:w-full"
+                        className="custom-table-input"
                       >
                         <option value={""}>Select Product</option>
                         {productsArr?.map((item, index) => {
@@ -491,7 +491,7 @@ export default function DeliveryNote({
                           list[index].prodDesc = e.target.value;
                           setQuoteOrder(list);
                         }}
-                        className="p-2 w-max md:w-full"
+                        className="custom-table-input"
                       />
                     </td>
                     <td>
@@ -508,7 +508,7 @@ export default function DeliveryNote({
                           list[index].Qty = e.target.value;
                           setQuoteOrder(list);
                         }}
-                        className="p-2 w-max md:w-full disabled:bg-white"
+                        className="custom-table-input disabled:bg-white"
                       />
                     </td>
 
@@ -528,7 +528,7 @@ export default function DeliveryNote({
                           list[index].Qty = e.target.value;
                           setQuoteOrder(list);
                         }}
-                        className="p-2 w-max md:w-full"
+                        className="custom-table-input"
                       />
                     </td>
                     <td>
@@ -541,7 +541,7 @@ export default function DeliveryNote({
                           list[index].Size = e.target.value;
                           setQuoteOrder(list);
                         }}
-                        className="p-2 w-max md:w-full"
+                        className="custom-table-input"
                       />
                     </td>
                     <td>
@@ -560,7 +560,7 @@ export default function DeliveryNote({
                           })[0]?.UOM;
                           setQuoteOrder(list);
                         }}
-                        className="p-2 w-max md:w-full disabled:bg-white"
+                        className="custom-table-input disabled:bg-white"
                       />
                     </td>
                     <td>
@@ -573,7 +573,7 @@ export default function DeliveryNote({
                           list[index].Weight = e.target.value;
                           setQuoteOrder(list);
                         }}
-                        className="p-2 w-max md:w-full"
+                        className="custom-table-input"
                       />
                     </td>
                   </tr>
@@ -583,13 +583,13 @@ export default function DeliveryNote({
             <div className="  w-full flex items-center justify-center gap-3 mt-2">
               <button
                 type="button"
-                className="bg-slate-400 hover:bg-green-400 p-2 rounded-lg font-semibold"
+                className="add-row-btn"
                 onClick={handleAdQuotedRow}
               >
                 + Add Row
               </button>
               <button
-                className="bg-slate-400 hover:bg-red-400  p-2 font-semibold rounded-lg"
+                className="delete-row-btn"
                 type="button"
                 onClick={() => handleRemoveQuoteRow()}
               >
@@ -855,7 +855,7 @@ export default function DeliveryNote({
         <div className="flex flex-col items-center">
           <div className="flex flex-col sm:flex-row pb-7 gap-16 w-full">
             <div className="flex flex-col w-full">
-              <div className=" grid grid-cols-2 gap-4 ">
+              <div className=" flex flex-col md:grid grid-cols-2 md:gap-4 ">
                 <div>
                   <p className="mt-2">Date :</p>
                   <input
@@ -873,14 +873,14 @@ export default function DeliveryNote({
                     value={DNNo}
                     disabled
                     onChange={(e) => setDNNo(e.target.value)}
-                    className=" p-2 w-max md:w-full  disabled:bg-white "
+                    className=" p-2 disabled:bg-white w-full "
                   />
                 </div>
               </div>
 
               <p className=" mt-3">From (dropdown for the site locations)</p>
               <select
-                className="p-2 w-max md:w-full "
+                className="p-2 w-full "
                 value={fromLocation1}
                 onChange={(e) => setFromLocation1(e.target.value)}
               >
@@ -890,7 +890,7 @@ export default function DeliveryNote({
               </select>
               <p className=" mt-3">To (dropdown for the site locations)</p>
               <select
-                className="p-2 w-max md:w-full "
+                className="p-2 w-full "
                 value={toLocation1}
                 onChange={(e) => setToLocation1(e.target.value)}
               >
@@ -959,22 +959,22 @@ export default function DeliveryNote({
                 });
               }
             }}
-            className=" w-full"
+            className=" w-full overflow-x-auto"
           >
-            <table className="w-full">
-              <thead className=" bg-blue-400 text-white">
+            <table className="custom-table">
+              <thead className=" custom-table-head">
                 <tr>
-                  <th>Sl. No. </th>
-                  <th>Product Name</th>
-                  <th>Product Description</th>
-                  <th>Avl. Qty.</th>
-                  <th>Quantity</th>
+                  <th className=" custom-table-row">Sl. No. </th>
+                  <th className=" custom-table-row">Product Name</th>
+                  <th className=" custom-table-row">Product Description</th>
+                  <th className=" custom-table-row">Avl. Qty.</th>
+                  <th className=" custom-table-row">Quantity</th>
                 </tr>
               </thead>
               <tbody>
                 {consumanleOrder.map((item, index) => (
                   <tr key={index}>
-                    <td className="text-center ">
+                    <td className=" custom-table-data text-center ">
                       <p className=" bg-white w-full p-2">{index + 1}</p>
                     </td>
                     <td>
@@ -986,7 +986,7 @@ export default function DeliveryNote({
                           list[index].prodName = e.target.value;
                           setConsumableOrder(list);
                         }}
-                        className="p-2 w-max md:w-full"
+                        className="custom-table-input"
                       >
                         <option value={""}>Select Product</option>
                         {productsArr?.map((item, index) => {
@@ -1007,7 +1007,7 @@ export default function DeliveryNote({
                           list[index].prodDesc = e.target.value;
                           setConsumableOrder(list);
                         }}
-                        className="p-2 w-max md:w-full"
+                        className="custom-table-input"
                       />
                     </td>
                     <td>
@@ -1026,7 +1026,7 @@ export default function DeliveryNote({
                           list[index].Qty = e.target.value;
                           setConsumableOrder(list);
                         }}
-                        className="p-2 w-max md:w-full disabled:bg-white"
+                        className="custom-table-input disabled:bg-white"
                       />
                     </td>
                     <td>
@@ -1047,7 +1047,7 @@ export default function DeliveryNote({
                           list[index].Qty = e.target.value;
                           setConsumableOrder(list);
                         }}
-                        className="p-2 w-max md:w-full"
+                        className="custom-table-input"
                       />
                     </td>
                   </tr>
@@ -1057,13 +1057,13 @@ export default function DeliveryNote({
             <div className="  flex items-center justify-center gap-3 mt-2">
               <button
                 type="button"
-                className="bg-slate-400 hover:bg-green-400 p-2 rounded-lg font-semibold"
+                className="add-row-btn"
                 onClick={handleAdConsumeabledRow}
               >
                 + Add Row
               </button>
               <button
-                className="bg-slate-400 hover:bg-red-400  p-2 font-semibold rounded-lg"
+                className="delete-row-btn"
                 type="button"
                 onClick={() => handleRemoveConsumableRow()}
               >
@@ -1101,7 +1101,7 @@ export default function DeliveryNote({
         <div>
           <div className="w-full md:pl-6 pr-12 flex justify-between">
             <button
-              className="bg-slate-300 p-2 rounded-lg"
+              className=" go-back-btn"
               onClick={() => {
                 if (!viewMenu) {
                   setViewMenu(true);
@@ -1114,15 +1114,15 @@ export default function DeliveryNote({
             </button>
           </div>
           <div className="flex flex-col items-center">
-            <p className="text-3xl">Delivery Note</p>
+            <p className="page-heading">Delivery Note</p>
             {viewMenu && (
-              <div className=" flex flex-col gap-2 mt-6">
+              <div className=" flex flex-col gap-2 md:mt-6">
                 <button
                   onClick={() => {
                     setViewMenu(false);
                     setViewQuoteOrder(true);
                   }}
-                  className=" bg-blue-500 hover:bg-blue-600 py-2 px-8 text-white font-semibold"
+                  className=" bg-blue-500 hover:bg-blue-600 py-2 px-8 text-white font-semibold text-sm md:text-base"
                 >
                   Quote Order
                 </button>
@@ -1131,7 +1131,7 @@ export default function DeliveryNote({
                     setViewMenu(false);
                     setViewQuoteOrder(false);
                   }}
-                  className=" bg-blue-500 hover:bg-blue-600 py-2 px-8 text-white font-semibold"
+                  className=" bg-blue-500 hover:bg-blue-600 py-2 px-8 text-white font-semibold text-sm md:text-base"
                 >
                   Consumables
                 </button>

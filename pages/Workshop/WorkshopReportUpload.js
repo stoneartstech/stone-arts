@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/router";
 import { db } from "../../firebase";
 import { setDoc, doc } from "firebase/firestore";
+import { enqueueSnackbar, SnackbarProvider } from "notistack";
 
 export default function WorkshopReportUpload() {
   const searchParams = useSearchParams();
@@ -81,28 +82,58 @@ export default function WorkshopReportUpload() {
     setReport([...report, row]);
   };
   const handleRemoveRow = (index) => {
-    const list = [...report];
-    list.splice(-1);
-    setReport(list);
+    if (report?.length > 1) {
+      const list = [...report];
+      list.splice(-1);
+      setReport(list);
+    }
   };
 
   return (
     <div>
-      <div className="w-full pl-8">
+      <SnackbarProvider
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+      />
+      <div className="w-full  md:pl-8">
         <button
-          className="bg-slate-300 p-2 rounded-lg"
+          type="button"
+          className="go-back-btn"
           onClick={() => router.back()}
         >
           Go Back
         </button>
       </div>
-      <p className="mt-2 text-2xl text-center font-bold mb-6">
-        Workshop Uploading Report
-      </p>
-      <div className="max-w-full py-4 border border-black px-2 overflow-auto">
+      <h3 className="page-heading">Workshop Uploading Report</h3>
+      <form
+        onSubmit={(e) => {
+          try {
+            e.preventDefault();
+            //convert report to object
+            const reportData = {};
+            report.forEach((item, index) => {
+              reportData[index] = item;
+            });
+            //   console.logF(reportData);
+            //set doc in showroomDbName database with key as date and value as reportData
+            setDoc(doc(db, "Workshop-Reports", `${date}-${time}`), reportData);
+            enqueueSnackbar("Report Uploaded Successfully", {
+              variant: "success",
+            });
+            router.push("/");
+          } catch (error) {
+            enqueueSnackbar("Some error occured", {
+              variant: "error",
+            });
+          }
+        }}
+        className="max-w-full py-4 border border-black px-2 overflow-auto"
+      >
         <div>
           <div className=" flex items-center justify-between">
-            <div className=" border border-black font-semibold p-1.5 px-4 w-fit ">
+            <div className=" border border-black font-semibold p-1.5 px-4 w-fit text-sm md:text-base ">
               <p>Invoice No. - {invoiceNumber}</p>
             </div>
             {/* <div>
@@ -119,35 +150,36 @@ export default function WorkshopReportUpload() {
           </div>
         </div>
         <div className=" relative mt-14 pb-4">
-          <p className=" absolute -top-5 right-0 text-[12px]">
+          <p className=" absolute -top-10 md:-top-5 right-0 text-[12px]">
             By Default Expected DOC(Date of Completion) is{" "}
             <span className=" font-bold"> On Hold</span>. Click to add your
             ExpectedDOC .
           </p>
-          <table className="mt-6 table-auto">
-            <thead className="bg-blue-500 text-white">
+          <table className=" custom-table">
+            <thead className=" custom-table-head">
               <tr>
-                <th className="px-2 border-gray-400 border">Sl. No.</th>
-                <th className="px-2 border-gray-400 border">Received Date</th>
-                <th className="px-2 border-gray-400 border">Order No.</th>
-                <th className="px-2 border-gray-400 border">Order Detail</th>
-                <th className="px-2 border-gray-400 border">Site Name</th>
-                <th className="px-2 border-gray-400 border">Delivery Date</th>
-                <th className="px-2 border-gray-400 border">Sc</th>
-                <th className="px-2 border-gray-400 border">Qty.</th>
-                <th className="px-2 border-gray-400 border">Units</th>
-                <th className="px-2 border-gray-400 border">Remarks</th>
-                <th className="px-2 border-gray-400 border">Expected DOC</th>
+                <th className="custom-table-row">Sl. No.</th>
+                <th className="custom-table-row">Received Date</th>
+                <th className="custom-table-row">Order No.</th>
+                <th className="custom-table-row">Order Detail</th>
+                <th className="custom-table-row">Site Name</th>
+                <th className="custom-table-row">Delivery Date</th>
+                <th className="custom-table-row">Sc</th>
+                <th className="custom-table-row">Qty.</th>
+                <th className="custom-table-row">Units</th>
+                <th className="custom-table-row">Remarks</th>
+                <th className="custom-table-row">Expected DOC</th>
               </tr>
             </thead>
             <tbody className="">
               {report.map((item, index) => (
                 <tr key={index}>
-                  <td className="bg-white border border-gray-400 text-center p-1">
+                  <td className="custom-table-data text-center p-1">
                     {index + 1}
                   </td>
-                  <td className="bg-white border border-gray-400">
+                  <td className="custom-table-data">
                     <input
+                      required
                       type="date"
                       value={item.ReceivedDate}
                       onChange={(e) => {
@@ -155,11 +187,12 @@ export default function WorkshopReportUpload() {
                         list[index].ReceivedDate = e.target.value;
                         setReport(list);
                       }}
-                      className="w-full px-2 border-none outline-none"
+                      className="custom-table-input"
                     />
                   </td>
-                  <td className="bg-white border border-gray-400">
+                  <td className="custom-table-data">
                     <input
+                      required
                       type="text"
                       value={item.OrderNo}
                       onChange={(e) => {
@@ -167,11 +200,12 @@ export default function WorkshopReportUpload() {
                         list[index].OrderNo = e.target.value;
                         setReport(list);
                       }}
-                      className="w-full px-2 border-none outline-none"
+                      className="custom-table-input"
                     />
                   </td>
-                  <td className="bg-white border border-gray-400">
+                  <td className="custom-table-data">
                     <input
+                      required
                       type="text"
                       value={item.OrderDetail}
                       onChange={(e) => {
@@ -179,11 +213,12 @@ export default function WorkshopReportUpload() {
                         list[index].OrderDetail = e.target.value;
                         setReport(list);
                       }}
-                      className="w-full px-2 border-none outline-none"
+                      className="custom-table-input"
                     />
                   </td>
-                  <td className="bg-white border border-gray-400">
+                  <td className="custom-table-data">
                     <input
+                      required
                       type="text"
                       value={item.SiteName}
                       onChange={(e) => {
@@ -191,11 +226,12 @@ export default function WorkshopReportUpload() {
                         list[index].SiteName = e.target.value;
                         setReport(list);
                       }}
-                      className="w-full px-2 border-none outline-none"
+                      className="custom-table-input"
                     />
                   </td>
-                  <td className="bg-white border border-gray-400">
+                  <td className="custom-table-data">
                     <input
+                      required
                       type="date"
                       value={item.DeliveryDate}
                       onChange={(e) => {
@@ -203,11 +239,12 @@ export default function WorkshopReportUpload() {
                         list[index].DeliveryDate = e.target.value;
                         setReport(list);
                       }}
-                      className="w-full px-2 border-none outline-none"
+                      className="custom-table-input"
                     />
                   </td>
-                  <td className="bg-white border border-gray-400">
+                  <td className="custom-table-data">
                     <input
+                      required
                       type="text"
                       value={item.Sc}
                       onChange={(e) => {
@@ -215,23 +252,25 @@ export default function WorkshopReportUpload() {
                         list[index].Sc = e.target.value;
                         setReport(list);
                       }}
-                      className="w-full px-2 border-none outline-none"
+                      className="custom-table-input"
                     />
                   </td>
-                  <td className="bg-white border border-gray-400">
+                  <td className="custom-table-data">
                     <input
-                      type="text"
+                      required
+                      type="number"
                       value={item.Qty}
                       onChange={(e) => {
                         const list = [...report];
                         list[index].Qty = e.target.value;
                         setReport(list);
                       }}
-                      className="w-full px-2 border-none outline-none"
+                      className="custom-table-input"
                     />
                   </td>
-                  <td className="bg-white border border-gray-400">
+                  <td className="custom-table-data">
                     <input
+                      required
                       type="text"
                       value={item.Unit}
                       onChange={(e) => {
@@ -239,11 +278,12 @@ export default function WorkshopReportUpload() {
                         list[index].Unit = e.target.value;
                         setReport(list);
                       }}
-                      className="w-full px-2 border-none outline-none"
+                      className="custom-table-input"
                     />
                   </td>
-                  <td className="bg-white border border-gray-400">
+                  <td className="custom-table-data">
                     <input
+                      required
                       type="text"
                       value={item.Remarks}
                       onChange={(e) => {
@@ -251,10 +291,10 @@ export default function WorkshopReportUpload() {
                         list[index].Remarks = e.target.value;
                         setReport(list);
                       }}
-                      className="w-full px-2 border-none outline-none"
+                      className="custom-table-input"
                     />
                   </td>
-                  <td className="bg-white border border-gray-400 border-l-0 border-t-0 flex items-center gap-1 p-1.5 ">
+                  <td className="custom-table-data border-l-0 border-t-0 flex items-center gap-1 p-1.5 ">
                     <p
                       className={`text-gray-500 text-[15px] select-none pb-1 ${
                         item.ExpectedDOC.toLowerCase() !== ""
@@ -265,6 +305,7 @@ export default function WorkshopReportUpload() {
                       on hold /
                     </p>
                     <input
+                      required
                       type="date"
                       placeholder="On hold (Default)"
                       value={item.ExpectedDOC}
@@ -284,37 +325,25 @@ export default function WorkshopReportUpload() {
               ))}
             </tbody>
           </table>
-          <button
-            className="bg-slate-400 mt-2 font-semibold text-sm hover:bg-green-500 p-2.5 rounded-lg"
-            onClick={handleAddRow}
-          >
+          <button type="button" className="add-row-btn" onClick={handleAddRow}>
             + Add Row
           </button>
           <button
-            className="bg-slate-400 mt-2 ml-2 font-semibold text-sm hover:bg-red-500 p-2.5 rounded-lg"
+            type="button"
+            className="delete-row-btn"
             onClick={handleRemoveRow}
           >
             Remove Row
           </button>
         </div>
         <button
-          className="bg-green-400 hover:bg-green-600 border border-black py-2 px-16 font-semibold"
-          onClick={() => {
-            //convert report to object
-            const reportData = {};
-            report.forEach((item, index) => {
-              reportData[index] = item;
-            });
-            //   console.logF(reportData);
-            //set doc in showroomDbName database with key as date and value as reportData
-            setDoc(doc(db, "Workshop-Reports", `${date}-${time}`), reportData);
-            alert("Report Uploaded Successfully");
-            router.push("/");
-          }}
+          disabled={report[0]?.ReceivedDate === ""}
+          type="submit"
+          className=" upload-form-btn"
         >
           Upload
         </button>
-      </div>
+      </form>
     </div>
   );
 }
