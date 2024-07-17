@@ -25,10 +25,7 @@ export default function WorkshopDashboard() {
     return (
       <div>
         <div className="w-full mb-8 flex justify-start items-start">
-          <button
-            className="bg-slate-300 p-2 rounded-lg"
-            onClick={() => router.back()}
-          >
+          <button className=" go-back-btn" onClick={() => router.back()}>
             Go Back
           </button>
         </div>
@@ -39,44 +36,45 @@ export default function WorkshopDashboard() {
 
   return (
     <div>
-      <div className="w-full px-8 flex flex-row justify-between">
-        <button
-          className="bg-slate-300 p-2 rounded-lg"
-          onClick={() => router.back()}
-        >
+      <div className="w-full md:px-8 flex flex-row justify-between">
+        <button className=" go-back-btn" onClick={() => router.back()}>
           Go Back
         </button>
-        <button className="bg-red-500 p-2 rounded-lg" onClick={logoutHandler}>
+        <button className="logout-btn" onClick={logoutHandler}>
           Logout
         </button>
       </div>
       <div className="flex flex-col mt-4">
-        <p className="text-2xl mx-auto font-bold">
+        <p className="page-heading">
           {currentUser.email === "workshop@stonearts.com"
             ? "Workshop Dashboard"
             : "Admin Workshop Dashboard"}
         </p>
       </div>
       <div className="flex flex-col">
-        <div className="flex flex-col items-center my-12 gap-6">
+        <div className="flex flex-col items-center my-3 mb-5 md:my-12 gap-3 md:gap-6">
           <Link
             href={{
-              pathname: '/Workshop/PendingOrders',
+              pathname: "/Workshop/PendingOrders",
             }}
-            className='bg-slate-300 p-2 rounded-lg text-center sm:w-1/3'>
+            className="bg-slate-300 p-2 rounded-lg text-center w-[250px] sm:w-1/3"
+          >
             Pending Orders
           </Link>
           <Link
             href={{
-              pathname: '/Workshop/CompletedOrders',
+              pathname: "/Workshop/CompletedOrders",
             }}
-            className='bg-slate-300 p-2 rounded-lg text-center sm:w-1/3'>
+            className="bg-slate-300 p-2 rounded-lg text-center w-[250px] sm:w-1/3"
+          >
             Completed Orders
           </Link>
         </div>
 
-        <div className="items-center sm:mx-24 grid grid-cols-3 gap-x-12 mb-4">
-          <p className="text-lg text-center">Workshop Report</p>
+        <div className="items-center sm:mx-24 grid grid-cols-2 md:grid-cols-3 gap-x-3 md:gap-x-12 mb-4">
+          <p className="text-lg text-center col-span-2 md:col-span-1">
+            Workshop Report
+          </p>
           <Link
             href={{
               pathname: "/Workshop/WorkshopReportUpload",

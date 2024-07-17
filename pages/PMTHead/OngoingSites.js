@@ -121,7 +121,7 @@ export default function OngoingSites() {
         }}
       />
       <div>
-        <div className="w-full px-8 flex flex-row justify-between">
+        <div className="w-full px-3 md:px-8 flex flex-row justify-between">
           <button
             className="bg-slate-300 p-2 rounded-lg"
             onClick={() => {
@@ -169,9 +169,9 @@ export default function OngoingSites() {
                   return (
                     <div
                       key={index}
-                      className=" mt-4 md:w-[40%] grid grid-cols-3"
+                      className=" mt-4 w-[250px] md:w-[40%] grid grid-cols-3"
                     >
-                      <div className=" py-1.5 md:py-0  col-span-3 md:col-span-2 text-sm md:text-base  border-black border flex items-center justify-center font-semibold">
+                      <div className=" py-1.5 md:py-0  col-span-3 md:md:col-span-2 text-sm md:text-base  border-black border flex items-center justify-center font-semibold">
                         {order?.name} - {order?.clientId}
                       </div>
                       <button
@@ -179,7 +179,7 @@ export default function OngoingSites() {
                           setActionsTab(true);
                           setSelectedClient(order);
                         }}
-                        className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border md:border-l-0"
+                        className=" col-span-3 md:col-span-1 bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border border-t-0 md:border-t md:border-l-0"
                       >
                         Actions
                       </button>
@@ -189,13 +189,13 @@ export default function OngoingSites() {
               </div>
             ) : (
               <div className=" flex flex-col items-center justify-center ">
-                <div className=" mt-4 grid grid-cols-2 flex-col gap-2.5 w-fit ">
-                  <div className=" flex  flex-col col-span-2 w-full">
+                <div className=" mt-4 grid grid-cols-1 md:grid-cols-2 flex-col gap-2.5 w-fit ">
+                  <div className=" flex  flex-col md:col-span-2 w-full">
                     <p className=" bg-white capitalize text-center w-full text-xs md:text-base font-semibold py-1.5 md:py-2.5 px-4 border-black border ">
                       Site Supervisor: {selectedClient?.supervisor}
                     </p>
                   </div>
-                  <div className=" flex  flex-col col-span-2 w-full">
+                  <div className=" flex  flex-col md:col-span-2 w-full">
                     {selectedClient?.address ? (
                       <p className=" bg-white capitalize text-center w-full text-xs md:text-base font-semibold py-1.5 md:py-2.5 px-4 border-black border ">
                         Address: {selectedClient?.address}
@@ -251,40 +251,40 @@ export default function OngoingSites() {
                   <Link
                     href={`/PMTHead/actions/CheckImages?qsName=${selectedClient?.qsName}&clientId=${selectedClient?.clientId}&clientName=${selectedClient?.name}&type=view`}
                   >
-                    <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border  min-w-[300px] w-full">
+                    <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border min-w-[250px]  md:min-w-[300px] w-full">
                       Check Images
                     </button>
                   </Link>
                   <Link
                     href={`/PMTHead/actions/CheckProgress?qsName=${selectedClient?.qsName}&clientId=${selectedClient?.clientId}&clientName=${selectedClient?.name}`}
                   >
-                    <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border  min-w-[300px] w-full">
+                    <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border min-w-[250px]  md:min-w-[300px] w-full">
                       Check Progress
                     </button>
                   </Link>
                   <Link href={selectedClient?.quotePdf} target="_blank">
-                    <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border  min-w-[300px] w-full">
+                    <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border min-w-[250px]  md:min-w-[300px] w-full">
                       Check Quote
                     </button>
                   </Link>
                   <Link
                     href={`/PMTHead/actions/MaterialPlanUpload?qsName=${selectedClient?.qsName}&clientId=${selectedClient?.clientId}&clientName=${selectedClient?.name}&type=view`}
                   >
-                    <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border  min-w-[300px] w-full">
+                    <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border min-w-[250px]  md:min-w-[300px] w-full">
                       Check Material Plan
                     </button>
                   </Link>
                   <Link
                     href={`/PMTHead/actions/SitePlanUpload?qsName=${selectedClient?.qsName}&clientId=${selectedClient?.clientId}&clientName=${selectedClient?.name}&type=view`}
                   >
-                    <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border  min-w-[300px] w-full">
+                    <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border min-w-[250px]  md:min-w-[300px] w-full">
                       Check Site Plan
                     </button>
                   </Link>
                   <Link
                     href={`/PMTHead/actions/JobCards?qsName=${selectedClient?.qsName}&clientId=${selectedClient?.clientId}&clientName=${selectedClient?.name}&type=view`}
                   >
-                    <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border  min-w-[300px] w-full">
+                    <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border min-w-[250px]  md:min-w-[300px] w-full">
                       Check Job Card
                     </button>
                   </Link>
@@ -293,7 +293,7 @@ export default function OngoingSites() {
                       href={selectedClient?.signedCopy}
                       target="_blank"
                       type="button"
-                      className=" bg-[#94e63d] hover:bg-[#83cb37] text-center text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border  min-w-[300px] w-full"
+                      className=" bg-[#94e63d] hover:bg-[#83cb37] text-center text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border min-w-[250px]  md:min-w-[300px] w-full"
                     >
                       View Signed Copy
                     </a>
@@ -333,7 +333,7 @@ export default function OngoingSites() {
                       : "Close Job Card"}
                   </button>
 
-                  <div className=" flex  flex-col col-span-2">
+                  <div className=" flex  flex-col md:col-span-2">
                     <button
                       onClick={() => {
                         const okay = confirm(

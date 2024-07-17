@@ -44,3 +44,40 @@
 ::-webkit-scrollbar-thumb {
   background: #999;
 }
+
+/* reuseable custom tailwind calsses ------------------------------------------ */
+.go-back-btn {
+  @apply bg-slate-300 p-2 px-4 text-sm md:text-base font-medium w-fit rounded-lg;
+}
+.logout-btn {
+  @apply bg-red-500 p-2 px-4 text-sm md:text-base font-medium w-fit rounded-lg;
+}
+.add-row-btn {
+  @apply bg-slate-400 mt-2 font-semibold hover:bg-green-500 p-2.5 text-xs md:text-sm rounded-lg;
+}
+.delete-row-btn {
+  @apply bg-slate-400 mt-2 ml-2 font-semibold hover:bg-red-500 p-2.5 text-xs md:text-sm rounded-lg;
+}
+.upload-form-btn {
+  @apply bg-green-400 disabled:bg-gray-400 hover:bg-green-600 text-sm md:text-base py-2 px-4 font-semibold rounded-lg my-4;
+}
+
+.page-heading {
+  @apply mt-2 text-xl md:text-2xl text-center font-bold mb-3 md:mb-6;
+}
+
+.custom-table {
+  @apply mt-2 table-auto text-sm md:text-base w-full;
+}
+.custom-table-head {
+  @apply bg-blue-500 text-white border border-gray-300;
+}
+.custom-table-row {
+  @apply px-2 border-gray-400 border;
+}
+.custom-table-data {
+  @apply bg-white;
+}
+.custom-table-input {
+  @apply w-max md:w-full p-2 border-none outline-none disabled:bg-white bg-white;
+}

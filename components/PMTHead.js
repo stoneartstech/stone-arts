@@ -63,7 +63,7 @@ export default function PMTHead() {
             href={{
               pathname: "/PMTHead/PendingSites",
             }}
-            className="bg-slate-300 p-2 rounded-lg text-center sm:w-1/3"
+            className="bg-slate-300 p-2 rounded-lg text-center min-w-[250px] sm:w-1/3"
           >
             Sites not assigned yet
           </Link>
@@ -71,7 +71,7 @@ export default function PMTHead() {
             href={{
               pathname: "/PMTHead/OngoingSites",
             }}
-            className="bg-slate-300 p-2 rounded-lg text-center sm:w-1/3"
+            className="bg-slate-300 p-2 rounded-lg text-center min-w-[250px] sm:w-1/3"
           >
             Sites in Progress
           </Link>
@@ -79,7 +79,7 @@ export default function PMTHead() {
             href={{
               pathname: "/Workshop/UploadOrder",
             }}
-            className="bg-slate-300 p-2 rounded-lg text-center sm:w-1/3 font-bold my-6"
+            className="bg-slate-300 p-2 rounded-lg text-center min-w-[250px]  sm:w-1/3 font-bold my-6"
           >
             Upload Order
           </Link>
@@ -87,7 +87,7 @@ export default function PMTHead() {
             href={{
               pathname: "/PMTHead/Reports",
             }}
-            className="bg-slate-300 p-2 rounded-lg text-center sm:w-1/3 font-bold "
+            className="bg-slate-300 p-2 rounded-lg text-center min-w-[250px]  sm:w-1/3 font-bold "
           >
             Reports
           </Link>

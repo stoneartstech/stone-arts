@@ -150,7 +150,7 @@ export default function CompletedOrders() {
                         key={index}
                         className=" mt-4  md:w-[55%] grid grid-cols-4"
                       >
-                        <div className=" col-span-2  border-black border flex items-center justify-center font-semibold">
+                        <div className=" col-span-2  border-black border flex items-center justify-center font-semibold text-sm md:text-base">
                           {order?.name && order?.clientId
                             ? order?.name + " - " + order?.clientId
                             : "Order ID - " + String(order?.orderId)}
@@ -179,23 +179,19 @@ export default function CompletedOrders() {
                           Check Quote
                         </button>
                         {activeQuote === order?.orderId && (
-                          <div className=" overflow-x-auto text-sm md:text-base p-2 col-span-3  md:col-span-5 bg-gray-100 w-full">
-                            <table className="  w-full mt-2 table-auto">
-                              <thead className="bg-blue-500 text-white">
+                          <div className=" overflow-x-auto text-sm md:text-base p-2 col-span-4  md:col-span-5 bg-gray-100 w-full">
+                            <table className="custom-table">
+                              <thead className="custom-table-head">
                                 <tr>
-                                  <th className="px-2 border-gray-400 border">
-                                    Sl. No.
-                                  </th>
-                                  <th className="px-2 border-gray-400 border">
+                                  <th className="custom-table-rowr">Sl. No.</th>
+                                  <th className="custom-table-rowr">
                                     Product Name
                                   </th>
-                                  <th className="px-2 border-gray-400 border">
+                                  <th className="custom-table-rowr">
                                     Product Description
                                   </th>
-                                  <th className="px-2 border-gray-400 border">
-                                    Size
-                                  </th>
-                                  <th className="px-2 border-gray-400 border">
+                                  <th className="custom-table-rowr">Size</th>
+                                  <th className="custom-table-rowr">
                                     Quantity
                                   </th>
                                 </tr>
@@ -203,19 +199,19 @@ export default function CompletedOrders() {
                               <tbody>
                                 {order?.order?.map((item, index) => (
                                   <tr key={index}>
-                                    <td className="bg-white border border-gray-400 text-center">
+                                    <td className="custom-table-data text-center">
                                       {index + 1}
                                     </td>
-                                    <td className="bg-white border border-gray-400">
+                                    <td className="custom-table-data">
                                       {item?.prodName}
                                     </td>
-                                    <td className="bg-white border border-gray-400">
+                                    <td className="custom-table-data">
                                       {item?.prodDesc}
                                     </td>
-                                    <td className="bg-white border border-gray-400">
+                                    <td className="custom-table-data">
                                       {item?.Size}
                                     </td>
-                                    <td className="bg-white border border-gray-400">
+                                    <td className="custom-table-data">
                                       {item?.Qty}
                                     </td>
                                   </tr>
@@ -272,7 +268,7 @@ export default function CompletedOrders() {
                         key={index}
                         className=" mt-4  md:w-[55%] grid grid-cols-4"
                       >
-                        <div className=" col-span-2  border-black border flex items-center justify-center font-semibold">
+                        <div className=" col-span-2  border-black border flex items-center justify-center font-semibold text-sm md:text-base">
                           {order?.name && order?.clientId
                             ? order?.name + " - " + order?.clientId
                             : "Order ID - " + String(order?.orderId)}
@@ -301,23 +297,19 @@ export default function CompletedOrders() {
                           Check Quote
                         </button>
                         {activeQuote === order?.orderId && (
-                          <div className=" overflow-x-auto text-sm md:text-base p-2 col-span-3  md:col-span-5 bg-gray-100 w-full">
-                            <table className="  w-full mt-2 table-auto">
-                              <thead className="bg-blue-500 text-white">
+                          <div className=" overflow-x-auto text-sm md:text-base p-2 col-span-4  md:col-span-5 bg-gray-100 w-full">
+                            <table className="custom-table">
+                              <thead className="custom-table-head">
                                 <tr>
-                                  <th className="px-2 border-gray-400 border">
-                                    Sl. No.
-                                  </th>
-                                  <th className="px-2 border-gray-400 border">
+                                  <th className="custom-table-rowr">Sl. No.</th>
+                                  <th className="custom-table-rowr">
                                     Product Name
                                   </th>
-                                  <th className="px-2 border-gray-400 border">
+                                  <th className="custom-table-rowr">
                                     Product Description
                                   </th>
-                                  <th className="px-2 border-gray-400 border">
-                                    Size
-                                  </th>
-                                  <th className="px-2 border-gray-400 border">
+                                  <th className="custom-table-rowr">Size</th>
+                                  <th className="custom-table-rowr">
                                     Quantity
                                   </th>
                                 </tr>
@@ -325,19 +317,19 @@ export default function CompletedOrders() {
                               <tbody>
                                 {order?.order?.map((item, index) => (
                                   <tr key={index}>
-                                    <td className="bg-white border border-gray-400 text-center">
+                                    <td className="custom-table-data text-center">
                                       {index + 1}
                                     </td>
-                                    <td className="bg-white border border-gray-400">
+                                    <td className="custom-table-data">
                                       {item?.prodName}
                                     </td>
-                                    <td className="bg-white border border-gray-400">
+                                    <td className="custom-table-data">
                                       {item?.prodDesc}
                                     </td>
-                                    <td className="bg-white border border-gray-400">
+                                    <td className="custom-table-data">
                                       {item?.Size}
                                     </td>
-                                    <td className="bg-white border border-gray-400">
+                                    <td className="custom-table-data">
                                       {item?.Qty}
                                     </td>
                                   </tr>
