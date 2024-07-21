@@ -133,8 +133,8 @@ export default function PendingOrders() {
             <button className="go-back-btn" onClick={() => router.back()}>
               Go Back
             </button>
-            <p className="page-heading">Workshop Home Page</p>
           </div>
+          <p className="page-heading ">Workshop Home Page</p>
           <div className=" flex items-center justify-center mt-2 w-full font-semibold">
             <button
               onClick={() => {

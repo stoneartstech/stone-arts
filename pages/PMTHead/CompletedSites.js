@@ -16,7 +16,7 @@ import Image from "next/image";
 import { enqueueSnackbar, SnackbarProvider } from "notistack";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
-export default function OngoingSites() {
+export default function CompletedSites() {
   const [isQsSelected, setIsQsSelected] = useState(false);
   const [loading, setLoading] = useState(true);
   const [actionsTab, setActionsTab] = useState(false);
@@ -35,7 +35,7 @@ export default function OngoingSites() {
     // let { signedCopy, jobCardClosed, ...rest } = selectedClient;
     // setDoc(doc(db, `PMT-sites-in-progress/${selectedClient?.clientId}`), rest);
     // for (let qs = 1; qs <= maxQs; qs++) {
-    const requestsRef = collection(db, `PMT-sites-in-progress`);
+    const requestsRef = collection(db, `PMT-sites-completed`);
     const snapshot = await getDocs(requestsRef);
     const requestsList = snapshot.docs.map((doc) => ({
       ...doc.data(),
@@ -142,7 +142,7 @@ export default function OngoingSites() {
           <p className="text-2xl mx-auto capitalize font-bold">
             {selectedClient !== ""
               ? `${selectedClient?.name} - ${selectedClient?.clientId} Actions`
-              : "Sites In Progress"}
+              : "Sites Completed"}
           </p>
           {selectedClient && (
             <p className=" w-full text-center text-sm mt-0.5 font-medium ">
@@ -257,7 +257,7 @@ export default function OngoingSites() {
                     </button>
                   </Link>
                   <Link
-                    href={`/PMTHead/actions/CheckProgress?qsName=${selectedClient?.qsName}&clientId=${selectedClient?.clientId}&clientName=${selectedClient?.name}`}
+                    href={`/PMTHead/actions/CheckProgress?qsName=${selectedClient?.qsName}&clientId=${selectedClient?.clientId}&clientName=${selectedClient?.name}&type=view`}
                   >
                     <button className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border min-w-[250px]  md:min-w-[300px] w-full">
                       Check Progress
@@ -289,43 +289,20 @@ export default function OngoingSites() {
                       Check Job Card
                     </button>
                   </Link>
-                  {selectedClient?.signedCopy ? (
-                    <a
-                      href={selectedClient?.signedCopy}
-                      target="_blank"
-                      type="button"
-                      className=" bg-[#94e63d] hover:bg-[#83cb37] text-center text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border min-w-[250px]  md:min-w-[300px] w-full"
-                    >
-                      View Signed Copy
-                    </a>
-                  ) : (
-                    <div className=" flex items-center">
-                      <input
-                        required
-                        className=" w-fit"
-                        id="file"
-                        name="file"
-                        type="file"
-                        onChange={(e) => {
-                          setUploadImage(e.target.files[0]);
-                        }}
-                      />
-                      <button
-                        disabled={uploading || uploadImage === ""}
-                        type="button"
-                        className=" disabled:bg-gray-400 font-semibold text-sm bg-green-500 p-2.5 rounded-lg w-[100px]"
-                        onClick={() => {
-                          handleUploadReportImages();
-                        }}
-                      >
-                        {uploading ? "Uploading" : "Upload   "}
-                      </button>
-                    </div>
-                  )}
+
+                  <a
+                    href={selectedClient?.signedCopy}
+                    target="_blank"
+                    type="button"
+                    className=" bg-[#94e63d] hover:bg-[#83cb37] text-center text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border min-w-[250px]  md:min-w-[300px] w-full"
+                  >
+                    View Signed Copy
+                  </a>
+
                   <button
                     disabled={selectedClient?.jobCardClosed}
                     onClick={() => {
-                      handleCloseJobCard();
+                      // handleCloseJobCard();
                     }}
                     className=" bg-[#94e63d] disabled:bg-gray-300 disabled:text-gray-700 hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border  w-full"
                   >
@@ -333,49 +310,6 @@ export default function OngoingSites() {
                       ? "Job Card Closed"
                       : "Close Job Card"}
                   </button>
-
-                  <div className=" flex  flex-col md:col-span-2">
-                    <button
-                      onClick={async () => {
-                        const okay = confirm(
-                          `Mark ${selectedClient?.name} - ${selectedClient?.clientId} as Completed`
-                        );
-                        try {
-                          if (okay) {
-                            await deleteDoc(
-                              doc(
-                                db,
-                                `PMT-sites-in-progress/${selectedClient?.clientId}`
-                              )
-                            );
-                            await setDoc(
-                              doc(
-                                db,
-                                `PMT-sites-completed/${selectedClient?.clientId}`
-                              ),
-                              selectedClient
-                            );
-                            enqueueSnackbar(
-                              ` ${selectedClient?.name} - ${selectedClient?.clientId} Completed`,
-                              {
-                                variant: "success",
-                              }
-                            );
-                            router.back();
-                          }
-                        } catch (error) {
-                          enqueueSnackbar("Some error occured", {
-                            variant: "error",
-                          });
-                          console.error(error);
-                        }
-                      }}
-                      disabled={!selectedClient?.jobCardClosed}
-                      className=" mt-2 bg-[#94e63d] disabled:bg-gray-300 disabled:text-gray-700 hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-3 px-4 border-black border  w-full"
-                    >
-                      Complete Project
-                    </button>
-                  </div>
                 </div>
               </div>
             )}
