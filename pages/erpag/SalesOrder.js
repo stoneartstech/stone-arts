@@ -1,21 +1,20 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { DataGrid, useGridApiContext } from "@mui/x-data-grid";
 import {
   IoAddSharp,
   IoBarChartSharp,
   IoReorderThreeOutline,
-  IoTabletLandscapeSharp,
 } from "react-icons/io5";
-import Head from "next/head";
 import { AiOutlineBorderlessTable } from "react-icons/ai";
 import { Text, View, Page, Document, StyleSheet } from "@react-pdf/renderer";
-import { BlobProvider, PDFDownloadLink } from "@react-pdf/renderer";
+import { PDFDownloadLink } from "@react-pdf/renderer";
 import Link from "next/link";
-import CreateSalesOrder from "./createSalesOrder";
+import CreatePurchase from "./createPurchase";
+import EditPurchase from "./editPurchase";
 import { useRouter } from "next/router";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "@/firebase";
-import { useParams } from "next/navigation";
+import EditSalesOrder from "./editSalesOrder";
+import CreateSalesOrder from "./createSalesOrder";
 
 const columns = [
   { field: "id", headerName: "ID", width: 70 },
@@ -34,145 +33,7 @@ const columns = [
   { field: "warehouse", headerName: "Warehouse", width: 130 },
 ];
 
-const rows = [
-  {
-    id: 1,
-    tag: "",
-    number: "SO-00007",
-    dateAndTime: "04/03/2023 14:12",
-    customer: "PC WORLD LLC",
-    status: "completed",
-    quantityStatus: "fulfilled",
-    shippingStatus: "Shipped",
-    paymentStatus: "PAID",
-    amount: 185.99,
-    totalAmount: 199.99,
-    unpaidAmt: 23,
-    advanceAmt: 67,
-    warehouse: "Main Warehouse",
-  },
-  {
-    id: 2,
-    tag: "",
-    number: "SO-00008",
-    dateAndTime: "09/02/2023 14:12",
-    customer: "Synergy LLC",
-    status: "pacekd",
-    quantityStatus: "no quantity",
-    shippingStatus: "ready for shipping",
-    paymentStatus: "partly-advance",
-    amount: 385.99,
-    totalAmount: 449.99,
-    unpaidAmt: 233,
-    advanceAmt: 67,
-    warehouse: "Main Warehouse",
-  },
-  {
-    id: 3,
-    tag: "",
-    number: "SO-00008",
-    dateAndTime: "04/03/2023 14:12",
-    customer: "iugyhf LLC",
-    status: "approved",
-    quantityStatus: "Available Quantity",
-    shippingStatus: "partly-shipped",
-    paymentStatus: "advance payment",
-    amount: 185.99,
-    totalAmount: 199.99,
-    unpaidAmt: 23,
-    advanceAmt: 67,
-    warehouse: "Main Warehouse",
-  },
-  {
-    id: 4,
-    tag: "",
-    number: "SO-00009",
-    dateAndTime: "04/09/2025 14:12",
-    customer: "oiuy LLC",
-    status: "completed",
-    quantityStatus: "fulfilled",
-    shippingStatus: "Shipped",
-    paymentStatus: "PAID",
-    amount: 78655.99,
-    totalAmount: 348769.99,
-    unpaidAmt: 8763,
-    advanceAmt: 6787,
-    warehouse: "Main Warehouse",
-  },
-  {
-    id: 5,
-    tag: "",
-    number: "SO-00011",
-    dateAndTime: "28/03/2023 14:12",
-    customer: "lkjhgfD LLC",
-    status: "completed",
-    quantityStatus: "fulfilled",
-    shippingStatus: "Shipped",
-    paymentStatus: "PAID",
-    amount: 185.99,
-    totalAmount: 199.99,
-    unpaidAmt: 23,
-    advanceAmt: 67,
-    warehouse: "Main Warehouse",
-  },
-  {
-    id: 6,
-    tag: "",
-    number: "SO-00007",
-    dateAndTime: "04/03/2023 14:12",
-    customer: "PC WORLD LLC",
-    status: "completed",
-    quantityStatus: "fulfilled",
-    shippingStatus: "Shipped",
-    paymentStatus: "PAID",
-    amount: 185.99,
-    totalAmount: 199.99,
-    unpaidAmt: 23,
-    advanceAmt: 67,
-    warehouse: "Main Warehouse",
-  },
-  {
-    id: 7,
-    tag: "",
-    number: "SO-00007",
-    dateAndTime: "04/03/2023 14:12",
-    customer: "PC WORLD LLC",
-    status: "completed",
-    quantityStatus: "fulfilled",
-    shippingStatus: "Shipped",
-    paymentStatus: "PAID",
-    amount: 185.99,
-    totalAmount: 199.99,
-    unpaidAmt: 23,
-    advanceAmt: 67,
-    warehouse: "Main Warehouse",
-  },
-  {
-    id: 8,
-    tag: "",
-    number: "SO-00007",
-    dateAndTime: "04/03/2023 14:12",
-    customer: "PC WORLD LLC",
-    status: "completed",
-    quantityStatus: "fulfilled",
-    shippingStatus: "Shipped",
-    paymentStatus: "PAID",
-    amount: 185.99,
-    totalAmount: 199.99,
-    unpaidAmt: 23,
-    advanceAmt: 67,
-    warehouse: "Main Warehouse",
-  },
-];
-
 const Header = ({ Invoice1, handleCreateSalesOrder }) => {
-  const bulkOptions = [
-    { name: "Print", action: "print" },
-    { name: "Save to GDRIVE", action: "gdrive" },
-    { name: "Mail To", action: "mailto" },
-    { name: "Download", action: "download" },
-  ];
-
   return (
     <div className=" flex w-full py-2 items-center justify-between">
       <div className=" relative">
@@ -218,7 +79,7 @@ const Header = ({ Invoice1, handleCreateSalesOrder }) => {
     </div>
   );
 };
-const Invoice = () => {
+const SalesOrder = () => {
   const Invoice2 = () => {
     const styles = StyleSheet.create({
       page: {
@@ -305,9 +166,6 @@ const Invoice = () => {
       return (
         <View style={{ width: "100%", flexDirection: "row", marginTop: 10 }}>
           <View style={[styles.theader, styles.theader2]}>
-            <Text>Sl No.</Text>
-          </View>
-          <View style={[styles.theader, styles.theader2]}>
             <Text>ID</Text>
           </View>
           <View style={[styles.theader, styles.theader2]}>
@@ -320,22 +178,13 @@ const Invoice = () => {
             <Text>Date and Time</Text>
           </View>
           <View style={[styles.theader, styles.theader2]}>
-            <Text>Customer</Text>
+            <Text>Supplier</Text>
           </View>
           <View style={[styles.theader, styles.theader2]}>
             <Text>Status</Text>
           </View>
           <View style={[styles.theader, styles.theader2]}>
-            <Text>Quantity Status</Text>
-          </View>
-          <View style={[styles.theader, styles.theader2]}>
-            <Text>Shipping Status</Text>
-          </View>
-          <View style={[styles.theader, styles.theader2]}>
             <Text>Payment Status</Text>
-          </View>
-          <View style={[styles.theader, styles.theader2]}>
-            <Text>Amount</Text>
           </View>
           <View style={[styles.theader, styles.theader2]}>
             <Text>Total Amount</Text>
@@ -343,55 +192,40 @@ const Invoice = () => {
           <View style={[styles.theader, styles.theader2]}>
             <Text>Unpaid Amount</Text>
           </View>
-          <View style={[styles.theader, styles.theader2]}>
-            <Text>Advance Amount</Text>
-          </View>
-          <View style={[styles.theader, styles.theader2]}>
-            <Text>Warehouse</Text>
-          </View>
         </View>
       );
     };
 
     const TableBody = () => {
-      return rows?.map((receipt, index) => (
+      return data?.map((receipt, index) => (
         <Fragment key={index}>
           <View style={{ width: "100%", flexDirection: "row" }}>
             <View style={[styles.tbody]}>
-              <Text>{receipt.id}</Text>
+              <Text>{index + 1}</Text>
             </View>
             <View style={styles.tbody}>
-              <Text>{receipt.number}</Text>
+              <Text>{receipt[0]?.number}</Text>
             </View>
             <View style={styles.tbody}>
-              <Text>{receipt.invoiceDate}</Text>
+              <Text>{receipt[0]?.tag}</Text>
             </View>
             <View style={styles.tbody}>
-              <Text>{receipt.salesOrder}</Text>
+              <Text>{receipt[0]?.dateAndTime}</Text>
             </View>
             <View style={styles.tbody}>
-              <Text>{receipt.dateAndTime}</Text>
+              <Text>{receipt[0]?.supplier}</Text>
             </View>
             <View style={styles.tbody}>
-              <Text>{receipt.customer}</Text>
+              <Text>{receipt[0]?.orderStatus}</Text>
             </View>
             <View style={styles.tbody}>
-              <Text>{receipt.status}</Text>
+              <Text>{receipt[0]?.paymentStatus}</Text>
             </View>
             <View style={styles.tbody}>
-              <Text>{receipt.amount}</Text>
+              <Text>{receipt?.total}</Text>
             </View>
             <View style={styles.tbody}>
-              <Text>{receipt.totalAmount}</Text>
-            </View>
-            <View style={styles.tbody}>
-              <Text>{receipt.warehouse}</Text>
-            </View>
-            <View style={styles.tbody}>
-              <Text>{receipt.paymentStatus}</Text>
-            </View>
-            <View style={styles.tbody}>
-              <Text>{receipt.unpaidAmt}</Text>
+              <Text>{receipt?.unpaid}</Text>
             </View>
           </View>
         </Fragment>
@@ -414,23 +248,6 @@ const Invoice = () => {
   const [selectionModel, setSelectionModel] = React.useState([]);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
-  const {
-    uploadInvoice,
-    address,
-    aspects,
-    clientCode,
-    clientId,
-    email,
-    id,
-    name,
-    number,
-    option,
-    showroom,
-    sourceInfo,
-    specificInfo,
-  } = router.query;
-  // alert(uploadInvoice);
 
   const today = new Date();
   const date =
@@ -452,27 +269,14 @@ const Invoice = () => {
   const time = hours + "-" + minutes + "-" + seconds;
 
   useEffect(() => {
-    if (uploadInvoice === true || uploadInvoice === "true") {
-      setIsCreateSalesOrder(true);
-    }
     const fetch = onSnapshot(
       collection(db, "erpag/reports/salesOrder"),
       (snapshot) => {
         var reports = snapshot.docs.map((doc) => ({
           ...doc.data(),
         }));
-        // setData(reports[0]?.);
         console.log(reports);
-        var newObjectsArray = [];
-        reports.forEach((item) => {
-          const updatedItem = item.data.map((obj) => ({
-            ...obj,
-            ...item[0]?.details,
-          }));
-          newObjectsArray.push(updatedItem);
-        });
-        console.log(newObjectsArray);
-        setData(newObjectsArray);
+        setData(reports);
         setLoading(false);
       }
     );
@@ -484,7 +288,7 @@ const Invoice = () => {
   const handEditSalesOrder = () => {
     setEditSalesOrder((prev) => (prev === true ? false : true));
   };
-
+  const router = useRouter();
   return (
     <div div className="">
       {loading ? (
@@ -512,6 +316,7 @@ const Invoice = () => {
               </button>
               <button
                 onClick={() => {
+                  setEditSalesOrder(false);
                   handleCreateSalesOrder();
                 }}
                 className=" flex items-center gap-1 bg-green-400 py-2 px-4 rounded-md text-sm font-medium"
@@ -519,27 +324,22 @@ const Invoice = () => {
                 <IoAddSharp />
                 Create
               </button>
-              {!isCreateSalesOrder && !editSalesOrder && (
+              {/* {!isCreateSalesOrder && !editSalesOrder && (
                 <PDFDownloadLink
                   document={<Invoice2 />}
-                  fileName={`pdf-quote.pdf`}
+                  fileName={`SalesOrder-List.pdf`}
                 >
-                  <button
-                    onClick={() => {
-                      handleCreateSalesOrder();
-                    }}
-                    className=" flex items-center gap-1 bg-green-400 py-2 px-4 rounded-md text-sm font-medium"
-                  >
+                  <button className=" flex items-center gap-1 bg-green-400 py-2 px-4 rounded-md text-sm font-medium">
                     Download
                   </button>
                 </PDFDownloadLink>
-              )}
+              )} */}
             </div>
           </div>
           {isCreateSalesOrder || editSalesOrder ? (
             <>
               {editSalesOrder ? (
-                <CreateSalesOrder
+                <EditSalesOrder
                   compType="edit"
                   handleClose={handEditSalesOrder}
                   selectedOrder={selectedOrder}
@@ -547,200 +347,208 @@ const Invoice = () => {
               ) : (
                 <CreateSalesOrder
                   compType={"create"}
-                  clientId={clientId}
                   handleClose={handleCreateSalesOrder}
                 />
               )}
             </>
           ) : (
             <>
-              <table className="table-auto overscroll-x-auto">
-                <thead className="bg-blue-500 text-white">
-                  <tr>
-                    {columns?.map((column, index) => {
-                      return (
-                        <th
-                          key={index}
-                          title={column?.headerName}
-                          className="px-2 border-gray-400 border"
-                        >
-                          {column?.headerName}
-                        </th>
-                      );
-                    })}
-                  </tr>
-                </thead>
-                <tbody className="">
-                  {data?.map((item, index) => (
-                    <tr key={index}>
-                      <td className="bg-white  border border-gray-400 text-center">
-                        <input
-                          disabled
-                          className="w-full px-2 border-none outline-none"
-                          title={item[0]?.id}
-                          value={item[0]?.id}
-                        />
-                      </td>
-                      <td className="bg-white  relative border border-gray-400 text-center">
-                        <p
-                          onClick={() => {
-                            setSelectedOrder(item);
-                            setEditSalesOrder(true);
-                          }}
-                          className=" absolute wf h-full inset-0 "
-                        ></p>
-                        <input
-                          disabled
-                          className="w-full px-2 font-medium underline cursor-pointer hover:text-blue-600 border-none outline-none"
-                          title={item[0]?.number}
-                          value={item[0]?.number}
-                        />
-                      </td>
-                      <td className="bg-white border border-gray-400 text-center">
-                        <input
-                          disabled
-                          className="w-full px-2 border-none outline-none"
-                          title={item[0]?.tag}
-                          value={item[0]?.tag}
-                        />
-                      </td>
-                      <td className="bg-white border border-gray-400 text-center">
-                        <input
-                          disabled
-                          className="w-fit text-center px-2 border-none outline-none"
-                          title={item[0]?.dateAndTime}
-                          value={item[0]?.dateAndTime}
-                        />
-                      </td>
-                      <td className="bg-white border border-gray-400 text-center">
-                        <input
-                          disabled
-                          className="w-full px-2 border-none outline-none"
-                          title={item[0]?.customer}
-                          value={item[0]?.customer}
-                        />
-                      </td>
-                      <td className="bg-white border border-gray-400 text-center">
-                        <input
-                          disabled
-                          className={`w-full px-2 ${
-                            item[0]?.status?.toLowerCase() === "completed"
-                              ? "bg-green-400"
-                              : item[0]?.status?.toLowerCase() === "packed"
-                              ? " bg-yellow-300"
-                              : item[0]?.status?.toLowerCase() === "approved"
-                              ? " bg-blue-400"
-                              : ""
-                          } border-none outline-none`}
-                          title={item[0]?.status}
-                          value={item[0]?.status}
-                        />
-                      </td>
-                      <td className="bg-white border border-gray-400 text-center">
-                        <input
-                          disabled
-                          className={`w-full px-2 ${
-                            item[0]?.quantityStatus?.toLowerCase() ===
-                            "fulfilled"
-                              ? "bg-green-400"
-                              : item[0]?.quantityStatus?.toLowerCase() ===
-                                "no quantity"
-                              ? " bg-red-300"
-                              : item[0]?.quantityStatus?.toLowerCase() ===
-                                "available quantity"
-                              ? " bg-blue-400"
-                              : ""
-                          } border-none outline-none`}
-                          title={item[0]?.quantityStatus}
-                          value={item[0]?.quantityStatus}
-                        />
-                      </td>
-                      <td className="bg-white border border-gray-400 text-center relative">
-                        <p
-                          className={` w-full px-2 ${
-                            item[0]?.shippingStatus?.toLowerCase() === "shipped"
-                              ? " w-full bg-green-400"
-                              : item[0]?.shippingStatus?.toLowerCase() ===
-                                "ready for shipping"
-                              ? " "
-                              : item[0]?.shippingStatus?.toLowerCase() ===
-                                "partly-shipped"
-                              ? " w-[50px] bg-yellow-300"
-                              : ""
-                          }  h-full absolute z-40 inset-0 `}
-                        ></p>
-                        <input
-                          disabled
-                          className="w-full px-2 absolute inset-0 z-50 bg-transparent border-none outline-none"
-                          title={item[0]?.shippingStatus}
-                          value={item[0]?.shippingStatus}
-                        />
-                      </td>
-                      <td className="bg-white border border-gray-400 text-center">
-                        <input
-                          disabled
-                          className={`w-full px-2 ${
-                            item[0]?.paymentStatus?.toLowerCase() === "paid"
-                              ? "bg-green-400"
-                              : item[0]?.paymentStatus?.toLowerCase() ===
-                                "partly-advance"
-                              ? " bg-yellow-200"
-                              : item[0]?.paymentStatus?.toLowerCase() ===
-                                "advance-payment"
-                              ? " bg-blue-400"
-                              : item[0]?.paymentStatus?.toLowerCase() ===
-                                "unpaid"
-                              ? " bg-red-400"
-                              : ""
-                          } border-none outline-none`}
-                          title={item[0]?.paymentStatus}
-                          value={item[0]?.paymentStatus}
-                        />
-                      </td>
-                      <td className="bg-white border border-gray-400 text-center">
-                        <input
-                          disabled
-                          className="w-full px-2 border-none outline-none"
-                          title={item[0]?.amount}
-                          value={item[0]?.amount}
-                        />
-                      </td>
-                      <td className="bg-white border border-gray-400 text-center">
-                        <input
-                          disabled
-                          className="w-full px-2 border-none outline-none"
-                          title={item[0]?.totalAmount}
-                          value={item[0]?.totalAmount}
-                        />
-                      </td>
-                      <td className="bg-white border border-gray-400 text-center">
-                        <input
-                          disabled
-                          className="w-full px-2 border-none outline-none"
-                          title={item[0]?.unpaidAmt}
-                          value={item[0]?.unpaidAmt}
-                        />
-                      </td>
-                      <td className="bg-white border border-gray-400 text-center">
-                        <input
-                          disabled
-                          className="w-full px-2 border-none outline-none"
-                          title={item[0]?.advanceAmt}
-                          value={item[0]?.advanceAmt}
-                        />
-                      </td>
-                      <td className="bg-white border border-gray-400 text-center">
-                        <input
-                          disabled
-                          className="w-full px-2 border-none outline-none"
-                          title={item[0]?.warehouse}
-                          value={item[0]?.warehouse}
-                        />
-                      </td>
+              {data?.length > 0 ? (
+                <table className="table-auto overscroll-x-auto">
+                  <thead className="bg-blue-500 text-white">
+                    <tr>
+                      {columns?.map((column, index) => {
+                        return (
+                          <th
+                            key={index}
+                            title={column?.headerName}
+                            className="px-2 border-gray-400 border"
+                          >
+                            {column?.headerName}
+                          </th>
+                        );
+                      })}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="">
+                    {data?.map((item, index) => (
+                      <tr key={index}>
+                        <td className="bg-white  border border-gray-400 text-center">
+                          <input
+                            disabled
+                            className="w-full px-2 border-none outline-none"
+                            title={index + 1}
+                            value={index + 1}
+                          />
+                        </td>
+                        <td className="bg-white  relative border border-gray-400 text-center">
+                          <p
+                            onClick={() => {
+                              setSelectedOrder(item);
+                              setEditSalesOrder(true);
+                            }}
+                            className=" absolute wf h-full inset-0 "
+                          ></p>
+                          <input
+                            disabled
+                            className="w-full px-2 font-medium underline cursor-pointer hover:text-blue-600 border-none outline-none"
+                            title={item?.details?.number}
+                            value={item?.details?.number}
+                          />
+                        </td>
+                        <td className="bg-white border border-gray-400 text-center">
+                          <input
+                            disabled
+                            className="w-full px-2 border-none outline-none"
+                            title={item?.details?.tag}
+                            value={item?.details?.tag}
+                          />
+                        </td>
+                        <td className="bg-white border border-gray-400 text-center">
+                          <input
+                            disabled
+                            className="w-fit text-center px-2 border-none outline-none"
+                            title={item?.details?.dateAndTime}
+                            value={item?.details?.dateAndTime}
+                          />
+                        </td>
+                        <td className="bg-white border border-gray-400 text-center">
+                          <input
+                            disabled
+                            className="w-full px-2 border-none outline-none"
+                            title={item?.details?.customer}
+                            value={item?.details?.customer}
+                          />
+                        </td>
+                        <td className="bg-white border border-gray-400 text-center">
+                          <input
+                            disabled
+                            className={`w-full px-2 ${
+                              item?.details?.status?.toLowerCase() ===
+                              "completed"
+                                ? "bg-green-400"
+                                : item?.details?.status?.toLowerCase() ===
+                                  "packed"
+                                ? " bg-yellow-300"
+                                : item?.details?.status?.toLowerCase() ===
+                                  "approved"
+                                ? " bg-blue-400"
+                                : ""
+                            } border-none outline-none`}
+                            title={item?.details?.status}
+                            value={item?.details?.status}
+                          />
+                        </td>
+                        <td className="bg-white border border-gray-400 text-center">
+                          <input
+                            disabled
+                            className={`w-full px-2 ${
+                              item?.details?.quantityStatus?.toLowerCase() ===
+                              "fulfilled"
+                                ? "bg-green-400"
+                                : item?.details?.quantityStatus?.toLowerCase() ===
+                                  "no quantity"
+                                ? " bg-red-300"
+                                : item?.details?.quantityStatus?.toLowerCase() ===
+                                  "available quantity"
+                                ? " bg-blue-400"
+                                : ""
+                            } border-none outline-none`}
+                            title={item?.details?.quantityStatus}
+                            value={item?.details?.quantityStatus}
+                          />
+                        </td>
+                        <td className="bg-white border border-gray-400 text-center relative">
+                          <p
+                            className={` w-full px-2 ${
+                              item?.details?.shippingStatus?.toLowerCase() ===
+                              "shipped"
+                                ? " w-full bg-green-400"
+                                : item?.details?.shippingStatus?.toLowerCase() ===
+                                  "ready for shipping"
+                                ? " "
+                                : item?.details?.shippingStatus?.toLowerCase() ===
+                                  "partly-shipped"
+                                ? " w-[50px] bg-yellow-300"
+                                : ""
+                            }  h-full absolute z-40 inset-0 `}
+                          ></p>
+                          <input
+                            disabled
+                            className="w-full px-2 absolute inset-0 z-50 bg-transparent border-none outline-none"
+                            title={item?.details?.shippingStatus}
+                            value={item?.details?.shippingStatus}
+                          />
+                        </td>
+                        <td className="bg-white border border-gray-400 text-center">
+                          <input
+                            disabled
+                            className={`w-full px-2 ${
+                              item?.details?.paymentStatus?.toLowerCase() ===
+                              "paid"
+                                ? "bg-green-400"
+                                : item?.details?.paymentStatus?.toLowerCase() ===
+                                  "partly-advance"
+                                ? " bg-yellow-200"
+                                : item?.details?.paymentStatus?.toLowerCase() ===
+                                  "advance-payment"
+                                ? " bg-blue-400"
+                                : item?.details?.paymentStatus?.toLowerCase() ===
+                                  "unpaid"
+                                ? " bg-red-400"
+                                : ""
+                            } border-none outline-none`}
+                            title={item?.details?.paymentStatus}
+                            value={item?.details?.paymentStatus}
+                          />
+                        </td>
+                        <td className="bg-white border border-gray-400 text-center">
+                          <input
+                            disabled
+                            className="w-full px-2 border-none outline-none"
+                            title={item?.details?.amount}
+                            value={item?.details?.amount}
+                          />
+                        </td>
+                        <td className="bg-white border border-gray-400 text-center">
+                          <input
+                            disabled
+                            className="w-full px-2 border-none outline-none"
+                            title={item?.details?.totalAmount}
+                            value={item?.details?.totalAmount}
+                          />
+                        </td>
+                        <td className="bg-white border border-gray-400 text-center">
+                          <input
+                            disabled
+                            className="w-full px-2 border-none outline-none"
+                            title={item?.details?.unpaidAmt}
+                            value={item?.details?.unpaidAmt}
+                          />
+                        </td>
+                        <td className="bg-white border border-gray-400 text-center">
+                          <input
+                            disabled
+                            className="w-full px-2 border-none outline-none"
+                            title={item?.details?.advanceAmt}
+                            value={item?.details?.advanceAmt}
+                          />
+                        </td>
+                        <td className="bg-white border border-gray-400 text-center">
+                          <input
+                            disabled
+                            className="w-full px-2 border-none outline-none"
+                            title={item?.details?.warehouse}
+                            value={item?.details?.warehouse}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <p className=" w-full text-center">No Sales Orders are Done</p>
+              )}
             </>
           )}
         </div>
@@ -748,4 +556,4 @@ const Invoice = () => {
     </div>
   );
 };
-export default Invoice;
+export default SalesOrder;

@@ -76,7 +76,7 @@
   @apply px-2 border-gray-400 border;
 }
 .custom-table-data {
-  @apply bg-white;
+  @apply bg-white border border-gray-400;
 }
 .custom-table-input {
   @apply w-max md:w-full p-2 border-none outline-none disabled:bg-white bg-white;

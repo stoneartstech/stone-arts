@@ -5,7 +5,7 @@ import router from "next/router";
 
 function Erpag() {
   const options = [
-    { title: "Invoice", link: "/erpag/Invoice" },
+    // { title: "Invoice", link: "/erpag/Invoice" },
     { title: "Sales Order", link: "/erpag/SalesOrder" },
     { title: "Inventory", link: "/erpag/Inventory" },
     { title: "View Inventory", link: "/erpag/ViewInventory" },

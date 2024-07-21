@@ -207,33 +207,35 @@ export default function CheckImages() {
           </div>
         ) : (
           <div className=" flex  gap-2 md:gap-0 flex-col mt-3 ">
-            <div className=" flex flex-col ml-4">
-              <label className=" font-medium  mb-1">
-                Upload New {isSiteImages ? "Site" : "Progress"} Images
-              </label>
-              <div className=" flex items-center ">
-                <input
-                  required
-                  id="file"
-                  name="file"
-                  multiple
-                  type="file"
-                  onChange={(e) => {
-                    setUploadImage(e.target.files);
-                  }}
-                />
-                <button
-                  disabled={uploading || uploadImage?.length === 0}
-                  type="button"
-                  className=" disabled:bg-gray-400 mt-2 font-semibold text-sm bg-green-500 p-2.5 rounded-lg w-fit"
-                  onClick={() => {
-                    handleUploadReportImages();
-                  }}
-                >
-                  {uploading ? "Uploading" : "Upload"}
-                </button>
+            {type?.toLowerCase() !== "view" && (
+              <div className=" flex flex-col ml-4">
+                <label className=" font-medium  mb-1">
+                  Upload New {isSiteImages ? "Site" : "Progress"} Images
+                </label>
+                <div className=" flex items-center ">
+                  <input
+                    required
+                    id="file"
+                    name="file"
+                    multiple
+                    type="file"
+                    onChange={(e) => {
+                      setUploadImage(e.target.files);
+                    }}
+                  />
+                  <button
+                    disabled={uploading || uploadImage?.length === 0}
+                    type="button"
+                    className=" disabled:bg-gray-400 mt-2 font-semibold text-sm bg-green-500 p-2.5 rounded-lg w-fit"
+                    onClick={() => {
+                      handleUploadReportImages();
+                    }}
+                  >
+                    {uploading ? "Uploading" : "Upload"}
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
             <div className=" grid grid-cols-1 md:grid-cols-4 gap-3 mt-6">
               {isSiteImages ? (
                 <>

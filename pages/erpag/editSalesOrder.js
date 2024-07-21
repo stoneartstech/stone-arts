@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { enqueueSnackbar, SnackbarProvider } from "notistack";
 import React, { useEffect, useState } from "react";
 
-const CreateSalesOrder = ({ compType, handEditSalesOrder, selectedOrder }) => {
+const EditSalesOrder = ({ compType, handEditSalesOrder, selectedOrder }) => {
   const today = new Date();
   const date =
     today.getDate() +
@@ -30,7 +30,7 @@ const CreateSalesOrder = ({ compType, handEditSalesOrder, selectedOrder }) => {
   const [data, setData] = useState({
     number: "",
     tag: "",
-    dateAndTime: date,
+    dateAndTime: "",
     warehouse: "",
     deadline: "",
     price: "",
@@ -45,11 +45,6 @@ const CreateSalesOrder = ({ compType, handEditSalesOrder, selectedOrder }) => {
     billingAddress: "",
   });
 
-  useEffect(() => {
-    if (compType?.toLowerCase() === "edit") {
-      setData(selectedOrder);
-    }
-  }, []);
   const {
     number,
     tag,
@@ -243,6 +238,11 @@ const CreateSalesOrder = ({ compType, handEditSalesOrder, selectedOrder }) => {
       amount2: "",
     },
   ]);
+  useEffect(() => {
+    setReport(selectedOrder?.data);
+    setData(selectedOrder?.details);
+  }, []);
+
   const fetchData = async (warehouseList) => {
     setLoading(true);
     const allShowroomData = [];
@@ -310,10 +310,7 @@ const CreateSalesOrder = ({ compType, handEditSalesOrder, selectedOrder }) => {
   const updateData = async (productName, prodQuantity) => {
     const docRef = doc(db, `erpag/inventory/${warehouse}`, productName);
     const docSnap = (await getDoc(docRef)).data();
-    console.log(productName);
-    console.log(prodQuantity);
-    console.log(warehouse);
-    console.log(docSnap);
+    // console.log(docSnap);
     if (
       Number(docSnap?.quantity) > 0 &&
       Number(docSnap?.quantity) < Number(prodQuantity)
@@ -364,12 +361,16 @@ const CreateSalesOrder = ({ compType, handEditSalesOrder, selectedOrder }) => {
             });
             if (isOkay) {
               setDoc(
-                doc(db, "erpag/reports/salesOrder", `Order-${date}-${time}`),
+                doc(
+                  db,
+                  "erpag/reports/salesOrder",
+                  `Order-${selectedOrder?.date}-${selectedOrder?.time}`
+                ),
                 {
                   details: data,
                   data: report,
-                  date,
-                  time,
+                  date: selectedOrder?.date,
+                  time: selectedOrder?.time,
                 }
               );
               // console.log(getDoc(db,`erpag/Inventory/mainWarehouse/${report[0].name}`))
@@ -513,8 +514,8 @@ const CreateSalesOrder = ({ compType, handEditSalesOrder, selectedOrder }) => {
                           ?.data?.find(
                             (item2) => item2?.name === String(e.target.value)
                           );
-                        list[index].UOM = selItem.UOM;
-                        list[index].sku = selItem.sku;
+                        list[index].UOM = selItem?.UOM;
+                        list[index].sku = selItem?.sku;
                         // console.log(selItem);
                         setReport(list);
                       }}
@@ -718,4 +719,4 @@ const CreateSalesOrder = ({ compType, handEditSalesOrder, selectedOrder }) => {
   );
 };
 
-export default CreateSalesOrder;
+export default EditSalesOrder;

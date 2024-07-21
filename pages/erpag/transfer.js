@@ -11,6 +11,7 @@ import {
 } from "firebase/firestore";
 import { IoChevronDown } from "react-icons/io5";
 import Image from "next/image";
+import { enqueueSnackbar, SnackbarProvider } from "notistack";
 
 export default function ViewInventory() {
   const [loading, setLoading] = useState(true);
@@ -21,38 +22,26 @@ export default function ViewInventory() {
   const [warehouseArr2, setWarehouseArr2] = useState([]);
   const [warehouse, setWarehouse] = useState("");
   const [combinedArr, setCombinedArr] = useState([]);
-  const [combinedArr2, setCombinedArr2] = useState([]);
-  const [reports, setReports] = useState([]);
 
   const fetchData = async (warehouseList) => {
     setLoading(true);
     const allShowroomData = [];
     for (const showroom of warehouseList) {
       const querySnapshot = await getDocs(
-        collection(db, `erpag/Inventory`, showroom)
+        collection(db, `erpag/inventory`, showroom?.name)
       );
       const requests = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
+
       allShowroomData.push({
-        warehouseName: showroom,
-        warehouseTitle: warehouseArr.find(
-          (i) => String(i?.value) === String(showroom)
-        )?.name,
+        warehouseName: showroom?.name,
         data: requests,
       });
     }
-    console.log([...allShowroomData]);
-    setCombinedArr([...allShowroomData]);
-    setCombinedArr2(
-      allShowroomData.flatMap((entry) =>
-        entry.data.map((client) => ({
-          ...client,
-          showroomName: entry.showroomName,
-        }))
-      )
-    );
+    console.log(allShowroomData);
+    setCombinedArr(allShowroomData);
     setLoading(false);
   };
 
@@ -60,10 +49,14 @@ export default function ViewInventory() {
     try {
       const warehouses = await getDoc(doc(db, `erpag`, "AllWarehouses"));
       if (warehouses.data()?.data) {
-        setWarehouseArr(warehouses.data()?.data);
-        const valuesArray = warehouses.data()?.data?.map((obj) => obj.value);
-        setWarehouseArr2(valuesArray.sort());
-        fetchData(valuesArray.sort());
+        const resArr = warehouses
+          .data()
+          ?.data?.sort((a, b) =>
+            a?.name?.toLowerCase() > b?.name?.toLowerCase() ? 1 : -1
+          );
+        setWarehouseArr(resArr);
+        console.log(resArr);
+        fetchData(resArr);
       }
     } catch (err) {
       console.error(err);
@@ -76,6 +69,12 @@ export default function ViewInventory() {
 
   return (
     <div className="w-full overflow-x-auto">
+      <SnackbarProvider
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+      />
       {loading ? (
         <div className=" w-full flex items-center justify-center">
           <Image width={50} height={50} src="/loading.svg" alt="Loading ..." />
@@ -104,14 +103,29 @@ export default function ViewInventory() {
                       prev === item?.warehouseName ? "" : item?.warehouseName
                     );
                   }}
-                  className="w-full bg-gray-300 py-2 text-center mt-3 mb-1 flex items-baseline gap-2 justify-center text-lg font-semibold cursor-pointer capitalize"
+                  className="w-full bg-gray-300 py-2 text-center mt-3 mb-1 flex items-baseline gap-2 justify-center font-semibold cursor-pointer "
                 >
+                  {item?.warehouseName} (
                   {
-                    warehouseArr?.find(
-                      (i) => String(i?.value) === String(item?.warehouseName)
-                    )?.name
-                  }{" "}
-                  <IoChevronDown className="text-sm" />
+                    item?.data?.filter((i) => {
+                      if (search === "") {
+                        return i;
+                      } else {
+                        return (
+                          i?.name
+                            ?.toLowerCase()
+                            .includes(search?.toLowerCase()) ||
+                          i?.sku?.toLowerCase().includes(search?.toLowerCase())
+                        );
+                      }
+                    }).length
+                  }
+                  )
+                  <IoChevronDown
+                    className={` ${
+                      activeWarehouse === item?.warehouseName ? "rotate-90" : ""
+                    }text-sm`}
+                  />
                 </h4>
                 {activeWarehouse === item?.warehouseName && (
                   <>
@@ -131,17 +145,14 @@ export default function ViewInventory() {
                           }}
                           className="py-2 px-3 border border-black rounded-md capitalize"
                         >
-                          <option
-                            value={"mainwarehouse"}
-                            className="capitalize"
-                          >
+                          <option value={"mainwarehouse"} className="">
                             Select Warehouse
                           </option>
                           {warehouseArr?.map((item, index) => {
                             return (
                               <option
                                 key={index}
-                                value={item?.value}
+                                value={item?.name}
                                 className="capitalize"
                               >
                                 {item?.name}
@@ -161,33 +172,55 @@ export default function ViewInventory() {
                                 await setDoc(
                                   doc(
                                     db,
-                                    `erpag/Inventory/${warehouse}`,
-                                    `${object?.name
-                                      ?.toLowerCase()
-                                      ?.replace(/\s+/g, "-")}`
+                                    `erpag/inventory/${warehouse}`,
+                                    object?.name
                                   ),
                                   object
                                 );
                                 await deleteDoc(
                                   doc(
                                     db,
-                                    `erpag/Inventory/${activeWarehouse}`,
-                                    `${object?.name
-                                      ?.toLowerCase()
-                                      ?.replace(/\s+/g, "-")}`
+                                    `erpag/inventory/${activeWarehouse}`,
+                                    object?.name
                                   )
                                 );
                               }
-                              fetchData(warehouseArr2);
-                              alert("Transfered Successfully");
+                              fetchData(warehouseArr);
+                              enqueueSnackbar("Transfered Successfully", {
+                                variant: "success",
+                              });
                             } catch (error) {
-                              alert("Transfer Failed");
+                              enqueueSnackbar("Some error occured", {
+                                variant: "error",
+                              });
+                              console.error(error);
                             }
                           } else {
-                            alert("Choose Two Different Inventories");
+                            enqueueSnackbar(
+                              "Choose Two Different Inventories",
+                              {
+                                variant: "warning",
+                              }
+                            );
                           }
                         }}
-                        disabled={warehouse === ""}
+                        disabled={
+                          warehouse === "" ||
+                          item?.data?.filter((i) => {
+                            if (search === "") {
+                              return i;
+                            } else {
+                              return (
+                                i?.name
+                                  ?.toLowerCase()
+                                  .includes(search?.toLowerCase()) ||
+                                i?.sku
+                                  ?.toLowerCase()
+                                  .includes(search?.toLowerCase())
+                              );
+                            }
+                          }).length <= 0
+                        }
                         className="bg-green-400 disabled:bg-gray-300 py-2.5 px-4 text-sm rounded-md font-semibold"
                       >
                         Transfer
@@ -259,6 +292,7 @@ export default function ViewInventory() {
                                     <input
                                       type="text"
                                       value={item.name}
+                                      onChange={() => {}}
                                       className="w-full px-2 border-none outline-none"
                                       readOnly
                                     />
@@ -267,6 +301,7 @@ export default function ViewInventory() {
                                     <input
                                       type="text"
                                       value={item.sku}
+                                      onChange={() => {}}
                                       className="w-full px-2 border-none outline-none"
                                       readOnly
                                     />
@@ -274,6 +309,7 @@ export default function ViewInventory() {
                                   <td className="bg-white border border-gray-400">
                                     <input
                                       type="text"
+                                      onChange={() => {}}
                                       value={item.quantity}
                                       className="w-full px-2 border-none outline-none"
                                       readOnly
@@ -284,6 +320,7 @@ export default function ViewInventory() {
                                     <input
                                       type="text"
                                       value={item.UOM}
+                                      onChange={() => {}}
                                       className="w-full px-2 border-none outline-none"
                                     />
                                   </td>
@@ -291,6 +328,7 @@ export default function ViewInventory() {
                                     <input
                                       type="number"
                                       value={item.stockPrice}
+                                      onChange={() => {}}
                                       className="w-full px-2 border-none outline-none"
                                     />
                                   </td>
@@ -298,6 +336,7 @@ export default function ViewInventory() {
                                     <input
                                       type="text"
                                       value={item.addInfo}
+                                      onChange={() => {}}
                                       className="w-full px-2 border-none outline-none"
                                     />
                                   </td>
