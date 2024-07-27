@@ -12,6 +12,7 @@ import QSDashboard from '@/components/QSDashboard'
 import WorkshopDashboard from '@/components/WorkshopDashboard'
 import PMTHead from '@/components/PMTHead'
 import LogiHead from '@/components/LogiHead'
+import DriverDashboard from '@/components/DriverDashboard'
 
 export default function Home() {
   const { currentUser } = useAuth()
@@ -31,6 +32,12 @@ export default function Home() {
     'qs1@stonearts.com': '1',
     'qs2@stonearts.com': '2',
     'qs3@stonearts.com': '3',
+  }
+
+  const driverMails = {
+    'driver1@stonearts.com': '1',
+    'driver2@stonearts.com': '2',
+    'driver3@stonearts.com': '3',
   }
 
   return (
@@ -65,6 +72,9 @@ export default function Home() {
 
       {/* Logistics */}
       {currentUser && currentUser.email === 'logisticshead@stonearts.com' && <LogiHead />}
+
+      {/* Driver */}
+      {currentUser && driverMails[currentUser.email] && <DriverDashboard driverId={driverMails[currentUser.email]} />}
 
     </>
   )
