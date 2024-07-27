@@ -58,29 +58,23 @@ export default function LogiHead() {
         </p>
       </div>
       <div className=" flex flex-col gap-2 items-center mt-4">
-        <Link
-          href="/Logistics/Vehicles"
-          className=" bg-gray-300 hover:bg-gray-400 rounded-md py-3 px-4 font-semibold w-full text-center max-w-[300px]"
-        >
+        <Link href="/Logistics/Vehicles" className=" main-btn">
           <p>Vehicles</p>
         </Link>
-        <Link
-          href="/Logistics/Drivers"
-          className=" bg-gray-300 hover:bg-gray-400 rounded-md py-3 px-4 font-semibold w-full text-center max-w-[300px]"
-        >
+        <Link href="/Logistics/Drivers" className=" main-btn">
           <p>Drivers</p>
         </Link>
-        <Link
-          href="/Logistics/LogiDashboard"
-          className=" bg-gray-300 hover:bg-gray-400 rounded-md py-3 px-4 font-semibold w-full text-center max-w-[300px]"
-        >
+        <Link href="/Logistics/LogiDashboard" className=" main-btn">
           <p>Past Orders</p>
         </Link>
         <Link
           href="/Logistics/PendingOrders"
-          className=" bg-gray-400 hover:bg-green-500 rounded-md py-3 px-4 font-semibold w-full text-center max-w-[300px] mt-5"
+          className="  main-btn mt-3 hover:bg-green-500"
         >
           <p>Assign Order</p>
+        </Link>
+        <Link href="/Logistics/Reports" className="  main-btn">
+          <p>Reports</p>
         </Link>
       </div>
     </div>
