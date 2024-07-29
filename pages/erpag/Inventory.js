@@ -5,10 +5,13 @@ import {
   disableNetwork,
   doc,
   getDoc,
+  getDocs,
   onSnapshot,
   setDoc,
 } from "firebase/firestore";
+import Image from "next/image";
 import { useRouter } from "next/router";
+import { enqueueSnackbar, SnackbarProvider } from "notistack";
 import React, { useEffect, useState } from "react";
 
 const Inventory = ({ compType, handEditSalesOrder, selectedOrder }) => {
@@ -33,11 +36,14 @@ const Inventory = ({ compType, handEditSalesOrder, selectedOrder }) => {
 
   const time = hours + "-" + minutes + "-" + seconds;
   const [isDialog, setIsDialog] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [creating, setCreating] = useState(false);
   const [resolveDialog, setResolveDialog] = useState(null);
   const [dialogData, setDialogData] = useState("");
   const [newWarehouse, setNewWarehouse] = useState("");
   const [warehouseArr, setWarehouseArr] = useState([]);
   const [warehouse, setWarehouse] = useState("");
+  const [combinedArr, setCombinedArr] = useState([]);
   const [newQty, setNewQty] = useState([]);
   const [exData, setExData] = useState([]);
   const [data, setData] = useState({
@@ -56,12 +62,38 @@ const Inventory = ({ compType, handEditSalesOrder, selectedOrder }) => {
     totalAmount: "",
     billingAddress: "",
   });
+
+  const fetchData = async (warehouseList) => {
+    const allShowroomData = [];
+    for (const showroom of warehouseList) {
+      const querySnapshot = await getDocs(
+        collection(db, `erpag/inventory`, showroom?.name)
+      );
+      const requests = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      allShowroomData.push({
+        warehouseName: showroom?.name,
+        data: requests,
+      });
+    }
+    console.log(allShowroomData);
+    setCombinedArr(allShowroomData);
+  };
+
   const fetchWarehouse = async () => {
     try {
       const warehouses = await getDoc(doc(db, `erpag`, "AllWarehouses"));
-      console.log(warehouses.data()?.data);
       if (warehouses.data()?.data) {
-        setWarehouseArr(warehouses.data()?.data);
+        const resArr = warehouses
+          .data()
+          ?.data?.sort((a, b) =>
+            a?.name?.toLowerCase() > b?.name?.toLowerCase() ? 1 : -1
+          );
+        console.log(resArr);
+        setWarehouseArr(resArr);
+        fetchData(resArr);
       }
     } catch (err) {
       console.error(err);
@@ -69,20 +101,6 @@ const Inventory = ({ compType, handEditSalesOrder, selectedOrder }) => {
   };
 
   useEffect(() => {
-    if (compType?.toLowerCase() === "edit") {
-      setData(selectedOrder);
-    }
-    const fetch = onSnapshot(
-      collection(db, "erpag/Inventory/mainWarehouse"),
-      (snapshot) => {
-        var reports = snapshot.docs.map((doc) => ({
-          ...doc.data(),
-        }));
-        setExData(reports);
-        console.log(reports);
-      }
-    );
-
     fetchWarehouse();
   }, []);
   const [report, setReport] = useState([
@@ -118,6 +136,12 @@ const Inventory = ({ compType, handEditSalesOrder, selectedOrder }) => {
 
   return (
     <div className=" w-full h-full pb-10 bg-gray-200 overflow-x-auto ">
+      <SnackbarProvider
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+      />
       <div className=" flex items-center justify-start">
         {" "}
         <button
@@ -145,14 +169,14 @@ const Inventory = ({ compType, handEditSalesOrder, selectedOrder }) => {
             onChange={(e) => {
               setWarehouse(e.target.value);
             }}
-            className=" py-2 px-3  border border-black rounded-md capitalize"
+            className=" py-2 px-5  border border-black rounded-md "
           >
-            <option value={"mainwarehouse"} className=" capitalize">
+            <option value={""} className=" capitalize">
               Select Warehouse
             </option>
             {warehouseArr?.map((item, index) => {
               return (
-                <option key={index} value={item?.value} className=" capitalize">
+                <option key={index} value={item?.name} className=" ">
                   {item?.name}
                 </option>
               );
@@ -170,43 +194,69 @@ const Inventory = ({ compType, handEditSalesOrder, selectedOrder }) => {
               onChange={(e) => {
                 setNewWarehouse(e.target.value);
               }}
+              autoComplete="off"
               name="warehouse"
-              className=" py-2 px-3  border border-black rounded-md"
+              className=" py-2 px-3  border border-black rounded-md "
             />
           </div>
-          <button
-            onClick={async () => {
-              if (
-                warehouseArr?.find((e) => {
-                  return (
-                    e?.value === newWarehouse.toLowerCase().replace(/\s+/g, "")
-                  );
-                })
-              ) {
-                alert(" Warehouse Already Exist !!");
-                return;
-              } else {
-                const newArr = warehouseArr ? warehouseArr : [];
-                newArr.push({
-                  value: newWarehouse.toLowerCase().replace(/\s+/g, ""),
-                  name: newWarehouse,
-                });
-                await setDoc(
-                  doc(db, `erpag/AllWarehouses`),
-                  {
-                    data: newArr,
-                  },
-                  { merge: true }
-                );
-                alert("New Warehouse Added");
-                setNewWarehouse("");
-                fetchWarehouse();
-              }
-            }}
-            className=" bg-blue-500 py-2 px-4 rounded-md text-white font-semibold"
-          >
-            Add
-          </button>
+          {uploading ? (
+            <Image
+              width={50}
+              height={50}
+              src="/loading.svg"
+              alt="Loading ..."
+            />
+          ) : (
+            <button
+              onClick={async () => {
+                try {
+                  setUploading(true);
+                  if (
+                    warehouseArr?.find((e) => {
+                      return (
+                        e?.value ===
+                        newWarehouse.toLowerCase().replace(/\s+/g, "")
+                      );
+                    })
+                  ) {
+                    enqueueSnackbar("Warehouse Already Exist !!", {
+                      variant: "warning",
+                    });
+                    setUploading(false);
+                    return;
+                  } else {
+                    const newArr = warehouseArr ? warehouseArr : [];
+                    newArr.push({
+                      name: newWarehouse,
+                    });
+                    await setDoc(
+                      doc(db, `erpag/AllWarehouses`),
+                      {
+                        data: newArr,
+                      },
+                      { merge: true }
+                    );
+                    enqueueSnackbar("New Warehouse Added", {
+                      variant: "success",
+                    });
+                    setNewWarehouse("");
+                    fetchWarehouse();
+                    setUploading(false);
+                  }
+                } catch (error) {
+                  enqueueSnackbar("Some error occured", {
+                    variant: "error",
+                  });
+                  console.error(error);
+                  setUploading(false);
+                }
+              }}
+              disabled={newWarehouse === ""}
+              className=" disabled:bg-gray-400 disabled:text-gray-600 bg-blue-500 py-2 px-4 rounded-md text-white font-semibold"
+            >
+              Add
+            </button>
+          )}
         </div>
       </div>
       {isDialog && (
@@ -215,7 +265,7 @@ const Inventory = ({ compType, handEditSalesOrder, selectedOrder }) => {
             <div className="flex flex-col md:text-[17px]">
               <p>
                 <b className="capitalize">{dialogData[0]?.name}</b> is already
-                present in Inventory.
+                present in {warehouse}.
               </p>
               <p className="mb-6 text-center mt-1">
                 Quantity : {dialogData[0]?.quantity} {dialogData[0]?.UOM}
@@ -227,12 +277,10 @@ const Inventory = ({ compType, handEditSalesOrder, selectedOrder }) => {
                   setDoc(
                     doc(
                       db,
-                      `erpag/Inventory/${
+                      `erpag/inventory/${
                         warehouse ? warehouse : "mainwarehouse"
                       }`,
-                      `${dialogData[0]?.name
-                        ?.toLowerCase()
-                        ?.replace(/\s+/g, "-")}`
+                      `${dialogData[0]?.name}`
                     ),
                     {
                       ...newQty[0],
@@ -251,12 +299,10 @@ const Inventory = ({ compType, handEditSalesOrder, selectedOrder }) => {
                   setDoc(
                     doc(
                       db,
-                      `erpag/Inventory/${
+                      `erpag/inventory/${
                         warehouse ? warehouse : "mainwarehouse"
                       }`,
-                      `${dialogData[0]?.name
-                        ?.toLowerCase()
-                        ?.replace(/\s+/g, "-")}`
+                      `${dialogData[0]?.name}`
                     ),
                     {
                       ...newQty[0],
@@ -277,168 +323,196 @@ const Inventory = ({ compType, handEditSalesOrder, selectedOrder }) => {
           </div>
         </div>
       )}
+      {creating ? (
+        <Image width={50} height={50} src="/loading.svg" alt="Loading ..." />
+      ) : (
+        <form
+          onSubmit={async (e) => {
+            // setCreating(true);
+            e.preventDefault();
+            try {
+              console.log(combinedArr);
+              for (const object of report) {
+                const existingItem = combinedArr
+                  ?.find((i) => i?.warehouseName === warehouse)
+                  ?.data?.find((i) => i?.name === object?.name);
+                console.log(existingItem);
+                if (existingItem) {
+                  setDialogData([existingItem]);
+                  setNewQty([object]);
+                  setIsDialog(true);
 
-      <form
-        onSubmit={async (e) => {
-          e.preventDefault();
-          try {
-            for (const object of report) {
-              const existingItem = exData.find((i) => i?.name === object?.name);
-              if (existingItem) {
-                setDialogData([existingItem]);
-                setNewQty([object]);
-                setIsDialog(true);
-
-                await new Promise((resolve) => {
-                  setResolveDialog(() => resolve);
-                });
-              } else {
-                await setDoc(
-                  doc(
-                    db,
-                    `erpag/Inventory/${
-                      warehouse ? warehouse : "mainwarehouse"
-                    }`,
-                    `${object?.name?.toLowerCase()?.replace(/\s+/g, "-")}`
-                  ),
-                  object
-                );
+                  await new Promise((resolve) => {
+                    setResolveDialog(() => resolve);
+                  });
+                } else {
+                  await setDoc(
+                    doc(
+                      db,
+                      `erpag/inventory/${
+                        warehouse ? warehouse : "Main Warehouse"
+                      }`,
+                      object?.name
+                    ),
+                    object
+                  );
+                }
               }
+              enqueueSnackbar("Inventory Updated Successfully", {
+                variant: "success",
+              });
+              // setReport([
+              //   {
+              //     SNo: 1,
+              //     name: "",
+              //     sku: "",
+              //     quantity: "",
+              //     UOM: "",
+              //     stockPrice: "",
+              //     addInfo: "",
+              //   },
+              // ]);
+              setCreating(false);
+            } catch (error) {
+              enqueueSnackbar("Some error occured", {
+                variant: "error",
+              });
+              console.error(error);
+              setUploading(false);
+              setCreating(false);
             }
-            alert("Inventory Updated Successfully");
-            router.push("/erpag/Erpag");
-          } catch (error) {
-            alert("Error Updating Inventory");
-          }
-        }}
-        className=" flex flex-col pb-10 bg-gray-200"
-      >
-        <h3 className=" font-semibold text-[18px] text-gray-800 my-2 ">
-          Items
-        </h3>
-        <table className="table-auto overflow-x-auto">
-          <thead className="bg-blue-500 text-white">
-            <tr>
-              <th className="px-2 border-gray-400 border">Sl.</th>
-              <th className="px-2 border-gray-400 border">Name</th>
-              <th className="px-2 border-gray-400 border">SKU</th>
-              <th className="px-2 border-gray-400 border">Quantity</th>
-              <th className="px-2 border-gray-400 border">UOM</th>
-              <th className="px-2 border-gray-400 border">Stock Price</th>
-              <th className="px-2 border-gray-400 border">Additional Info</th>
-            </tr>
-          </thead>
-          <tbody className="">
-            {report.map((item, index) => (
-              <tr key={index}>
-                <td className="bg-white border border-gray-400 text-center p-1">
-                  {index + 1}
-                </td>
-                <td className="bg-white border border-gray-400">
-                  <input
-                    type="text"
-                    value={item.name}
-                    required
-                    onChange={(e) => {
-                      const list = [...report];
-                      list[index].name = e.target.value;
-                      setReport(list);
-                    }}
-                    className="w-full px-2 border-none outline-none"
-                  />
-                </td>
-                <td className="bg-white border border-gray-400">
-                  <input
-                    type="text"
-                    value={item.sku}
-                    required
-                    onChange={(e) => {
-                      const list = [...report];
-                      list[index].sku = e.target.value;
-                      setReport(list);
-                    }}
-                    className="w-full px-2 border-none outline-none"
-                  />
-                </td>
-                <td className="bg-white border border-gray-400">
-                  <input
-                    type="number"
-                    value={item.quantity}
-                    required
-                    onChange={(e) => {
-                      const list = [...report];
-                      list[index].quantity = e.target.value;
-                      setReport(list);
-                    }}
-                    className="w-full px-2 border-none outline-none"
-                  />
-                </td>
-                <td className="bg-white border border-gray-400">
-                  <input
-                    type="text"
-                    value={item.UOM}
-                    required
-                    onChange={(e) => {
-                      const list = [...report];
-                      list[index].UOM = e.target.value;
-                      setReport(list);
-                    }}
-                    className="w-full px-2 border-none outline-none"
-                  />
-                </td>
-                <td className="bg-white border border-gray-400">
-                  <input
-                    type="number"
-                    value={item.stockPrice}
-                    required
-                    onChange={(e) => {
-                      const list = [...report];
-                      list[index].stockPrice = e.target.value;
-                      setReport(list);
-                    }}
-                    className="w-full px-2 border-none outline-none"
-                  />
-                </td>
-                <td className="bg-white border border-gray-400">
-                  <input
-                    type="text"
-                    value={item.addInfo}
-                    onChange={(e) => {
-                      const list = [...report];
-                      list[index].addInfo = e.target.value;
-                      setReport(list);
-                    }}
-                    className="w-full px-2 border-none outline-none"
-                  />
-                </td>
+          }}
+          className=" flex flex-col pb-10 bg-gray-200"
+        >
+          <h3 className=" font-semibold text-[18px] text-gray-800 mt-2 ">
+            Items
+          </h3>
+          <table className=" custom-table">
+            <thead className=" custom-table-head">
+              <tr>
+                <th className="custom-table-row">Sl.</th>
+                <th className="custom-table-row">Name</th>
+                <th className="custom-table-row">SKU</th>
+                <th className="custom-table-row">Quantity</th>
+                <th className="custom-table-row">UOM</th>
+                <th className="custom-table-row">Stock Price</th>
+                <th className="custom-table-row">Additional Info</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-        <div className=" flex items-center justify-between">
-          <div className=" flex items-center">
+            </thead>
+            <tbody className="">
+              {report.map((item, index) => (
+                <tr key={index}>
+                  <td className="custom-table-data text-center p-1">
+                    {index + 1}
+                  </td>
+                  <td className="custom-table-data">
+                    <input
+                      type="text"
+                      value={item.name}
+                      required
+                      onChange={(e) => {
+                        const list = [...report];
+                        list[index].name = e.target.value;
+                        setReport(list);
+                      }}
+                      className="w-full px-2 border-none outline-none"
+                    />
+                  </td>
+                  <td className="custom-table-data">
+                    <input
+                      type="text"
+                      value={item.sku}
+                      required
+                      onChange={(e) => {
+                        const list = [...report];
+                        list[index].sku = e.target.value;
+                        setReport(list);
+                      }}
+                      className="w-full px-2 border-none outline-none"
+                    />
+                  </td>
+                  <td className="custom-table-data">
+                    <input
+                      type="number"
+                      value={item.quantity}
+                      required
+                      onChange={(e) => {
+                        const list = [...report];
+                        list[index].quantity = e.target.value;
+                        setReport(list);
+                      }}
+                      className="w-full px-2 border-none outline-none"
+                    />
+                  </td>
+                  <td className="custom-table-data">
+                    <input
+                      type="text"
+                      value={item.UOM}
+                      required
+                      onChange={(e) => {
+                        const list = [...report];
+                        list[index].UOM = e.target.value;
+                        setReport(list);
+                      }}
+                      className="w-full px-2 border-none outline-none"
+                    />
+                  </td>
+                  <td className="custom-table-data">
+                    <input
+                      type="number"
+                      value={item.stockPrice}
+                      required
+                      onChange={(e) => {
+                        const list = [...report];
+                        list[index].stockPrice = e.target.value;
+                        setReport(list);
+                      }}
+                      className="w-full px-2 border-none outline-none"
+                    />
+                  </td>
+                  <td className="custom-table-data">
+                    <input
+                      type="text"
+                      value={item.addInfo}
+                      onChange={(e) => {
+                        const list = [...report];
+                        list[index].addInfo = e.target.value;
+                        setReport(list);
+                      }}
+                      className="w-full px-2 border-none outline-none"
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div className=" flex items-center justify-between">
+            <div className=" flex items-center">
+              <button
+                type="buttton"
+                className="add-row-btn"
+                onClick={handleAddRow}
+              >
+                + Add Row
+              </button>
+              <button
+                type="button"
+                className="delete-row-btn"
+                onClick={handleRemoveRow}
+              >
+                Remove Row
+              </button>
+            </div>
             <button
-              className="bg-slate-400 w-fit mt-2 font-semibold text-xs md:text-sm hover:bg-green-500 p-2 md:p-2.5 rounded-lg"
-              onClick={handleAddRow}
+              type="submit"
+              disabled={report[0].name === "" || warehouse === ""}
+              className=" w-fit mt-2 font-semibold text-xs md:text-sm bg-green-500 disabled:bg-gray-400 text-white p-2 md:p-2.5 rounded-lg"
             >
-              + Add Row
-            </button>
-            <button
-              className="bg-slate-400 w-fit mt-2 ml-2 font-semibold text-xs md:text-sm hover:bg-red-500 p-2 md:p-2.5 rounded-lg"
-              onClick={handleRemoveRow}
-            >
-              Remove Row
+              Create Inventory
             </button>
           </div>
-          <button
-            type="submit"
-            disabled={report[0].name === ""}
-            className=" w-fit mt-2 font-semibold text-xs md:text-sm bg-green-500 disabled:bg-gray-400 text-white p-2 md:p-2.5 rounded-lg"
-          >
-            Create Inventory
-          </button>
-        </div>
-      </form>
+        </form>
+      )}
     </div>
   );
 };

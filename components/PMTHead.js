@@ -51,19 +51,19 @@ export default function PMTHead() {
         </button>
       </div>
       <div className="flex flex-col mt-4">
-        <p className="text-2xl mx-auto font-bold">
+        <p className="text-2xl mx-auto  font-bold">
           {currentUser.email === "pmthead@stonearts.com"
             ? "PMT Head Dashboard"
             : "Admin PMT Dashboard"}
         </p>
       </div>
       <div className="flex flex-col">
-        <div className="flex flex-col items-center my-12 gap-3">
+        <div className="flex flex-col items-center my-6 gap-2">
           <Link
             href={{
               pathname: "/PMTHead/PendingSites",
             }}
-            className="bg-slate-300 p-2 rounded-lg text-center sm:w-1/3"
+            className="bg-slate-300 p-2 rounded-lg text-center min-w-[250px] sm:w-1/3"
           >
             Sites not assigned yet
           </Link>
@@ -71,15 +71,33 @@ export default function PMTHead() {
             href={{
               pathname: "/PMTHead/OngoingSites",
             }}
-            className="bg-slate-300 p-2 rounded-lg text-center sm:w-1/3"
+            className="bg-slate-300 p-2 rounded-lg text-center min-w-[250px] sm:w-1/3"
           >
             Sites in Progress
           </Link>
           <Link
             href={{
+              pathname: "/PMTHead/CompletedSites",
+            }}
+            className="bg-slate-300 p-2 rounded-lg text-center min-w-[250px] sm:w-1/3"
+          >
+            Completed Orders
+          </Link>
+          {currentUser.email === "admin@stonearts.com" && (
+            <Link
+              href={{
+                pathname: "/PMTHead/ConfirmOrders",
+              }}
+              className="bg-slate-300 p-2 rounded-lg text-center min-w-[250px]  sm:w-1/3  mt-3"
+            >
+              Confirm Order
+            </Link>
+          )}
+          <Link
+            href={{
               pathname: "/Workshop/UploadOrder",
             }}
-            className="bg-slate-300 p-2 rounded-lg text-center sm:w-1/3 font-bold my-6"
+            className="bg-slate-300 p-2 rounded-lg text-center min-w-[250px]  sm:w-1/3  mt-3"
           >
             Upload Order
           </Link>
@@ -87,7 +105,7 @@ export default function PMTHead() {
             href={{
               pathname: "/PMTHead/Reports",
             }}
-            className="bg-slate-300 p-2 rounded-lg text-center sm:w-1/3 font-bold "
+            className="bg-slate-300 p-2 rounded-lg text-center min-w-[250px]  sm:w-1/3  "
           >
             Reports
           </Link>

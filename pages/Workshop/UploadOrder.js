@@ -135,10 +135,11 @@ export default function UploadOrder() {
                 };
                 // setDoc(doc(db, showroomDbName, `${orderId}`), orderData);
                 setDoc(doc(db, "orderId", "orderId-SP"), { id: orderId + 1 });
-                setDoc(
-                  doc(db, "workshop-site-pending", `${orderId}`),
-                  orderData
-                );
+                // setDoc(
+                //   doc(db, "workshop-site-pending", `${orderId}`),
+                //   orderData
+                // );
+                setDoc(doc(db, "PMT-pending-confirm", `${orderId}`), orderData);
                 enqueueSnackbar("Order Sent to admin for confirmation", {
                   variant: "success",
                 });

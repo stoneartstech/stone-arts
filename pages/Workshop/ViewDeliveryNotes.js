@@ -14,6 +14,7 @@ export default function ViewDeliveryNote({
   setViewDeliverynote,
   quoteOrderData,
   consumableData,
+  action,
 }) {
   const router = useRouter();
   console.log("q", quoteOrderData);
@@ -271,7 +272,7 @@ export default function ViewDeliveryNote({
       <div>
         <div className="w-full md:pl-6 pr-12 flex justify-between">
           <button
-            className="bg-slate-300 p-2 rounded-lg"
+            className=" go-back-btn"
             onClick={() => {
               if (!viewMenu) {
                 setViewMenu(true);
@@ -284,16 +285,16 @@ export default function ViewDeliveryNote({
           </button>
         </div>
         <div className="flex flex-col items-center">
-          <p className="text-3xl">Check Delivery Note</p>
+          <p className="page-heading">Check Delivery Note</p>
           {viewMenu && (
-            <div className=" flex flex-col gap-2 mt-6">
+            <div className=" flex flex-col gap-2 md:mt-6">
               <button
                 onClick={() => {
                   setViewMenu(false);
                   setViewQuoteOrder(true);
                 }}
                 disabled={!quoteOrderData}
-                className=" bg-blue-500 disabled:bg-gray-400 disabled:text-gray-600 hover:bg-blue-600 py-2 px-8 text-white font-semibold"
+                className=" bg-blue-500 disabled:bg-gray-400 disabled:text-gray-600 hover:bg-blue-600 py-2 px-8 text-white font-semibold text-sm md:text-base"
               >
                 Quote Order
               </button>
@@ -303,7 +304,7 @@ export default function ViewDeliveryNote({
                   setViewQuoteOrder(false);
                 }}
                 disabled={!consumableData}
-                className=" bg-blue-500 disabled:bg-gray-400 disabled:text-gray-600 hover:bg-blue-600 py-2 px-8 text-white font-semibold"
+                className=" bg-blue-500 disabled:bg-gray-400 disabled:text-gray-600 hover:bg-blue-600 py-2 px-8 text-white font-semibold text-sm md:text-base"
               >
                 Consumables
               </button>
@@ -312,7 +313,7 @@ export default function ViewDeliveryNote({
           {!viewMenu && (
             <>
               {viewQuoteOrder ? (
-                <div className=" w-full mt-4 text-sm md:text-base">
+                <div className=" w-full md:mt-4 text-sm md:text-base">
                   <div className=" flex items-center justify-center">
                     <button
                       onClick={() => {
@@ -411,25 +412,25 @@ export default function ViewDeliveryNote({
                         />
                       </div>
                     </div>
-                    <table className="w-full table-auto ">
-                      <thead className=" bg-blue-400 text-white">
+                    <table className="custom-table w-full ml-[150px] ">
+                      <thead className=" custom-table-head">
                         <tr>
-                          <th>Sl. No. </th>
-                          <th>Product Name</th>
-                          <th>Product Description</th>
-                          <th>Quantity</th>
-                          <th>Size</th>
-                          <th>Unit</th>
-                          <th>Weight (Tonnes)</th>
+                          <th className=" custom-table-row">Sl. No. </th>
+                          <th className=" custom-table-row">Product Name</th>
+                          <th className=" custom-table-row">
+                            Product Description
+                          </th>
+                          <th className=" custom-table-row">Quantity</th>
+                          <th className=" custom-table-row">Size</th>
+                          <th className=" custom-table-row">Unit</th>
+                          <th className=" custom-table-row">Weight (Tonnes)</th>
                         </tr>
                       </thead>
                       <tbody>
                         {quoteOrderData?.quoteOrder?.map((item, index) => (
                           <tr key={index}>
-                            <td className="text-center ">
-                              <p className=" bg-white w-full p-2">
-                                {index + 1}
-                              </p>
+                            <td className="text-center custom-table-data ">
+                              <p className=" ">{index + 1}</p>
                             </td>
                             <td>
                               <input
@@ -440,7 +441,7 @@ export default function ViewDeliveryNote({
                                   list[index].prodName = e.target.value;
                                   setQuoteOrder(list);
                                 }}
-                                className="p-2 w-full"
+                                className=" custom-table-input"
                               />
                             </td>
                             <td>
@@ -452,7 +453,7 @@ export default function ViewDeliveryNote({
                                   list[index].prodDesc = e.target.value;
                                   setQuoteOrder(list);
                                 }}
-                                className="p-2 w-full"
+                                className=" custom-table-input"
                               />
                             </td>
                             <td>
@@ -464,7 +465,7 @@ export default function ViewDeliveryNote({
                                   list[index].Qty = e.target.value;
                                   setQuoteOrder(list);
                                 }}
-                                className="p-2 w-full"
+                                className=" custom-table-input"
                               />
                             </td>
                             <td>
@@ -476,7 +477,7 @@ export default function ViewDeliveryNote({
                                   list[index].Size = e.target.value;
                                   setQuoteOrder(list);
                                 }}
-                                className="p-2 w-full"
+                                className=" custom-table-input"
                               />
                             </td>
                             <td>
@@ -488,7 +489,7 @@ export default function ViewDeliveryNote({
                                   list[index].Unit = e.target.value;
                                   setQuoteOrder(list);
                                 }}
-                                className="p-2 w-full"
+                                className=" custom-table-input"
                               />
                             </td>
                             <td>
@@ -500,50 +501,55 @@ export default function ViewDeliveryNote({
                                   list[index].Weight = e.target.value;
                                   setQuoteOrder(list);
                                 }}
-                                className="p-2 w-full"
+                                className=" custom-table-input"
                               />
                             </td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
-                    {!quoteOrderData?.confirmed && (
-                      <button
-                        className="bg-green-400 disabled:bg-gray-400 hover:bg-green-600 font-semibold p-2 px-6 rounded-lg mt-4"
-                        onClick={() => {
-                          try {
-                            const orderData = {
-                              ...quoteOrderData,
-                              confirmed: true,
-                            };
-                            // console.log(orderData);
-                            if (Number(orderType) === 0) {
-                              setDoc(
-                                doc(db, "DN-quote-orders", `site-${orderID}`),
-                                orderData
-                              );
-                            } else {
-                              setDoc(
-                                doc(db, "DN-quote-orders", `retail-${orderID}`),
-                                orderData
-                              );
+                    {!quoteOrderData?.confirmed &&
+                      action?.toLowerCase() !== "view" && (
+                        <button
+                          className="bg-green-400 disabled:bg-gray-400 hover:bg-green-600 font-semibold p-2 px-6 rounded-lg mt-4"
+                          onClick={() => {
+                            try {
+                              const orderData = {
+                                ...quoteOrderData,
+                                confirmed: true,
+                              };
+                              // console.log(orderData);
+                              if (Number(orderType) === 0) {
+                                setDoc(
+                                  doc(db, "DN-quote-orders", `site-${orderID}`),
+                                  orderData
+                                );
+                              } else {
+                                setDoc(
+                                  doc(
+                                    db,
+                                    "DN-quote-orders",
+                                    `retail-${orderID}`
+                                  ),
+                                  orderData
+                                );
+                              }
+                              enqueueSnackbar("QuoteOrder Confirmed", {
+                                variant: "success",
+                              });
+                              setTimeout(() => {
+                                router.back();
+                              }, 3500);
+                            } catch (error) {
+                              enqueueSnackbar("Some error occured", {
+                                variant: "error",
+                              });
                             }
-                            enqueueSnackbar("QuoteOrder Confirmed", {
-                              variant: "success",
-                            });
-                            setTimeout(() => {
-                              router.back();
-                            }, 3500);
-                          } catch (error) {
-                            enqueueSnackbar("Some error occured", {
-                              variant: "error",
-                            });
-                          }
-                        }}
-                      >
-                        Confirm
-                      </button>
-                    )}
+                          }}
+                        >
+                          Confirm
+                        </button>
+                      )}
                   </div>
                 </div>
               ) : (
@@ -650,22 +656,22 @@ export default function ViewDeliveryNote({
                         />
                       </div>
                     </div>
-                    <table className="w-full">
-                      <thead className=" bg-blue-400 text-white">
+                    <table className=" custom-table">
+                      <thead className=" custom-table-head">
                         <tr>
-                          <th>Sl. No. </th>
-                          <th>Product Name</th>
-                          <th>Product Description</th>
-                          <th>Quantity</th>
+                          <th className=" custom-table-row">Sl. No. </th>
+                          <th className=" custom-table-row">Product Name</th>
+                          <th className=" custom-table-row">
+                            Product Description
+                          </th>
+                          <th className=" custom-table-row">Quantity</th>
                         </tr>
                       </thead>
                       <tbody>
                         {consumableData?.consumanleOrder.map((item, index) => (
                           <tr key={index}>
-                            <td className="text-center ">
-                              <p className=" bg-white w-full p-2">
-                                {index + 1}
-                              </p>
+                            <td className="text-center custom-table-data ">
+                              <p className=" ">{index + 1}</p>
                             </td>
                             <td>
                               <input
@@ -676,7 +682,7 @@ export default function ViewDeliveryNote({
                                   list[index].prodName = e.target.value;
                                   setConsumableOrder(list);
                                 }}
-                                className="p-2 w-full"
+                                className=" custom-table-input"
                               />
                             </td>
                             <td>
@@ -688,7 +694,7 @@ export default function ViewDeliveryNote({
                                   list[index].prodDesc = e.target.value;
                                   setConsumableOrder(list);
                                 }}
-                                className="p-2 w-full"
+                                className=" custom-table-input"
                               />
                             </td>
                             <td>
@@ -700,50 +706,55 @@ export default function ViewDeliveryNote({
                                   list[index].Qty = e.target.value;
                                   setConsumableOrder(list);
                                 }}
-                                className="p-2 w-full"
+                                className=" custom-table-input"
                               />
                             </td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
-                    {!consumableData?.confirmed && (
-                      <button
-                        className="bg-green-400 disabled:bg-gray-400 hover:bg-green-600 font-semibold p-2 px-6 rounded-lg mt-4"
-                        onClick={() => {
-                          try {
-                            const orderData = {
-                              ...consumableData,
-                              confirmed: true,
-                            };
-                            // console.log(orderData);
-                            if (Number(orderType) === 0) {
-                              setDoc(
-                                doc(db, "DN-consumables", `site-${orderID}`),
-                                orderData
-                              );
-                            } else {
-                              setDoc(
-                                doc(db, "DN-consumables", `retail-${orderID}`),
-                                orderData
-                              );
+                    {!consumableData?.confirmed &&
+                      action?.toLowerCase() !== "view" && (
+                        <button
+                          className="bg-green-400 disabled:bg-gray-400 hover:bg-green-600 font-semibold p-2 px-6 rounded-lg mt-4"
+                          onClick={() => {
+                            try {
+                              const orderData = {
+                                ...consumableData,
+                                confirmed: true,
+                              };
+                              // console.log(orderData);
+                              if (Number(orderType) === 0) {
+                                setDoc(
+                                  doc(db, "DN-consumables", `site-${orderID}`),
+                                  orderData
+                                );
+                              } else {
+                                setDoc(
+                                  doc(
+                                    db,
+                                    "DN-consumables",
+                                    `retail-${orderID}`
+                                  ),
+                                  orderData
+                                );
+                              }
+                              enqueueSnackbar("ConsumableOrder Confirmed", {
+                                variant: "success",
+                              });
+                              setTimeout(() => {
+                                router.back();
+                              }, 3500);
+                            } catch (error) {
+                              enqueueSnackbar("Some error occured", {
+                                variant: "error",
+                              });
                             }
-                            enqueueSnackbar("ConsumableOrder Confirmed", {
-                              variant: "success",
-                            });
-                            setTimeout(() => {
-                              router.back();
-                            }, 3500);
-                          } catch (error) {
-                            enqueueSnackbar("Some error occured", {
-                              variant: "error",
-                            });
-                          }
-                        }}
-                      >
-                        Confirm
-                      </button>
-                    )}
+                          }}
+                        >
+                          Confirm
+                        </button>
+                      )}
                   </div>
                 </div>
               )}

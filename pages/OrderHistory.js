@@ -18,6 +18,7 @@ import Image from "next/image";
 export default function OrderHistory() {
   const searchParams = useSearchParams();
   const showroomName = searchParams.get("showroomName");
+  const viewType = searchParams.get("type");
   const { currentUser } = useAuth();
   const [loading, setLoading] = useState(true);
   const showroomDbNames = {
@@ -45,6 +46,9 @@ export default function OrderHistory() {
 
   const [ordersData, setOrdersData] = useState([]);
   useEffect(() => {
+    if (String(viewType)?.toLocaleLowerCase() !== "unconfirmed") {
+      setViewConfirmed(true);
+    }
     const fetch = onSnapshot(collection(db, showroomDbName), (snapshot) => {
       var orders = snapshot.docs.map((doc) => ({
         id: doc.id,
@@ -91,233 +95,203 @@ export default function OrderHistory() {
           </div>
           <div className="flex flex-col items-center">
             <p className="text-3xl">
-              {viewOrderTypes ? (
-                "Orders History"
-              ) : (
-                <>{viewConfirmed ? "Confirmed Orders" : "Unconfirmed Orders"}</>
-              )}
+              {viewConfirmed ? "Confirmed Orders" : "Unconfirmed Orders"}
             </p>
           </div>
-          {viewOrderTypes ? (
-            <>
-              <div className=" flex flex-col justify-center items-center mt-6 gap-3 ">
-                <button
-                  onClick={() => {
-                    setViewConfirmed(true);
-                    setViewOrdersTypes(false);
-                  }}
-                  className=" py-2.5 px-6 bg-blue-400 hover:bg-blue-500 text-white  font-semibold w-[200px] "
-                >
-                  Confirmed Orders
-                </button>
-                <button
-                  onClick={() => {
-                    setViewConfirmed(false);
-                    setViewOrdersTypes(false);
-                  }}
-                  className=" py-2.5 px-6 bg-blue-400 hover:bg-blue-500 text-white  font-semibold w-[200px] "
-                >
-                  Unconfirmed Orders
-                </button>
-              </div>
-            </>
-          ) : (
-            <>
-              {viewConfirmed ? (
-                <>
-                  {loading ? (
-                    <div className=" w-full flex items-center justify-center">
-                      <Image
-                        width={50}
-                        height={50}
-                        src="/loading.svg"
-                        alt="Loading ..."
-                      />
-                    </div>
-                  ) : (
-                    <div className="flex flex-col gap-4 mt-2">
-                      {pendingRetailOrders?.length > 0 ? (
-                        <>
-                          {pendingRetailOrders?.map((order) => (
-                            <div
-                              key={order.orderId}
-                              className="p-1.5 bg-slate-300 cursor-pointer"
-                              onClick={() => handleClick(order?.orderId)}
-                            >
-                              <div className=" flex items-center justify-between px-3">
-                                <p>Order Id: {order?.orderId}</p>
-                              </div>
-                              {selectedOrderId === order?.orderId && (
-                                <div className="p-2 bg-slate-300 mt-2">
-                                  <p>Order Date: {order.date}</p>
-                                  <p>Order Type: {order.orderType}</p>
-                                  <p>
-                                    Order Designation: {order.orderDesignation}
-                                  </p>
-                                  <p>Client Code: {order.clientCode}</p>
-                                  <p>Invoice Number: {order.invoiceNumber}</p>
-                                  <p>Location: {order.location}</p>
-                                  <p>Client Name: {order.name}</p>
-                                  <p>Workshop: {order.workshop}</p>
-                                  <p>
-                                    Order Status:{" "}
-                                    {order.confirmed === true
-                                      ? "confirmed"
-                                      : "not confirmed"}
-                                  </p>
 
-                                  <table>
-                                    <thead>
-                                      <tr>
-                                        <th>Prod Name</th>
-                                        <th>Prod Desc</th>
-                                        <th>Size</th>
-                                        <th>Qty</th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      {order?.order?.map((item) => (
-                                        <tr key={item.prodName}>
-                                          <td className="px-6">
-                                            {item.prodName}
-                                          </td>
-                                          <td className="px-12">
-                                            {item.prodDesc}
-                                          </td>
-                                          <td className="px-6">{item.Size}</td>
-                                          <td className="px-4 text-center">
-                                            {item.Qty}
-                                          </td>
-                                        </tr>
-                                      ))}
-                                    </tbody>
-                                  </table>
-                                </div>
-                              )}
+          <>
+            {viewConfirmed ? (
+              <>
+                {loading ? (
+                  <div className=" w-full flex items-center justify-center">
+                    <Image
+                      width={50}
+                      height={50}
+                      src="/loading.svg"
+                      alt="Loading ..."
+                    />
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-4 mt-2">
+                    {pendingRetailOrders?.length > 0 ? (
+                      <>
+                        {pendingRetailOrders?.map((order) => (
+                          <div
+                            key={order.orderId}
+                            className="p-1.5 bg-slate-300 cursor-pointer"
+                            onClick={() => handleClick(order?.orderId)}
+                          >
+                            <div className=" flex items-center justify-between px-3">
+                              <p>Order Id: {order?.orderId}</p>
                             </div>
-                          ))}
-                        </>
-                      ) : (
-                        <p className=" text-center mt-4">No Confirmed Orders</p>
-                      )}
-                    </div>
-                  )}
-                </>
-              ) : (
-                <>
-                  {loading ? (
-                    <div className=" w-full flex items-center justify-center">
-                      <Image
-                        width={50}
-                        height={50}
-                        src="/loading.svg"
-                        alt="Loading ..."
-                      />
-                    </div>
-                  ) : (
-                    <div className="flex flex-col gap-4 mt-2">
-                      {ordersData?.length > 0 ? (
-                        <>
-                          {ordersData.map((order) => (
-                            <div
-                              key={order.orderId}
-                              className="p-1.5 bg-slate-300 cursor-pointer"
-                              onClick={() => handleClick(order.orderId)}
-                            >
-                              <div className=" flex items-center justify-between px-3">
-                                <p>Order Id: {order.orderId}</p>
-                                {currentUser &&
-                                  currentUser?.email ===
-                                    "admin@stonearts.com" && (
-                                    <button
-                                      onClick={() => {
-                                        setDoc(
-                                          doc(
-                                            db,
-                                            "workshop-retail-pending",
-                                            `${order?.orderId}`
-                                          ),
-                                          order
-                                        );
-                                        deleteDoc(
-                                          doc(
-                                            db,
-                                            showroomDbName,
-                                            `${order?.orderId}`
-                                          ),
-                                          order
-                                        );
-                                        alert(
-                                          `Order - ${order?.orderId} Confirmed`
-                                        );
-                                      }}
-                                      className=" font-medium bg-green-400 text-sm hover:bg-green-500 py-2 px-4"
-                                    >
-                                      Confirm Order
-                                    </button>
-                                  )}
-                              </div>
-                              {selectedOrderId === order.orderId && (
-                                <div className="p-2 bg-slate-300 mt-2">
-                                  <p>Order Date: {order.date}</p>
-                                  <p>Order Type: {order.orderType}</p>
-                                  <p>
-                                    Order Designation: {order.orderDesignation}
-                                  </p>
-                                  <p>Client Code: {order.clientCode}</p>
-                                  <p>Invoice Number: {order.invoiceNumber}</p>
-                                  <p>Location: {order.location}</p>
-                                  <p>Client Name: {order.name}</p>
-                                  <p>Workshop: {order.workshop}</p>
-                                  <p>
-                                    Order Status:{" "}
-                                    {order.confirmed === true
-                                      ? "confirmed"
-                                      : "not confirmed"}
-                                  </p>
+                            {selectedOrderId === order?.orderId && (
+                              <div className="p-2 bg-slate-300 mt-2">
+                                <p>Order Date: {order.date}</p>
+                                <p>Order Type: {order.orderType}</p>
+                                <p>
+                                  Order Designation: {order.orderDesignation}
+                                </p>
+                                <p>Client Code: {order.clientCode}</p>
+                                <p>Invoice Number: {order.invoiceNumber}</p>
+                                <p>Location: {order.location}</p>
+                                <p>Client Name: {order.name}</p>
+                                <p>Workshop: {order.workshop}</p>
+                                <p>
+                                  Order Status:{" "}
+                                  {order.confirmed === true
+                                    ? "confirmed"
+                                    : "not confirmed"}
+                                </p>
 
-                                  <table>
-                                    <thead>
-                                      <tr>
-                                        <th>Prod Name</th>
-                                        <th>Prod Desc</th>
-                                        <th>Size</th>
-                                        <th>Qty</th>
+                                <table>
+                                  <thead>
+                                    <tr>
+                                      <th>Prod Name</th>
+                                      <th>Prod Desc</th>
+                                      <th>Size</th>
+                                      <th>Qty</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {order?.order?.map((item) => (
+                                      <tr key={item.prodName}>
+                                        <td className="px-6">
+                                          {item.prodName}
+                                        </td>
+                                        <td className="px-12">
+                                          {item.prodDesc}
+                                        </td>
+                                        <td className="px-6">{item.Size}</td>
+                                        <td className="px-4 text-center">
+                                          {item.Qty}
+                                        </td>
                                       </tr>
-                                    </thead>
-                                    <tbody>
-                                      {order.order.map((item) => (
-                                        <tr key={item.prodName}>
-                                          <td className="px-6">
-                                            {item.prodName}
-                                          </td>
-                                          <td className="px-12">
-                                            {item.prodDesc}
-                                          </td>
-                                          <td className="px-6">{item.Size}</td>
-                                          <td className="px-4 text-center">
-                                            {item.Qty}
-                                          </td>
-                                        </tr>
-                                      ))}
-                                    </tbody>
-                                  </table>
-                                </div>
-                              )}
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </>
+                    ) : (
+                      <p className=" text-center mt-4">No Confirmed Orders</p>
+                    )}
+                  </div>
+                )}
+              </>
+            ) : (
+              <>
+                {loading ? (
+                  <div className=" w-full flex items-center justify-center">
+                    <Image
+                      width={50}
+                      height={50}
+                      src="/loading.svg"
+                      alt="Loading ..."
+                    />
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-4 mt-2">
+                    {ordersData?.length > 0 ? (
+                      <>
+                        {ordersData.map((order) => (
+                          <div
+                            key={order.orderId}
+                            className="p-1.5 bg-slate-300 cursor-pointer"
+                            onClick={() => handleClick(order.orderId)}
+                          >
+                            <div className=" flex items-center justify-between px-3">
+                              <p>Order Id: {order.orderId}</p>
+                              {currentUser &&
+                                currentUser?.email ===
+                                  "admin@stonearts.com" && (
+                                  <button
+                                    onClick={() => {
+                                      setDoc(
+                                        doc(
+                                          db,
+                                          "workshop-retail-pending",
+                                          `${order?.orderId}`
+                                        ),
+                                        order
+                                      );
+                                      deleteDoc(
+                                        doc(
+                                          db,
+                                          showroomDbName,
+                                          `${order?.orderId}`
+                                        ),
+                                        order
+                                      );
+                                      alert(
+                                        `Order - ${order?.orderId} Confirmed`
+                                      );
+                                    }}
+                                    className=" font-medium bg-green-400 text-sm hover:bg-green-500 py-2 px-4"
+                                  >
+                                    Confirm Order
+                                  </button>
+                                )}
                             </div>
-                          ))}
-                        </>
-                      ) : (
-                        <p className=" text-center mt-4">
-                          No Unconfirmed Orders
-                        </p>
-                      )}
-                    </div>
-                  )}
-                </>
-              )}
-            </>
-          )}
+                            {selectedOrderId === order.orderId && (
+                              <div className="p-2 bg-slate-300 mt-2">
+                                <p>Order Date: {order.date}</p>
+                                <p>Order Type: {order.orderType}</p>
+                                <p>
+                                  Order Designation: {order.orderDesignation}
+                                </p>
+                                <p>Client Code: {order.clientCode}</p>
+                                <p>Invoice Number: {order.invoiceNumber}</p>
+                                <p>Location: {order.location}</p>
+                                <p>Client Name: {order.name}</p>
+                                <p>Workshop: {order.workshop}</p>
+                                <p>
+                                  Order Status:{" "}
+                                  {order.confirmed === true
+                                    ? "confirmed"
+                                    : "not confirmed"}
+                                </p>
+
+                                <table>
+                                  <thead>
+                                    <tr>
+                                      <th>Prod Name</th>
+                                      <th>Prod Desc</th>
+                                      <th>Size</th>
+                                      <th>Qty</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {order.order.map((item) => (
+                                      <tr key={item.prodName}>
+                                        <td className="px-6">
+                                          {item.prodName}
+                                        </td>
+                                        <td className="px-12">
+                                          {item.prodDesc}
+                                        </td>
+                                        <td className="px-6">{item.Size}</td>
+                                        <td className="px-4 text-center">
+                                          {item.Qty}
+                                        </td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </>
+                    ) : (
+                      <p className=" text-center mt-4">No Unconfirmed Orders</p>
+                    )}
+                  </div>
+                )}
+              </>
+            )}
+          </>
         </div>
       )}
     </>

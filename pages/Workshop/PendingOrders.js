@@ -9,6 +9,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/firebase";
 import ViewOrder from "./ViewOrder";
+import { enqueueSnackbar, SnackbarProvider } from "notistack";
 
 const filterList = [
   {
@@ -63,36 +64,63 @@ export default function PendingOrders() {
   }, []);
 
   const handleSiteOrders = async (clientId) => {
-    try {
-      const report = pendingSiteOrders.filter((i) => {
-        return i?.clientId === clientId;
-      });
-      // console.log(report);
-      await setDoc(doc(db, `workshop-site-completed/${clientId}`), report[0]);
-      await deleteDoc(doc(db, `workshop-site-pending/${clientId}`));
-      alert("Uploaded");
-    } catch (error) {
-      console.log(error);
-      alert("Try again Later !! ");
+    const isOkay = confirm("Confirm Complete Order");
+    if (isOkay) {
+      try {
+        const report = pendingSiteOrders.filter((i) => {
+          return i?.clientId === clientId;
+        });
+        let newData = { ...report[0], type: "site" };
+        // console.log(report);
+        await setDoc(doc(db, `logistics-pending/${clientId}`), newData);
+        await setDoc(doc(db, `workshop-site-completed/${clientId}`), report[0]);
+        await deleteDoc(doc(db, `workshop-site-pending/${clientId}`));
+        enqueueSnackbar("Order Completed", {
+          variant: "success",
+        });
+      } catch (error) {
+        console.log(error);
+        enqueueSnackbar("Some error occured", {
+          variant: "error",
+        });
+      }
     }
   };
   const handleRetailOrders = async (clientId) => {
-    try {
-      const report = pendingRetailOrders.filter((i) => {
-        return i?.clientId === clientId || i?.orderId === clientId;
-      });
-      // console.log(report);
-      await setDoc(doc(db, `workshop-retail-completed/${clientId}`), report[0]);
-      await deleteDoc(doc(db, `workshop-retail-pending/${clientId}`));
-      alert("Uploaded");
-    } catch (error) {
-      console.log(error);
-      alert("Try again Later !! ");
+    const isOkay = confirm("Confirm Complete Order");
+    if (isOkay) {
+      try {
+        const report = pendingRetailOrders.filter((i) => {
+          return i?.clientId === clientId || i?.orderId === clientId;
+        });
+        let newData = { ...report[0], type: "retail" };
+        // console.log(report);
+        await setDoc(doc(db, `logistics-pending/${clientId}`), newData);
+        await setDoc(
+          doc(db, `workshop-retail-completed/${clientId}`),
+          report[0]
+        );
+        await deleteDoc(doc(db, `workshop-retail-pending/${clientId}`));
+        enqueueSnackbar("Order Completed", {
+          variant: "success",
+        });
+      } catch (error) {
+        console.log(error);
+        enqueueSnackbar("Some error occured", {
+          variant: "error",
+        });
+      }
     }
   };
 
   return (
     <>
+      <SnackbarProvider
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+      />
       {viewOrder ? (
         <ViewOrder
           orderType={orderType}
@@ -102,16 +130,11 @@ export default function PendingOrders() {
       ) : (
         <div>
           <div className="w-full relative md:px-8 flex flex-col md:flex-row justify-between">
-            <button
-              className="bg-slate-300 p-2 md:absolute left-10 rounded-lg w-fit"
-              onClick={() => router.back()}
-            >
+            <button className="go-back-btn" onClick={() => router.back()}>
               Go Back
             </button>
-            <p className="text-xl md:text-2xl  text-center w-full font-bold mb-2">
-              Workshop Home Page
-            </p>
           </div>
+          <p className="page-heading ">Workshop Home Page</p>
           <div className=" flex items-center justify-center mt-2 w-full font-semibold">
             <button
               onClick={() => {
@@ -187,7 +210,7 @@ export default function PendingOrders() {
                         key={index}
                         className=" mt-4 md:w-[70%] grid grid-cols-3 md:grid-cols-5"
                       >
-                        <div className=" py-1.5 md:py-0  col-span-3 md:col-span-2 text-sm md:text-base  border-black border flex items-center justify-center font-semibold">
+                        <div className=" py-1.5 md:py-0  col-span-3 md:col-span-2 text-sm md:text-base  border-black border-b-0 md:border-b border flex items-center justify-center font-semibold">
                           {order?.name && order?.clientId
                             ? order?.name + " - " + order?.clientId
                             : "Order ID - " + String(order?.orderId)}
@@ -225,42 +248,36 @@ export default function PendingOrders() {
                         </button>
                         {activeQuote === order?.orderId && (
                           <div className=" overflow-x-auto text-sm md:text-base p-2 col-span-3  md:col-span-5 bg-gray-100 w-full">
-                            <table className="  w-full mt-2 table-auto">
-                              <thead className="bg-blue-500 text-white">
+                            <table className="custom-table">
+                              <thead className="custom-table-head">
                                 <tr>
-                                  <th className="px-2 border-gray-400 border">
-                                    Sl. No.
-                                  </th>
-                                  <th className="px-2 border-gray-400 border">
+                                  <th className="custom-table-row">Sl. No.</th>
+                                  <th className="custom-table-row">
                                     Product Name
                                   </th>
-                                  <th className="px-2 border-gray-400 border">
+                                  <th className="custom-table-row">
                                     Product Description
                                   </th>
-                                  <th className="px-2 border-gray-400 border">
-                                    Size
-                                  </th>
-                                  <th className="px-2 border-gray-400 border">
-                                    Quantity
-                                  </th>
+                                  <th className="custom-table-row">Size</th>
+                                  <th className="custom-table-row">Quantity</th>
                                 </tr>
                               </thead>
                               <tbody>
                                 {order?.order?.map((item, index) => (
                                   <tr key={index}>
-                                    <td className="bg-white border border-gray-400 text-center">
+                                    <td className="custom-table-data text-center">
                                       {index + 1}
                                     </td>
-                                    <td className="bg-white border border-gray-400">
+                                    <td className="custom-table-data">
                                       {item?.prodName}
                                     </td>
-                                    <td className="bg-white border border-gray-400">
+                                    <td className="custom-table-data">
                                       {item?.prodDesc}
                                     </td>
-                                    <td className="bg-white border border-gray-400">
+                                    <td className="custom-table-data">
                                       {item?.Size}
                                     </td>
-                                    <td className="bg-white border border-gray-400">
+                                    <td className="custom-table-data">
                                       {item?.Qty}
                                     </td>
                                   </tr>
@@ -347,42 +364,36 @@ export default function PendingOrders() {
                         </button>
                         {activeQuote === order?.orderId && (
                           <div className=" overflow-x-auto text-sm md:text-base p-2 col-span-3  md:col-span-5 bg-gray-100 w-full">
-                            <table className="  w-full mt-2 table-auto">
-                              <thead className="bg-blue-500 text-white">
+                            <table className="custom-table">
+                              <thead className="custom-table-head">
                                 <tr>
-                                  <th className="px-2 border-gray-400 border">
-                                    Sl. No.
-                                  </th>
-                                  <th className="px-2 border-gray-400 border">
+                                  <th className="custom-table-row">Sl. No.</th>
+                                  <th className="custom-table-row">
                                     Product Name
                                   </th>
-                                  <th className="px-2 border-gray-400 border">
+                                  <th className="custom-table-row">
                                     Product Description
                                   </th>
-                                  <th className="px-2 border-gray-400 border">
-                                    Size
-                                  </th>
-                                  <th className="px-2 border-gray-400 border">
-                                    Quantity
-                                  </th>
+                                  <th className="custom-table-row">Size</th>
+                                  <th className="custom-table-row">Quantity</th>
                                 </tr>
                               </thead>
                               <tbody>
                                 {order?.order?.map((item, index) => (
                                   <tr key={index}>
-                                    <td className="bg-white border border-gray-400 text-center">
+                                    <td className="custom-table-data text-center">
                                       {index + 1}
                                     </td>
-                                    <td className="bg-white border border-gray-400">
+                                    <td className="custom-table-data">
                                       {item?.prodName}
                                     </td>
-                                    <td className="bg-white border border-gray-400">
+                                    <td className="custom-table-data">
                                       {item?.prodDesc}
                                     </td>
-                                    <td className="bg-white border border-gray-400">
+                                    <td className="custom-table-data">
                                       {item?.Size}
                                     </td>
-                                    <td className="bg-white border border-gray-400">
+                                    <td className="custom-table-data">
                                       {item?.Qty}
                                     </td>
                                   </tr>
