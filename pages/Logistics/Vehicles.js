@@ -125,8 +125,14 @@ const LogIDashboard = () => {
                         </div>
                         {activeTab && activeTab?.name === order?.name && (
                           <div className=" flex flex-col p-2 ">
-                            <p>Name: {activeTab?.name}</p>
-                            <p>Description: {activeTab?.description}</p>
+                            <p>Name : {activeTab?.name}</p>
+                            <p>
+                              Assigned Driver :{" "}
+                              {activeTab?.driver
+                                ? activeTab?.driver
+                                : "Not Assigned"}
+                            </p>
+                            <p>Description : {activeTab?.description}</p>
                             <div className=" flex flex-col ">
                               <div>
                                 <p className=" font-semibold underline">

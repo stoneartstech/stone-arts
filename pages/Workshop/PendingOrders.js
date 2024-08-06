@@ -68,11 +68,11 @@ export default function PendingOrders() {
     if (isOkay) {
       try {
         const report = pendingSiteOrders.filter((i) => {
-          return i?.clientId === clientId;
+          return i?.orderId === clientId;
         });
         let newData = { ...report[0], type: "site" };
         // console.log(report);
-        await setDoc(doc(db, `logistics-pending/${clientId}`), newData);
+        await setDoc(doc(db, `logistics-assign/${clientId}`), newData);
         await setDoc(doc(db, `workshop-site-completed/${clientId}`), report[0]);
         await deleteDoc(doc(db, `workshop-site-pending/${clientId}`));
         enqueueSnackbar("Order Completed", {
@@ -91,11 +91,11 @@ export default function PendingOrders() {
     if (isOkay) {
       try {
         const report = pendingRetailOrders.filter((i) => {
-          return i?.clientId === clientId || i?.orderId === clientId;
+          return i?.orderId === clientId;
         });
         let newData = { ...report[0], type: "retail" };
         // console.log(report);
-        await setDoc(doc(db, `logistics-pending/${clientId}`), newData);
+        await setDoc(doc(db, `logistics-assign/${clientId}`), newData);
         await setDoc(
           doc(db, `workshop-retail-completed/${clientId}`),
           report[0]
@@ -240,7 +240,7 @@ export default function PendingOrders() {
                         </button>
                         <button
                           onClick={() => {
-                            handleSiteOrders(order.clientId);
+                            handleSiteOrders(order?.orderId);
                           }}
                           className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border border-l-0"
                         >
@@ -354,9 +354,7 @@ export default function PendingOrders() {
                         </button>
                         <button
                           onClick={() => {
-                            handleRetailOrders(
-                              order.clientId || order?.orderId
-                            );
+                            handleRetailOrders(order?.orderId);
                           }}
                           className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black border border-l-0"
                         >

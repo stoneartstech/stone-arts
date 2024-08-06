@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { db } from "@/firebase";
-import { setDoc, doc } from "firebase/firestore";
+import { setDoc, doc, getDocs, collection } from "firebase/firestore";
 import { enqueueSnackbar, SnackbarProvider } from "notistack";
 import Image from "next/image";
 
@@ -13,6 +13,26 @@ export default function AddVehicle() {
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [driver, setDriver] = useState("");
+
+  const [driversList, setDriversList] = useState([]);
+
+  const fetchData = async () => {
+    try {
+      const driverSnapshot = await getDocs(collection(db, "Drivers"));
+      const driversList = driverSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setDriversList(driversList);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching vehicles: ", error);
+    }
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <>
@@ -43,6 +63,7 @@ export default function AddVehicle() {
                 const data = {
                   date,
                   name,
+                  driver,
                   description,
                 };
                 setDoc(doc(db, "Vehicles", `${name}`), data);
@@ -51,6 +72,7 @@ export default function AddVehicle() {
                 });
                 setDescription("");
                 setName("");
+                setDriver("");
               } catch (error) {
                 console.error(error);
                 enqueueSnackbar("Something Went Wrong", {
@@ -65,7 +87,9 @@ export default function AddVehicle() {
               <div className="flex flex-col w-full">
                 <p className="mt-2">Date : {date}</p>
 
-                <p className="mt-4">Vehicle Name</p>
+                <p className="mt-4">
+                  Vehicle Name <span className=" text-red-600">*</span>
+                </p>
                 <div className="flex flex-row gap-2">
                   <input
                     required
@@ -75,7 +99,24 @@ export default function AddVehicle() {
                     className=" p-2 w-full "
                   />
                 </div>
-                <p className="mt-2">Description</p>
+                <p className="mt-2">Assign Driver</p>
+                <select
+                  value={driver}
+                  onChange={(e) => setDriver(e.target.value)}
+                  className=" p-2 w-full "
+                >
+                  <option value="">Select a Driver</option>
+                  {driversList?.map((driver, index) => {
+                    return (
+                      <option key={index} value={driver?.name}>
+                        {driver?.name}
+                      </option>
+                    );
+                  })}
+                </select>
+                <p className="mt-2">
+                  Description <span className=" text-red-600">*</span>
+                </p>
                 <input
                   required
                   type="text"

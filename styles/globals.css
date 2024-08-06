@@ -63,7 +63,7 @@
 }
 
 .main-btn {
-  @apply bg-gray-300 hover:bg-gray-400 rounded-md py-3 px-4 font-semibold w-full text-center max-w-[300px] cursor-pointer;
+  @apply bg-gray-300 hover:bg-gray-400 rounded-md py-3 px-4 font-semibold w-full text-center md:min-w-[250px] max-w-[300px] cursor-pointer;
 }
 .page-heading {
   @apply mt-2 text-lg md:text-2xl text-center font-medium mb-3 md:mb-6;

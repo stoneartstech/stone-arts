@@ -64,12 +64,20 @@ export default function LogiHead() {
         <Link href="/Logistics/Drivers" className=" main-btn">
           <p>Drivers</p>
         </Link>
-        <Link href="/Logistics/LogiDashboard" className=" main-btn">
-          <p>Past Orders</p>
+        {/* <div className=" my-2"> */}
+        <Link href="/Logistics/PendingOrders" className=" main-btn mt-2">
+          <p>Pending Orders</p>
         </Link>
+        <Link href="/Logistics/OngoingOrders" className=" main-btn">
+          <p>Ongoing Orders</p>
+        </Link>
+        <Link href="/Logistics/CompletedOrders" className=" main-btn">
+          <p>Completed Orders</p>
+        </Link>
+        {/* </div> */}
         <Link
-          href="/Logistics/PendingOrders"
-          className="  main-btn mt-3 hover:bg-green-500"
+          href="/Logistics/AssignOrders"
+          className="  main-btn mt-3 bg-green-500 hover:bg-green-600"
         >
           <p>Assign Order</p>
         </Link>
