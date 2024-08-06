@@ -14,7 +14,7 @@ import ViewDeliveryNote from "./ViewDeliveryNotes";
 import ViewOrder from "./ViewOrder";
 import { enqueueSnackbar, SnackbarProvider } from "notistack";
 
-export default function CompletedOrders() {
+export default function AssignOrders() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [viewSiteInfo, setViewSiteInfo] = useState(false);
@@ -74,17 +74,14 @@ export default function CompletedOrders() {
   };
   useEffect(() => {
     fetchVehicleData();
-    const fetch = onSnapshot(
-      collection(db, "logistics-pending"),
-      (snapshot) => {
-        var reports = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setOrders(reports);
-        setLoading(false);
-      }
-    );
+    const fetch = onSnapshot(collection(db, "logistics-assign"), (snapshot) => {
+      var reports = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setOrders(reports);
+      setLoading(false);
+    });
     return fetch;
   }, []);
 
@@ -121,7 +118,7 @@ export default function CompletedOrders() {
           ...activeOrder,
           assignedVehicle: tempArr2,
         });
-        // await deleteDoc(doc(db, "logistics-assign", `${activeOrder?.id}`));
+        await deleteDoc(doc(db, "logistics-assign", `${activeOrder?.id}`));
         // await deleteDoc(doc(db, "logistics-pending", `${activeOrder?.id}`));
         setActiveOrder({ ...activeOrder, assignedVehicle: tempArr2 });
         await setDoc(doc(db, "Vehicles", `${vehicle?.name}`), tempData);
@@ -177,7 +174,7 @@ export default function CompletedOrders() {
             </button>
             <p className=" text-xl md:text-2xl  text-center w-full font-bold mb-2">
               {activeOrder === ""
-                ? "Pending Orders"
+                ? "Assign Order"
                 : `Order - ${activeOrder?.orderId || activeOrder?.id}`}
             </p>
           </div>

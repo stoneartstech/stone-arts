@@ -14,7 +14,7 @@ import ViewDeliveryNote from "./ViewDeliveryNotes";
 import ViewOrder from "./ViewOrder";
 import { enqueueSnackbar, SnackbarProvider } from "notistack";
 
-export default function CompletedOrders() {
+export default function OngoingOrders() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [viewSiteInfo, setViewSiteInfo] = useState(false);
@@ -75,7 +75,7 @@ export default function CompletedOrders() {
   useEffect(() => {
     fetchVehicleData();
     const fetch = onSnapshot(
-      collection(db, "logistics-pending"),
+      collection(db, "logistics-ongoing"),
       (snapshot) => {
         var reports = snapshot.docs.map((doc) => ({
           id: doc.id,
@@ -177,7 +177,7 @@ export default function CompletedOrders() {
             </button>
             <p className=" text-xl md:text-2xl  text-center w-full font-bold mb-2">
               {activeOrder === ""
-                ? "Pending Orders"
+                ? "Ongoing Orders"
                 : `Order - ${activeOrder?.orderId || activeOrder?.id}`}
             </p>
           </div>
@@ -375,236 +375,6 @@ export default function CompletedOrders() {
                         ) : (
                           <p>No Vehicles Assigned</p>
                         )}
-                      </div>
-
-                      <div className="flex flex-col items-center mt-4">
-                        <p className=" font-semibold underline">
-                          Assign New Vehicles
-                        </p>
-                        {vehiclesList?.length === 0 && (
-                          <p className=" mt-2">No Vehicles Found !!</p>
-                        )}{" "}
-                        {vehiclesList?.map((vehicle, index) => {
-                          return (
-                            <div key={index}>
-                              <div className=" mt-2.5 grid grid-cols-3 md:grid-cols-5">
-                                <div className=" py-1.5 md:py-0  col-span-3 md:col-span-1 text-sm md:text-base  border-black border flex items-center justify-center font-semibold">
-                                  {vehicle?.name}
-                                </div>
-                                <button
-                                  disabled={vehicle?.isAssigned}
-                                  onClick={() => {
-                                    setActiveTab1(vehicle);
-                                    if (!vehicle?.driver) {
-                                      enqueueSnackbar("Driver not Assigned", {
-                                        variant: "warning",
-                                      });
-                                    } else {
-                                      handleAssignOrder(vehicle);
-                                    }
-                                  }}
-                                  className=" bg-[#94e63d] disabled:bg-gray-400 disabled:text-gray-600 hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-3 px-4 border-black border md:border-l-0"
-                                >
-                                  Assign Delivery
-                                </button>
-                                <button
-                                  onClick={() => {
-                                    if (checkDeliveries1) {
-                                      if (activeTab1?.name === vehicle?.name) {
-                                        setActiveTab1(vehicle);
-                                        setCheckDeliveries1(false);
-                                      } else {
-                                        setActiveTab1(vehicle);
-                                        setCheckDeliveries1(false);
-                                      }
-                                    } else {
-                                      if (activeTab1?.name === vehicle?.name) {
-                                        setActiveTab1(false);
-                                      } else {
-                                        setActiveTab1(vehicle);
-                                      }
-                                    }
-                                  }}
-                                  className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-3 px-4 border-black border border-l-0"
-                                >
-                                  Check Vehicle
-                                </button>
-                                <button
-                                  disabled={vehicle?.isAssigned}
-                                  onClick={() => {
-                                    if (activeTab1?.name === vehicle?.name) {
-                                      setActiveTab1(false);
-                                      setAssignDriverTab(false);
-                                    } else {
-                                      setCheckDeliveries1(false);
-                                      setActiveTab1(vehicle);
-                                      setAssignDriverTab(true);
-                                    }
-                                  }}
-                                  className={`${
-                                    vehicle?.driver
-                                      ? "bg-[#94e63d]"
-                                      : " bg-red-400"
-                                  } text-xs md:text-sm disabled:bg-gray-400 disabled:text-gray-600 font-semibold py-3 px-4 border-black border border-l-0`}
-                                >
-                                  {vehicle?.driver
-                                    ? `Driver : ${vehicle?.driver}`
-                                    : "Assign Driver"}
-                                </button>
-                                <button
-                                  onClick={() => {
-                                    if (checkDeliveries1) {
-                                      if (activeTab1?.name === vehicle?.name) {
-                                        setActiveTab1(false);
-                                        setCheckDeliveries1(false);
-                                      } else {
-                                        setActiveTab1(vehicle);
-                                        setCheckDeliveries1(true);
-                                      }
-                                    } else {
-                                      setActiveTab1(vehicle);
-                                      setCheckDeliveries1(true);
-                                    }
-                                  }}
-                                  className=" bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-3 px-4 border-black border border-l-0"
-                                >
-                                  Check Assigned Deliveries
-                                </button>
-                              </div>
-                              {!assignDriverTab &&
-                                activeTab1 &&
-                                activeTab1?.name === vehicle?.name && (
-                                  <div className=" flex flex-col p-2 ">
-                                    {checkDeliveries1 ? (
-                                      <div>
-                                        <p className=" font-semibold underline">
-                                          Assigned Deliveries:
-                                        </p>
-                                        {activeTab1?.ordersAssigned?.length >
-                                        0 ? (
-                                          <>
-                                            {activeTab1?.ordersAssigned?.map(
-                                              (item, index) => {
-                                                return (
-                                                  <p key={index}>
-                                                    Name: Order-{item?.id}
-                                                  </p>
-                                                );
-                                              }
-                                            )}
-                                          </>
-                                        ) : (
-                                          <p>No orders Assigned</p>
-                                        )}
-                                      </div>
-                                    ) : (
-                                      <>
-                                        <p>Name: {activeTab1?.name}</p>
-                                        <p>
-                                          Assigned Driver :{" "}
-                                          {activeTab?.driver
-                                            ? activeTab?.driver
-                                            : "Not Assigned"}
-                                        </p>
-                                        <p>
-                                          Description: {activeTab1?.description}
-                                        </p>
-                                      </>
-                                    )}
-                                  </div>
-                                )}
-                              {assignDriverTab &&
-                                activeTab1 &&
-                                activeTab1?.name === vehicle?.name && (
-                                  <form
-                                    onSubmit={async (e) => {
-                                      e.preventDefault();
-                                      try {
-                                        const data = {
-                                          date: activeTab1?.date,
-                                          name: activeTab1?.name,
-                                          driver,
-                                          description: activeTab1?.description,
-                                        };
-                                        const driverData = {
-                                          date: selectedDriver?.date,
-                                          name: selectedDriver?.name,
-                                          description:
-                                            selectedDriver?.description,
-                                          assignedVehicle: activeTab1?.name,
-                                        };
-                                        setDoc(
-                                          doc(
-                                            db,
-                                            "Vehicles",
-                                            `${activeTab1?.name}`
-                                          ),
-                                          data
-                                        );
-                                        setDoc(
-                                          doc(
-                                            db,
-                                            "Drivers",
-                                            `${selectedDriver?.name}`
-                                          ),
-                                          driverData
-                                        );
-                                        enqueueSnackbar(
-                                          "Driver Added Successfully",
-                                          {
-                                            variant: "success",
-                                          }
-                                        );
-                                        setDriver("");
-                                      } catch (error) {
-                                        console.error(error);
-                                        enqueueSnackbar(
-                                          "Something Went Wrong",
-                                          {
-                                            variant: "error",
-                                          }
-                                        );
-                                      }
-                                    }}
-                                    className=" flex flex-col p-2 "
-                                  >
-                                    <p className="mt-2">Assign Driver</p>
-                                    <select
-                                      value={driver}
-                                      onChange={(e) => {
-                                        setDriver(e.target.value);
-                                        let tempDriver = driversList.filter(
-                                          (item) => item.name === e.target.value
-                                        )[0];
-                                        setSelectedDriver(tempDriver);
-                                        // console.log(tempDriver);
-                                      }}
-                                      className=" p-2 w-full "
-                                    >
-                                      <option value="">Select a Driver</option>
-                                      {driversList?.map((driver, index) => {
-                                        return (
-                                          <option
-                                            key={index}
-                                            value={driver?.name}
-                                          >
-                                            {driver?.name}
-                                          </option>
-                                        );
-                                      })}
-                                    </select>
-                                    <button
-                                      disabled={driver === ""}
-                                      type="submit"
-                                      className=" w-fit font-semibold text-sm bg-green-400 hover:bg-green-600 p-2 rounded-lg mt-4"
-                                    >
-                                      Assign Driver
-                                    </button>
-                                  </form>
-                                )}
-                            </div>
-                          );
-                        })}
                       </div>
                     </>
                   )}
