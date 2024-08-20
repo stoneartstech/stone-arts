@@ -106,7 +106,7 @@ export default function CompletedOrders() {
         const tempDriverArr = tempDriver?.pendingOrder
           ? tempDriver?.pendingOrder
           : [];
-        tempDriverArr.push({ id: activeOrder?.id, name: activeOrder?.name });
+        tempDriverArr.push({ id: activeOrder?.id, ...activeOrder });
         const tempDriverData = {
           ...tempDriver,
           isAssigned: true,
@@ -502,8 +502,8 @@ export default function CompletedOrders() {
                                         <p>Name: {activeTab1?.name}</p>
                                         <p>
                                           Assigned Driver :{" "}
-                                          {activeTab?.driver
-                                            ? activeTab?.driver
+                                          {activeTab1?.driver
+                                            ? activeTab1?.driver
                                             : "Not Assigned"}
                                         </p>
                                         <p>
