@@ -13,6 +13,7 @@ import Image from "next/image";
 import ViewDeliveryNote from "./ViewDeliveryNotes";
 import ViewOrder from "./ViewOrder";
 import { enqueueSnackbar, SnackbarProvider } from "notistack";
+import Link from "next/link";
 
 export default function OngoingOrders() {
   const router = useRouter();
@@ -240,14 +241,18 @@ export default function OngoingOrders() {
                 <p className="mt-2 p-2.5 bg-white px-2 md:px-4">
                   Date : {activeOrder?.date}
                 </p>
-                <button
-                  onClick={(e) => {
-                    setViewDeliverynote(true);
-                  }}
-                  className=" cursor-pointer  bg-green-500 disabled:bg-gray-400 disabled:text-gray-700 py-2.5 px-4 text-white font-semibold"
-                >
-                  Check Delivery Note
-                </button>
+                {/* {console.log(activeOrder)} */}
+                {activeOrder?.DN ? (
+                  <Link
+                    href={activeOrder?.DN}
+                    target="_blank"
+                    className=" text-center bg-[#94e63d] hover:bg-[#83cb37] text-xs md:text-sm font-semibold py-1.5 md:py-2.5 px-4 border-black min-w-[250px]  md:min-w-[300px]"
+                  >
+                    Check Delivery Note
+                  </Link>
+                ) : (
+                  <p>No Delivery Note Uploaded</p>
+                )}
                 <button
                   onClick={(e) => {
                     setViewSiteInfo(true);
