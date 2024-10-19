@@ -136,7 +136,7 @@ export default function ViewInventory() {
                 onChange={(e) => {
                   setSearch(e.target.value);
                 }}
-                placeholder="search by name/ sku "
+                placeholder="Search Products by name/ SKU "
                 className=" md:w-[300px] py-2 px-3 border-black border rounded-md"
               />
             </div>

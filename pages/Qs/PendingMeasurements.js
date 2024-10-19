@@ -204,9 +204,9 @@ export default function PendingMeasurements() {
                 Check Info
               </button>
             </Link>
-            {quotePdfUrl.link !== "" && qs["id"] === quotePdfUrl.id ? (
+            {qs?.invoiceUrl ? (
               <Link
-                href={quotePdfUrl.link}
+                href={qs?.invoiceUrl}
                 target="_blank"
                 className="bg-gray-400 hover:bg-gray-500 mb-2 p-2 rounded-lg text-center"
               >

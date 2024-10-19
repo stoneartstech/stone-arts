@@ -346,16 +346,16 @@ const Inventory = ({ compType, handEditSalesOrder, selectedOrder }) => {
                     setResolveDialog(() => resolve);
                   });
                 } else {
-                  await setDoc(
-                    doc(
-                      db,
-                      `erpag/inventory/${
-                        warehouse ? warehouse : "Main Warehouse"
-                      }`,
-                      object?.name
-                    ),
-                    object
-                  );
+                  // await setDoc(
+                    // doc(
+                      // db,
+                      // `erpag/inventory/${
+                        // warehouse ? warehouse : "Main Warehouse"
+                      // }`,
+                      // object?.name
+                    // ),
+                    console.log(object)
+                  // );
                 }
               }
               enqueueSnackbar("Inventory Updated Successfully", {

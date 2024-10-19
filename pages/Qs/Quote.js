@@ -7,18 +7,91 @@ import { BlobProvider, PDFDownloadLink } from "@react-pdf/renderer";
 import { Text, View, Page, Document, StyleSheet } from "@react-pdf/renderer";
 import { Fragment } from "react";
 import { useSearchParams } from "next/navigation";
-import { deleteDoc, doc, setDoc } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
+import { enqueueSnackbar, SnackbarProvider } from "notistack";
+import { useRouter } from "next/router";
+import Link from "next/link";
 
 export default function Quote({ setQuotePdfUrl, quoteData, setIsQuote }) {
   const targetRef = useRef();
 
   const [total, setTotal] = useState(0);
   const [rowCount, setRowCount] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [allProducts, setAllProducts] = useState([]);
+  const [warehouseArr, setWarehouseArr] = useState([]);
+const VAT=0.10;
+  // Date and Time 
+  const today = new Date();
+  const date =
+    today.getDate() +
+    "-" +
+    ("0" + (today.getMonth() + 1)).slice(-2) +
+    "-" +
+    today.getFullYear();
+  // Extract date
+  const router = useRouter();
+  const currentDate = new Date();
+  const year = currentDate.getFullYear();
+  const month = ("0" + (currentDate.getMonth() + 1)).slice(-2); // Add leading zero if necessary
+  const day = ("0" + currentDate.getDate()).slice(-2);
+
+  const hours = ("0" + currentDate.getHours()).slice(-2);
+  const minutes = ("0" + currentDate.getMinutes()).slice(-2);
+  const seconds = ("0" + currentDate.getSeconds()).slice(-2);
+
+  const time = hours + "-" + minutes + "-" + seconds;
+  
+  // warehouse fetching 
+  const fetchData = async (warehouseList) => {
+    setLoading(true);
+    const allShowroomData = [];
+    for (const showroom of warehouseList) {
+      const querySnapshot = await getDocs(
+        collection(db, `erpag/inventory`, showroom?.name)
+      );
+      const requests = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      allShowroomData.push({
+        warehouseName: showroom?.name,
+        data: requests,
+      });
+    }
+    const flattenedData = allShowroomData.flatMap(item => item?.data || []);
+
+    console.log(flattenedData);
+    setAllProducts(flattenedData);
+    setLoading(false);
+  };
+
+  const fetchWarehouse = async () => {
+    try {
+      const warehouses = await getDoc(doc(db, `erpag`, "AllWarehouses"));
+      if (warehouses.data()?.data) {
+        setWarehouseArr(warehouses.data()?.data);
+        const resArr = warehouses
+          .data()
+          ?.data?.sort((a, b) =>
+            a?.name?.toLowerCase() > b?.name?.toLowerCase() ? 1 : -1
+          );
+        // console.log(resArr);
+        fetchData(resArr);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  useEffect(() => {
+    fetchWarehouse();
+  }, []);
 
   const [data, setData] = useState([
     {
       id: 1,
       image: "",
+      name:"",
       description: "",
       size: "",
       type: "",
@@ -35,6 +108,7 @@ export default function Quote({ setQuotePdfUrl, quoteData, setIsQuote }) {
     const newRow = {
       id: rowCount + 1,
       image: "",
+      name:"",
       description: "",
       size: "",
       type: "",
@@ -71,7 +145,7 @@ export default function Quote({ setQuotePdfUrl, quoteData, setIsQuote }) {
 
   const CurrDate = new Date();
 
-  const handleUploadQuoteImages = async (qsId, event) => {
+  const handleUploadQuoteImages = async (qsId,index, event) => {
     const file = event.target.files[0];
     try {
       // Upload the file to Firebase Storage
@@ -83,10 +157,9 @@ export default function Quote({ setQuotePdfUrl, quoteData, setIsQuote }) {
 
       // Get the download URL for the uploaded file
       const downloadURL = await getDownloadURL(storageRef);
-      const newData = data.map((row) =>
-        row.id === qsId ? { ...row, image: downloadURL } : row
-      );
-      setData(newData);
+      const list = [...data];
+      list[index].image = downloadURL;
+      setData(list);
     } catch (error) {
       console.log(error);
     }
@@ -113,10 +186,35 @@ export default function Quote({ setQuotePdfUrl, quoteData, setIsQuote }) {
         doc(db, `Quotes/${dbName.slice(0, 3)}/${quoteData.clientId}/file`),
         { data }
       );
-      alert("Uploaded");
+
+          setDoc(
+            doc(db, `qs/pendingQuotes/${dbName.slice(0, 3)}/${quoteData.id}`),
+            {
+              data,
+              date,
+              time,
+              total,
+              details:{
+clientName:quoteData?.name+quoteData?.lastname,
+siteLocation:quoteData?.address,
+              },
+              vat:total * VAT,
+              grandTotal:total - 100 + total * VAT
+            }
+          );
+          setDoc(
+            doc(db, `${dbName}/${quoteData.id}`),{...quoteData,invoiceUrl:downloadURL});
+          
+            enqueueSnackbar("Invoice Created Successfully", {
+              variant: "success",
+            });
+            setTimeout(() => {
+              setIsQuote(false);
+            }, 4000);
     } catch (error) {
       console.log(error);
     }
+
   };
 
   const Invoice = () => {
@@ -245,6 +343,9 @@ export default function Quote({ setQuotePdfUrl, quoteData, setIsQuote }) {
               <Text>{receipt.id}</Text>
             </View>
             <View style={styles.tbody}>
+              <Text>{receipt.name}</Text>
+            </View>
+            <View style={styles.tbody}>
               <Text>{receipt.description}</Text>
             </View>
             <View style={styles.tbody}>
@@ -308,11 +409,17 @@ export default function Quote({ setQuotePdfUrl, quoteData, setIsQuote }) {
           <View style={styles.total}>
             <Text> $ {total}</Text>
           </View>
+          <View style={styles.total}>
+            <Text>VAT({VAT*100}%)</Text>
+          </View>
+          <View style={styles.total}>
+            <Text> + $ {(VAT * total).toFixed(2)}</Text>
+          </View>
           <View style={styles.tbody}>
             <Text>Grand Total</Text>
           </View>
           <View style={styles.tbody}>
-            <Text>$ {total - 100 + total * 0.16}</Text>
+            <Text>$ {total  + total * VAT}</Text>
           </View>
         </View>
       );
@@ -334,6 +441,12 @@ export default function Quote({ setQuotePdfUrl, quoteData, setIsQuote }) {
   return (
     <>
       <div className=" absolute inset-0 z-50 flex items-center justify-center w-full min-h-[100vh] h-fit bg-black/60">
+      <SnackbarProvider
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+      />
         <div className=" actual-receipt min-w-[90%] min-h-[90vh] relative h-fit p-7 bg-white flex flex-col justify-center items-center">
           <IoClose
             onClick={() => {
@@ -342,7 +455,7 @@ export default function Quote({ setQuotePdfUrl, quoteData, setIsQuote }) {
             className=" absolute top-0.5 right-0.5 text-[27px] text-black cursor-pointer "
           />
 
-          <div className=" flex-col flex gap-3 py-5 px-7 border border-black w-full">
+          <div className=" flex-col flex gap-3 py-5 px-7 border border-black w-full h-full">
             <p className=" wf text-center font-medium text-lg">Quote</p>
             <div className=" flex items-center justify-between">
               <div className=" flex flex-col gap-3">
@@ -407,6 +520,7 @@ export default function Quote({ setQuotePdfUrl, quoteData, setIsQuote }) {
                 <tr>
                   <th className=" px-3 py-2 border border-white">Serial No.</th>
                   <th className=" px-3 border border-white">Image Upload</th>
+                  <th className=" px-3 border border-white">Name</th>
                   <th className=" px-3 border border-white">Description</th>
                   <th className=" px-3 border border-white">Size</th>
                   <th className=" px-3 border border-white">
@@ -416,7 +530,7 @@ export default function Quote({ setQuotePdfUrl, quoteData, setIsQuote }) {
                   <th className=" px-3 border border-white">Unit</th>
                   <th className=" px-3 border border-white">Rate</th>
                   <th className=" px-3 border border-white">Amount</th>
-                  <th className=" px-3 border border-white">Discount</th>
+                  <th className=" px-3 border border-white">Discount(%)</th>
                   <th className=" px-3 border border-white">Total</th>
                 </tr>
               </thead>
@@ -431,17 +545,67 @@ export default function Quote({ setQuotePdfUrl, quoteData, setIsQuote }) {
                         {item.id}
                       </td>
                       <td className=" flex items-center justify-center border border-white">
+                        {item?.image?<>
+                        <Link className=" bg-green-400 px-2" href={item?.image}>
+View
+                        </Link>
+                          <IoClose className=" cursor-pointer" onClick={()=>{
+                             const list = [...data];
+                             list[index].image = "";
+                             setData(list);
+                          }}/>
+                        </>:
                         <input
                           className=" w-[100px]  "
                           type="file"
                           id={`image-${item}`}
                           name="image"
-                          value={item.name}
+                          // value={item.name}
                           onChange={(e) => {
-                            handleUploadQuoteImages(item.id, e);
+                            handleUploadQuoteImages(item.id,index, e);
                           }}
                           autoComplete="off"
-                        />
+                        />}
+                      </td>
+                      <td className=" text-center border border-white ">
+                      <select
+                      type="text"
+                      placeholder="Warehouse Name"
+                      id="warehouse"
+                      name="warehouse"
+                      value={item.name}
+                      onChange={(e) => {
+                        const list = [...data];
+                        list[index].name = e.target.value;
+                        let selItem = allProducts?.find(
+                            (item2) => item2?.name === String(e.target.value)
+                          );
+                        list[index].amount = selItem?.stockPrice                        ;
+                        list[index].total = selItem?.stockPrice                        ;
+                        list[index].description = selItem?.addInfo;
+                        list[index].unit = selItem?.UOM;
+                        list[index].quantity = selItem?.quantity;
+                        list[index].name = selItem?.name;
+                        // // console.log(selItem);
+                        setData(list);
+                      }}
+                      className=" w-full px-2 border-none outline-none"
+                    >
+                      <option value={""} className=" capitalize">
+                        Select Product
+                      </option>
+                      {allProducts?.map((subItem, index2) => {
+                          return (
+                            <option
+                              key={index2}
+                              value={subItem?.name}
+                              className=" text-black "
+                            >
+                              {subItem?.name}
+                            </option>
+                          );
+                        })}
+                    </select>
                       </td>
                       <td className="mx-auto border border-white ">
                         <input
@@ -449,8 +613,12 @@ export default function Quote({ setQuotePdfUrl, quoteData, setIsQuote }) {
                           type="text"
                           id="description"
                           name="description"
-                          value={item.name}
-                          onChange={(e) => handleQuoteChange(e, item.id)}
+                          value={item.description}
+                          onChange={(e) => {
+                            const list = [...data];
+                      list[index].description = e.target.value;
+                      setData(list);
+                          }}
                           autoComplete="off"
                         />
                       </td>
@@ -460,8 +628,12 @@ export default function Quote({ setQuotePdfUrl, quoteData, setIsQuote }) {
                           type="text"
                           id="size"
                           name="size"
-                          value={item.name}
-                          onChange={(e) => handleQuoteChange(e, item.id)}
+                          value={item.size}
+                          onChange={(e) => {
+                            const list = [...data];
+                      list[index].size = e.target.value;
+                      setData(list);
+                          }}
                           autoComplete="off"
                         />
                       </td>
@@ -471,8 +643,12 @@ export default function Quote({ setQuotePdfUrl, quoteData, setIsQuote }) {
                           type="text"
                           id="type"
                           name="type"
-                          value={item.name}
-                          onChange={(e) => handleQuoteChange(e, item.id)}
+                          value={item.type}
+                          onChange={(e) => {
+                            const list = [...data];
+                      list[index].type = e.target.value;
+                      setData(list);
+                          }}
                           autoComplete="off"
                         />
                       </td>
@@ -482,8 +658,12 @@ export default function Quote({ setQuotePdfUrl, quoteData, setIsQuote }) {
                           type="text"
                           id="quantity"
                           name="quantity"
-                          value={item.name}
-                          onChange={(e) => handleQuoteChange(e, item.id)}
+                          value={item.quantity}
+                          onChange={(e) => {
+                            const list = [...data];
+                      list[index].quantity = e.target.value;
+                      setData(list);
+                          }}
                           autoComplete="off"
                         />
                       </td>
@@ -493,8 +673,12 @@ export default function Quote({ setQuotePdfUrl, quoteData, setIsQuote }) {
                           type="text"
                           id="unit"
                           name="unit"
-                          value={item.name}
-                          onChange={(e) => handleQuoteChange(e, item.id)}
+                          value={item.unit}
+                          onChange={(e) => {
+                            const list = [...data];
+                      list[index].unit = e.target.value;
+                      setData(list);
+                          }}
                           autoComplete="off"
                         />
                       </td>
@@ -504,8 +688,12 @@ export default function Quote({ setQuotePdfUrl, quoteData, setIsQuote }) {
                           type="text"
                           id="rate"
                           name="rate"
-                          value={item.name}
-                          onChange={(e) => handleQuoteChange(e, item.id)}
+                          value={item.rate}
+                          onChange={(e) => {
+                            const list = [...data];
+                      list[index].rate = e.target.value;
+                      setData(list);
+                          }}
                           autoComplete="off"
                         />
                       </td>
@@ -515,8 +703,12 @@ export default function Quote({ setQuotePdfUrl, quoteData, setIsQuote }) {
                           type="text"
                           id="amount"
                           name="amount"
-                          value={item.name}
-                          onChange={(e) => handleQuoteChange(e, item.id)}
+                          value={item.amount}
+                          onChange={(e) => {
+                            const list = [...data];
+                      list[index].amount = e.target.value;
+                      setData(list);
+                          }}
                           autoComplete="off"
                         />
                       </td>
@@ -526,8 +718,16 @@ export default function Quote({ setQuotePdfUrl, quoteData, setIsQuote }) {
                           type="text"
                           id="discount"
                           name="discount"
-                          value={item.name}
-                          onChange={(e) => handleQuoteChange(e, item.id)}
+                          value={item.discount}
+                          onChange={(e) => {
+                            const list = [...data];
+                            list[index].discount = e.target.value;
+                            setData(list);
+                            list[index].total = (
+                              list[index].amount *
+                              (1 - parseFloat(list[index].discount) * 0.01)
+                            ).toFixed(2);
+                          }}
                           autoComplete="off"
                         />
                       </td>
@@ -537,8 +737,8 @@ export default function Quote({ setQuotePdfUrl, quoteData, setIsQuote }) {
                           type="text"
                           id="total"
                           name="total"
-                          value={item.name}
-                          onChange={(e) => handleQuoteChange(e, item.id)}
+                          value={item.total}
+                          onChange={(e) => {}}
                           autoComplete="off"
                         />
                       </td>
@@ -548,32 +748,32 @@ export default function Quote({ setQuotePdfUrl, quoteData, setIsQuote }) {
 
                 <tr className=" bg-orange-100">
                   <td>Total</td>
-                  {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((index) => {
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9,10].map((index) => {
                     return <td key={index}></td>;
                   })}
-                  <td className=" text-center">$ {total}</td>
+                  <td className=" text-center">$ {total.toFixed(2)}</td>
                 </tr>
-                <tr className=" bg-orange-100">
+                {/* <tr className=" bg-orange-100">
                   <td>Discount</td>
                   {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((index) => {
                     return <td key={index}></td>;
                   })}
                   <td className=" text-center">-{total !== 0 ? 100 : 0}</td>
-                </tr>
+                </tr> */}
                 <tr className=" bg-orange-100">
-                  <td>VAT(16%)</td>
-                  {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((index) => {
+                  <td>VAT({VAT*100}%)</td>
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9,10].map((index) => {
                     return <td key={index}></td>;
                   })}
-                  <td className=" text-center">+{(0.16 * total).toFixed(2)}</td>
+                  <td className=" text-center">+${(VAT * total).toFixed(2)}</td>
                 </tr>
                 <tr className=" bg-orange-100">
-                  <td className=" font-bold">Grand Total</td>
-                  {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((index) => {
+                  <td className=" font-bold w-full">Grand Total</td>
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9,10].map((index) => {
                     return <td key={index}></td>;
                   })}
                   <td className=" font-bold text-center">
-                    ${total !== 0 ? total - 100 + 0.16 * total : "0"}
+                    ${(total !== 0 ? total + VAT * total : 0).toFixed(2)}
                   </td>
                 </tr>
               </tbody>
