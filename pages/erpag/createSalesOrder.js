@@ -26,7 +26,7 @@ const CreateSalesOrder = ({ compType, handEditSalesOrder, selectedOrder }) => {
   const time = hours + "-" + minutes + "-" + seconds;
   const [loading, setLoading] = useState(false);
   const [allProducts, setAllProducts] = useState([]);
-  const [warehouseArr, setWarehouseArr] = useState([]);
+   
   const [data, setData] = useState({
     number: "",
     tag: "",
@@ -515,6 +515,7 @@ const CreateSalesOrder = ({ compType, handEditSalesOrder, selectedOrder }) => {
                           );
                         list[index].UOM = selItem.UOM;
                         list[index].sku = selItem.sku;
+                        list[index].price = selItem.stockPrice;
                         // console.log(selItem);
                         setReport(list);
                       }}
